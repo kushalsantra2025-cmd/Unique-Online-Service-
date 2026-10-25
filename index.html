@@ -1,0 +1,86 @@
+
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unique Online Service Buy & Sell</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f3f5f9;color:#172033}
+header{background:#123b70;color:white;padding:22px 15px;text-align:center}
+header h1{font-size:23px;margin:0 0 8px}
+header p{margin:0}
+main{max-width:800px;margin:auto;padding:16px}
+h2{font-size:20px}
+.card{background:white;padding:16px;border-radius:12px;margin:14px 0;box-shadow:0 2px 8px #0001}
+input,select,textarea,button{width:100%;padding:12px;margin:7px 0;border:1px solid #ccd3df;border-radius:7px;font-size:16px}
+button{background:#1261b0;color:white;border:0;font-weight:bold}
+.listing img{width:100%;max-height:260px;object-fit:contain;background:#eee}
+.price{font-size:21px;color:#087b43;font-weight:bold}
+footer{text-align:center;padding:22px;color:#555}
+</style>
+</head>
+<body>
+<header>
+<h1>Unique Online Service Buy & Sell</h1>
+<p>পুরনো মোবাইল ও গাড়ি কেনাবেচা</p>
+</header>
+<main>
+<div class="card">
+<h2>🔎 বিজ্ঞাপন খুঁজুন</h2>
+<input id="search" placeholder="মোবাইল বা গাড়ির নাম লিখুন" oninput="showItems()">
+</div>
+<div class="card">
+<h2>📱 🚗 বিক্রির বিজ্ঞাপন</h2>
+<div id="items">বিজ্ঞাপন এখনও যোগ করা হয়নি।</div>
+</div>
+<div class="card">
+<h2>➕ নতুন বিজ্ঞাপন যোগ করুন (শুধু Admin)</h2>
+<p>এই নমুনা পেজে বিজ্ঞাপন যোগ করার ফর্ম দেখানো হয়েছে। এটি এখনও নিরাপদ Admin login নয়।</p>
+<input id="title" placeholder="পণ্যের নাম">
+<select id="category">
+<option>মোবাইল</option>
+<option>গাড়ি</option>
+</select>
+<input id="price" type="number" placeholder="দাম (₹)">
+<textarea id="desc" placeholder="পণ্যের বিবরণ"></textarea>
+<input id="photo" type="file" accept="image/*">
+<input id="phone" placeholder="যোগাযোগের নম্বর">
+<button onclick="addItem()">বিজ্ঞাপন দেখুন</button>
+</div>
+</main>
+<footer>© Unique Online Service Buy & Sell</footer>
+<script>
+let products=[];
+function showItems(){
+let q=document.getElementById('search').value.toLowerCase();
+let filtered=products.filter(p=>p.title.toLowerCase().includes(q)||p.category.toLowerCase().includes(q));
+document.getElementById('items').innerHTML=filtered.length?filtered.map(p=>`
+<div class="listing card">
+${p.photo?`<img src="${p.photo}">`:''}
+<h3>${p.title}</h3><p>${p.category}</p>
+<div class="price">₹${p.price}</div>
+<p>${p.desc}</p><p>যোগাযোগ: ${p.phone}</p>
+</div>`).join(''):'কোনও বিজ্ঞাপন পাওয়া যায়নি।';
+}
+function addItem(){
+let title=document.getElementById('title').value.trim();
+let price=document.getElementById('price').value;
+let file=document.getElementById('photo').files[0];
+if(!title||!price){alert('নাম ও দাম লিখুন');return}
+let p={title,price,category:document.getElementById('category').value,desc:document.getElementById('desc').value,phone:document.getElementById('phone').value,photo:''};
+if(file){
+let reader=new FileReader();
+reader.onload=()=>{p.photo=reader.result;products.unshift(p);showItems()};
+reader.readAsDataURL(file);
+}else{products.unshift(p);showItems()}
+document.getElementById('title').value='';
+document.getElementById('price').value='';
+document.getElementById('desc').value='';
+document.getElementById('phone').value='';
+document.getElementById('photo').value='';
+}
+</script>
+</body>
+</html>
