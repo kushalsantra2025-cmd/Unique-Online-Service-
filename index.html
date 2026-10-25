@@ -3,20 +3,30 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Unique Online Service Buy & Sell</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f3f6fb;color:#172033}
-header{background:#123b70;color:white;padding:25px 15px;text-align:center}
-header h1{margin:0 0 10px;font-size:25px}
-main{max-width:850px;margin:auto;padding:16px}
-.card{background:white;padding:18px;border-radius:12px;margin:15px 0;box-shadow:0 3px 12px #0001}
-input,select,textarea,button{width:100%;padding:12px;margin:7px 0;border:1px solid #ccd3df;border-radius:7px;font-size:16px}
-button{background:#1261b0;color:white;border:0;font-weight:bold;cursor:pointer}
-.listing img{width:100%;max-height:280px;object-fit:contain;background:#eee}
-.price{color:#087b43;font-weight:bold;font-size:22px}
-small{color:#64748b}
+body{margin:0;font-family:Arial,sans-serif;background:#f4f7f5;color:#172033}
+header{background:#126b45;color:white;padding:24px 16px;text-align:center}
+header h1{font-size:25px;margin:0 0 8px}
+header p{margin:0}
+main{max-width:950px;margin:auto;padding:15px}
+.card{background:white;padding:18px;border-radius:16px;margin:15px 0;box-shadow:0 4px 16px #0000000b}
+h2{margin-top:0}
+input,select,textarea,button{width:100%;padding:13px;margin:7px 0;border:1px solid #d5ded8;border-radius:9px;font-size:16px}
+button{background:#13764b;color:white;border:0;font-weight:bold;cursor:pointer}
+.secondary{background:#e8f5ed;color:#126b45}
+.danger{background:#b42318;color:white}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.listing{margin:0;padding:12px;border:1px solid #e7ece8;overflow-wrap:anywhere}
+.listing img{width:100%;height:210px;object-fit:contain;background:#f0f2f0;border-radius:9px}
+.price{font-size:23px;font-weight:bold;color:#087b43}
+.muted{color:#65736b;font-size:13px}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.actions button{flex:1;min-width:100px}
+[hidden]{display:none!important}
+footer{text-align:center;padding:25px;color:#65736b}
 </style>
 </head>
 <body>
@@ -24,60 +34,196 @@ small{color:#64748b}
 <h1>Unique Online Service Buy & Sell</h1>
 <p>Buy and Sell Used Mobiles & Cars</p>
 </header>
+
 <main>
-<div class="card">
+<section class="card">
 <h2>Find Your Item</h2>
-<input id="search" placeholder="Search mobile phones or cars..." oninput="showItems()">
-</div>
-<div class="card">
-<h2>Latest Listings</h2>
-<div id="items">No listings available yet.</div>
-</div>
-<div class="card">
-<h2>Post a New Listing</h2>
-<p><small>Admin posting form — secure login is not yet configured.</small></p>
-<input id="title" placeholder="Item name or model">
-<select id="category">
-<option value="Mobile Phone">Mobile Phone</option>
-<option value="Car">Car</option>
+<input id="search" placeholder="Search by name or model..."
+ oninput="showItems()">
+<select id="filter" onchange="showItems()">
+<option value="">All Categories</option>
+<option>Mobile Phone</option>
+<option>Car</option>
 </select>
-<input id="price" type="number" placeholder="Price (INR ₹)">
-<textarea id="desc" placeholder="Item description and condition"></textarea>
-<label>Upload Item Photo</label>
+</section>
+
+<section class="card">
+<h2>Latest Listings</h2>
+<p class="muted" id="count"></p>
+<div id="items" class="grid"></div>
+</section>
+
+<section class="card">
+<h2 id="formTitle">Admin: Add Listing</h2>
+<p class="muted">Demo form. This is not a secure admin login.</p>
+<form id="productForm">
+<input id="title" placeholder="Product name or model" required>
+<select id="category">
+<option>Mobile Phone</option>
+<option>Car</option>
+</select>
+<input id="price" type="number" min="1" placeholder="Price in INR" required>
+<textarea id="desc" placeholder="Description and condition"></textarea>
+<label for="photo">Product photo</label>
 <input id="photo" type="file" accept="image/*">
-<input id="phone" placeholder="Contact phone number">
-<button onclick="addItem()">Add Listing</button>
-</div>
+<input id="phone" type="tel" placeholder="WhatsApp number with country code" required>
+<button id="saveBtn" type="submit">Add Listing</button>
+<button type="button" class="secondary" onclick="resetForm()">Cancel Edit</button>
+</form>
+</section>
 </main>
-<footer style="text-align:center;padding:20px">
-© 2026 Unique Online Service Buy & Sell
-</footer>
+
+<footer>© 2026 Unique Online Service Buy & Sell</footer>
+
 <script>
-let products=[];
-function showItems(){
-const q=document.getElementById('search').value.toLowerCase();
-const found=products.filter(p=>(p.title+' '+p.category+' '+p.desc).toLowerCase().includes(q));
-document.getElementById('items').innerHTML=found.length?found.map(p=>`
-<div class="card listing">
-${p.photo?`<img src="${p.photo}" alt="Item photo">`:''}
-<h3>${p.title}</h3><p>${p.category}</p>
-<div class="price">₹${p.price}</div>
-<p>${p.desc}</p><p>Contact: ${p.phone||'Not provided'}</p>
-</div>`).join(''):'No listings found.';
+const KEY = "unique_marketplace_v2";
+let products = [];
+let editingId = null;
+
+try {
+ products = JSON.parse(localStorage.getItem(KEY) || "[]");
+ if (!Array.isArray(products)) products = [];
+} catch(e) { products = []; }
+
+function persist() {
+ try {
+  localStorage.setItem(KEY, JSON.stringify(products));
+  return true;
+ } catch(e) {
+  alert("Storage is full. Try a smaller photo.");
+  return false;
+ }
 }
-function addItem(){
-const title=document.getElementById('title').value.trim();
-const price=document.getElementById('price').value;
-const file=document.getElementById('photo').files[0];
-if(!title||!price){alert('Please enter the item name and price.');return;}
-const p={title,price,category:document.getElementById('category').value,desc:document.getElementById('desc').value,phone:document.getElementById('phone').value,photo:''};
-function finish(){
-products.unshift(p);showItems();
-['title','price','desc','phone','photo'].forEach(id=>document.getElementById(id).value='');
+
+function safeText(value) {
+ return String(value ?? "").replace(/[&<>"']/g, c => ({
+  "&":"&amp;","<":"&lt;",">":"&gt;",
+  '"':"&quot;","'":"&#39;"
+ }[c]));
 }
-if(file){const reader=new FileReader();reader.onload=()=>{p.photo=reader.result;finish()};reader.readAsDataURL(file)}
-else finish();
+
+function showItems() {
+ const q = document.getElementById("search").value.toLowerCase();
+ const cat = document.getElementById("filter").value;
+ const found = products.filter(p =>
+  (p.title+" "+p.category+" "+p.desc).toLowerCase().includes(q)
+  && (!cat || p.category === cat)
+ );
+ document.getElementById("count").textContent =
+  found.length + " item(s) found";
+
+ document.getElementById("items").innerHTML = found.length
+ ? found.map(p => `
+  <article class="card listing">
+   ${p.photo ? `<img src="${p.photo}" alt="Product photo">` : ""}
+   <h3>${safeText(p.title)}</h3>
+   <p>${safeText(p.category)}</p>
+   <div class="price">₹${safeText(p.price)}</div>
+   <p>${safeText(p.desc)}</p>
+   <p class="muted">Contact: ${safeText(p.phone)}</p>
+   <button onclick="contact('${p.id}')">WhatsApp Seller</button>
+   <div class="actions">
+    <button class="secondary" onclick="editItem('${p.id}')">Edit</button>
+    <button class="danger" onclick="deleteItem('${p.id}')">Delete</button>
+   </div>
+  </article>`).join("")
+ : "<p>No listings found.</p>";
 }
+
+function contact(id) {
+ const p = products.find(x => x.id === id);
+ if (!p) return;
+ const number = p.phone.replace(/\D/g,"");
+ if (!number) {
+  alert("Please enter a valid WhatsApp number.");
+  return;
+ }
+ const message = encodeURIComponent(
+  "Hello, I am interested in " + p.title +
+  " listed for ₹" + p.price
+ );
+ window.open("https://wa.me/" + number + "?text=" + message,"_blank");
+}
+
+function resetForm() {
+ editingId = null;
+ document.getElementById("productForm").reset();
+ document.getElementById("formTitle").textContent = "Admin: Add Listing";
+ document.getElementById("saveBtn").textContent = "Add Listing";
+}
+
+function editItem(id) {
+ const p = products.find(x => x.id === id);
+ if (!p) return;
+ editingId = id;
+ ["title","category","price","desc","phone"].forEach(k =>
+  document.getElementById(k).value = p[k] || ""
+ );
+ document.getElementById("formTitle").textContent = "Edit Listing";
+ document.getElementById("saveBtn").textContent = "Save Changes";
+ document.getElementById("productForm").scrollIntoView({behavior:"smooth"});
+}
+
+function deleteItem(id) {
+ if (!confirm("Delete this listing?")) return;
+ const old = products;
+ products = products.filter(p => p.id !== id);
+ if (!persist()) { products = old; return; }
+ showItems();
+ if (editingId === id) resetForm();
+}
+
+document.getElementById("productForm").addEventListener("submit", async e => {
+ e.preventDefault();
+ const title = document.getElementById("title").value.trim();
+ const price = document.getElementById("price").value;
+ const phone = document.getElementById("phone").value.trim();
+ const file = document.getElementById("photo").files[0];
+ if (!title || !price || Number(price) <= 0 || !phone) {
+  alert("Enter a product name, valid price and phone number.");
+  return;
+ }
+ let photo = editingId
+  ? (products.find(p => p.id === editingId)?.photo || "")
+  : "";
+
+ if (file) {
+  if (file.size > 700 * 1024) {
+   alert("Please choose a photo smaller than 700 KB.");
+   return;
+  }
+  photo = await new Promise((resolve,reject) => {
+   const reader = new FileReader();
+   reader.onload = () => resolve(reader.result);
+   reader.onerror = reject;
+   reader.readAsDataURL(file);
+  }).catch(() => "");
+ }
+
+ const item = {
+  id: editingId || (Date.now().toString(36) + Math.random().toString(36).slice(2,8)),
+  title,
+  category: document.getElementById("category").value,
+  price: Number(price),
+  desc: document.getElementById("desc").value.trim(),
+  phone: phone,
+  photo
+ };
+
+ const old = products;
+ if (editingId) {
+  products = products.map(p => p.id === editingId ? item : p);
+ } else {
+  products.unshift(item);
+ }
+ if (!persist()) { products = old; return; }
+
+ resetForm();
+ showItems();
+ alert("Listing saved in this browser.");
+});
+
+showItems();
 </script>
 </body>
 </html>
