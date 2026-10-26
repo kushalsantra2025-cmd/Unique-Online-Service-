@@ -31,14 +31,14 @@ h2{margin-top:10px}
 .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
 .card{background:white;border:1px solid #e2e8f0;border-radius:14px;overflow:hidden;min-width:0}
 .art{height:180px;background:linear-gradient(135deg,#dbeafe,#ede9fe);display:grid;place-items:center;font-size:58px;overflow:hidden}
-.art img{width:100%;height:100%;object-fit:cover}
+.art img{width:100%;height:100%;object-fit:cover;cursor:pointer}
 .content{padding:15px}
 .label{font-size:11px;color:#2563eb;font-weight:bold}
 .content h3{margin:8px 0;overflow-wrap:anywhere}
 .price{font-size:23px;font-weight:bold}
 .old-price{font-size:14px;color:#64748b;text-decoration:line-through;margin-left:6px}
 .details{color:#64748b;font-size:13px;line-height:1.7;margin:8px 0;overflow-wrap:anywhere}
-.actions{display:flex;gap:8px}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
 .actions button{flex:1}
 .secondary{background:#e8efff;color:#1d4ed8}
 .info{background:white;padding:20px;border-radius:12px;margin-top:28px;line-height:1.7}
@@ -46,8 +46,22 @@ h2{margin-top:10px}
 .field{margin-bottom:12px}
 .field label{display:block;font-weight:bold;font-size:14px;margin-bottom:6px}
 .full{grid-column:1/-1}
-#photoPreview{max-width:180px;max-height:150px;object-fit:contain;display:none;margin-top:10px;border-radius:8px}
+#photoPreview{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:10px}
+.preview-wrap{position:relative;min-width:0}
+.preview-wrap img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;border:1px solid #ddd}
+.preview-wrap button{position:absolute;top:4px;right:4px;padding:3px 7px;background:#dc2626;border-radius:50%}
+.photo-hint{font-size:12px;color:#64748b;line-height:1.6;margin-top:7px}
+.gallery-thumbs{display:flex;gap:7px;overflow-x:auto;margin-top:10px;padding-bottom:5px}
+.gallery-thumbs img{width:60px;height:60px;object-fit:cover;border-radius:6px;cursor:pointer;border:2px solid transparent}
+.gallery-thumbs img.active{border-color:#2563eb}
 footer{margin-top:30px;background:#101827;color:white;padding:24px 6%;text-align:center;font-size:13px}
+#viewer{display:none;position:fixed;inset:0;background:#000e;z-index:9999;align-items:center;justify-content:center;padding:15px}
+#viewer.open{display:flex}
+.viewer-box{width:min(900px,100%);text-align:center;color:white}
+#largeImage{max-width:100%;max-height:70vh;object-fit:contain;margin-top:12px}
+.viewer-controls{display:flex;justify-content:center;align-items:center;gap:12px;margin:12px 0;flex-wrap:wrap}
+.viewer-controls button{background:white;color:#172033}
+.viewer-close{background:#dc2626;margin-bottom:10px}
 @media(max-width:700px){
  .categories{grid-template-columns:repeat(2,1fr)}
  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -58,11 +72,13 @@ footer{margin-top:30px;background:#101827;color:white;padding:24px 6%;text-align
  .content h3{font-size:15px}
  .actions{flex-direction:column}
  .actions button{width:100%}
+ #photoPreview{grid-template-columns:repeat(4,minmax(0,1fr))}
 }
 @media(max-width:430px){
  .grid{grid-template-columns:1fr}
  .form-grid{grid-template-columns:1fr}
  .full{grid-column:auto}
+ .art{height:180px}
 }
 </style>
 </head>
@@ -123,6 +139,7 @@ footer{margin-top:30px;background:#101827;color:white;padding:24px 6%;text-align
     <label for="adBrand">Brand *</label>
     <input id="adBrand" required placeholder="e.g. Samsung, Maruti">
    </div>
+
    <div class="field">
     <label for="adName">Model / Product Name *</label>
     <input id="adName" required placeholder="e.g. Galaxy S21">
@@ -194,9 +211,13 @@ footer{margin-top:30px;background:#101827;color:white;padding:24px 6%;text-align
    </div>
 
    <div class="field full">
-    <label for="adPhoto">Product Photo * (max 2 MB)</label>
-    <input id="adPhoto" type="file" accept="image/*" required>
-    <img id="photoPreview" alt="Product photo preview">
+    <label for="adPhoto">Product Photos * (Maximum 10 photos)</label>
+    <input id="adPhoto" type="file" accept="image/*" multiple required>
+    <div class="photo-hint">
+     সর্বোচ্চ ১০টি ছবি যোগ করতে পারবে। ছবিকে resize বা compress করা হবে না। অরিজিনাল ফাইলের কোয়ালিটি বজায় থাকবে। বড় ছবির জন্য স্টোরেজ বেশি লাগতে পারে।
+    </div>
+    <div id="photoCount" class="photo-hint">No photos selected</div>
+    <div id="photoPreview"></div>
    </div>
 
    <div class="field full">
@@ -205,7 +226,7 @@ footer{margin-top:30px;background:#101827;color:white;padding:24px 6%;text-align
    </div>
   </div>
 
-  <button type="submit">Post Advertisement</button>
+  <button type="submit" id="submitBtn">Post Advertisement</button>
   <button type="button" class="secondary" onclick="clearForm()">Clear Form</button>
  </form>
  <p id="adMessage" role="status"></p>
@@ -232,271 +253,603 @@ footer{margin-top:30px;background:#101827;color:white;padding:24px 6%;text-align
 </main>
 
 <footer>
- © <span id="year"></span> Unique Online Service Buy & Sell<br>
+ © <span id="footerYear"></span> Unique Online Service Buy & Sell<br>
  Mobiles • Cars • Other Products
 </footer>
 
+<div id="viewer">
+ <div class="viewer-box">
+  <button type="button" class="viewer-close" onclick="closeGallery()">✕ Close</button>
+  <div><img id="largeImage" alt="Product photo"></div>
+  <div class="viewer-controls">
+   <button type="button" onclick="changePhoto(-1)">❮ Previous</button>
+   <span id="imageNumber"></span>
+   <button type="button" onclick="changePhoto(1)">Next ❯</button>
+  </div>
+  <div id="galleryThumbs" class="gallery-thumbs"></div>
+ </div>
+</div>
+
 <script>
-// Replace this with your WhatsApp number including country code.
-// India example: "919876543210" (digits only, no + or spaces).
+"use strict";
+
+// India example: "919876543210", digits only, no + or spaces.
 const WHATSAPP_NUMBER = "919903087477";
 
-// Local browser storage only. Listings are not shared between devices.
-const STORAGE_KEY = "uniqueOnlineServiceListings_v2";
-const MAX_IMAGE_SIZE = 2 * 1024 * 1024;
+// Images are saved in IndexedDB without compression or resizing.
+const DB_NAME = "UniqueOnlineServiceDB";
+const DB_VERSION = 1;
+const STORE_NAME = "products";
+const MAX_PHOTOS = 10;
 
-const defaultProducts = [
- {id:1,cat:"Mobile",brand:"Sample Brand",name:"Sample Android Phone",ram:"8 GB",rom:"128 GB",colour:"Black",price:25000,offer:19999,details:"Example listing. Replace with a real advertisement.",condition:"Used",icon:"📱"},
- {id:2,cat:"Car",brand:"Sample Brand",name:"Sample Car",year:"2022",fuel:"Petrol",km:"25000",price:600000,offer:550000,details:"Example listing. Replace with a real advertisement.",condition:"Used",icon:"🚗"},
- {id:3,cat:"Other",brand:"Sample Brand",name:"Sample Headphones",colour:"Black",price:2000,offer:1500,details:"Example listing. Replace with a real advertisement.",condition:"New",icon:"🎧"}
-];
-
-let products = loadProducts();
+let db;
+let products = [];
 let selected = "All";
-let pendingPhoto = "";
+let selectedPhotos = [];
+let galleryPhotos = [];
+let galleryUrls = [];
+let galleryIndex = 0;
+let previewUrls = [];
 
-function loadProducts(){
- try {
-  const saved = localStorage.getItem(STORAGE_KEY);
-  return saved ? JSON.parse(saved) : defaultProducts.map(p=>({...p}));
- } catch(e) {
-  return defaultProducts.map(p=>({...p}));
- }
+const $ = id => document.getElementById(id);
+
+function openDatabase() {
+ return new Promise((resolve, reject) => {
+  const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+  request.onupgradeneeded = event => {
+   const database = event.target.result;
+   if (!database.objectStoreNames.contains(STORE_NAME)) {
+    database.createObjectStore(STORE_NAME, {keyPath:"id"});
+   }
+  };
+
+  request.onsuccess = () => resolve(request.result);
+  request.onerror = () => reject(request.error);
+ });
 }
 
-function saveProducts(){
- try {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(products));
-  return true;
- } catch(e) {
-  alert("Browser storage is full. Remove some old listings or use a smaller photo.");
-  return false;
- }
+function getAllProducts() {
+ return new Promise((resolve, reject) => {
+  const request = db.transaction(STORE_NAME, "readonly")
+   .objectStore(STORE_NAME).getAll();
+  request.onsuccess = () => resolve(request.result || []);
+  request.onerror = () => reject(request.error);
+ });
 }
 
-function safe(s){
- return String(s ?? "").replace(/[&<>"']/g,c=>({
+function putProduct(product) {
+ return new Promise((resolve, reject) => {
+  const request = db.transaction(STORE_NAME, "readwrite")
+   .objectStore(STORE_NAME).put(product);
+  request.onsuccess = () => resolve();
+  request.onerror = () => reject(request.error);
+ });
+}
+
+function removeProduct(id) {
+ return new Promise((resolve, reject) => {
+  const request = db.transaction(STORE_NAME, "readwrite")
+   .objectStore(STORE_NAME).delete(id);
+  request.onsuccess = () => resolve();
+  request.onerror = () => reject(request.error);
+ });
+}
+
+function safe(s) {
+ return String(s ?? "").replace(/[&<>"']/g, c => ({
   "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
  }[c]));
 }
 
-function money(value){
- const n=Number(value);
- return Number.isFinite(n) && n>0 ? "₹"+n.toLocaleString("en-IN") : "Price on request";
+function money(value) {
+ const n = Number(value);
+ return Number.isFinite(n) && n > 0
+  ? "₹" + n.toLocaleString("en-IN")
+  : "Price on request";
 }
 
-function updateFields(){
- const cat=document.getElementById("adCat").value;
- const isMobile=cat==="Mobile";
- const isCar=cat==="Car";
+function updateFields() {
+ const cat = $("adCat").value;
+ const isMobile = cat === "Mobile";
+ const isCar = cat === "Car";
 
- document.getElementById("ramField").hidden=!isMobile;
- document.getElementById("romField").hidden=!isMobile;
- document.getElementById("colourField").hidden=isCar;
- document.getElementById("yearField").hidden=!isCar;
- document.getElementById("fuelField").hidden=!isCar;
- document.getElementById("kmField").hidden=!isCar;
+ $("ramField").hidden = !isMobile;
+ $("romField").hidden = !isMobile;
+ $("colourField").hidden = isCar;
+ $("yearField").hidden = !isCar;
+ $("fuelField").hidden = !isCar;
+ $("kmField").hidden = !isCar;
 }
 
-function render(){
- const q=document.getElementById("q").value.trim().toLowerCase();
- let cat=document.getElementById("cat").value;
- if(cat==="All" && selected!=="All") cat=selected;
-
- const items=products.filter(p=>
-  (cat==="All"||p.cat===cat) &&
-  [p.name,p.brand,p.details,p.condition,p.cat,p.ram,p.rom,p.colour,p.year,p.fuel,p.km]
-   .filter(Boolean).join(" ").toLowerCase().includes(q)
- );
-
- document.getElementById("products").innerHTML=items.length ? items.map(p=>{
-  const image=p.photo
-   ? '<img src="'+p.photo+'" alt="'+safe(p.name)+'" loading="lazy">'
-   : safe(p.icon || (p.cat==="Car"?"🚗":p.cat==="Mobile"?"📱":"📦"));
-
-  let extra="";
-  if(p.cat==="Mobile"){
-   extra=[p.ram&&"RAM: "+p.ram,p.rom&&"Storage: "+p.rom,p.colour&&"Colour: "+p.colour].filter(Boolean).join(" | ");
-  } else if(p.cat==="Car"){
-   extra=[p.year&&"Year: "+p.year,p.fuel&&"Fuel: "+p.fuel,p.km&&"Driven: "+Number(p.km).toLocaleString("en-IN")+" km"].filter(Boolean).join(" | ");
-  } else {
-   extra=p.colour?"Colour: "+p.colour:"";
-  }
-
-  return '<article class="card"><div class="art">'+image+'</div><div class="content">'+
-   '<div class="label">'+safe(p.cat.toUpperCase())+' • '+safe(p.condition||"Used")+'</div>'+
-   '<h3>'+safe(p.brand? p.brand+" "+p.name:p.name)+'</h3>'+
-   '<div class="price">'+money(p.offer||p.price)+'</div>'+
-   (p.price&&p.offer&&Number(p.price)>Number(p.offer)?'<div class="old-price">'+money(p.price)+'</div>':'')+
-   '<div class="details">'+safe(extra?extra+" | ":"")+safe(p.details||"")+'</div>'+
-   '<div class="actions"><button onclick="enquire('+Number(p.id)+')">Enquire</button>'+
-   '<button class="secondary" onclick="showDetails('+Number(p.id)+')">Details</button></div>'+
-   '<div style="margin-top:8px"><button type="button" style="background:#fee2e2;color:#991b1b;width:100%" onclick="deleteProduct('+Number(p.id)+')">Delete Ad</button></div>'+
-   '</div></article>';
- }).join("") : '<p>No products found.</p>';
-
- document.querySelectorAll(".filters button").forEach(b=>{
-  const value=b.textContent.trim();
-  const wanted=cat==="All"?"All":cat==="Mobile"?"Mobiles":cat==="Car"?"Cars":"Other";
-  b.classList.toggle("active",value===wanted);
- });
-}
-
-function pick(c){
- selected=c;
- document.getElementById("cat").value=c;
+function pick(category) {
+ selected = category;
+ $("cat").value = category;
  render();
- document.getElementById("listings").scrollIntoView({behavior:"smooth"});
+ $("listings").scrollIntoView({behavior:"smooth"});
 }
 
-function whatsApp(text){
- if(!WHATSAPP_NUMBER){
-  alert("Please set WHATSAPP_NUMBER in the code first. Example: 919876543210");
+function revokePreviewUrls() {
+ previewUrls.forEach(url => URL.revokeObjectURL(url));
+ previewUrls = [];
+}
+
+function revokeGalleryUrls() {
+ galleryUrls.forEach(url => URL.revokeObjectURL(url));
+ galleryUrls = [];
+}
+
+$("adPhoto").addEventListener("change", function() {
+ revokePreviewUrls();
+ selectedPhotos = [];
+
+ const files = Array.from(this.files || []);
+
+ if (files.length > MAX_PHOTOS) {
+  this.value = "";
+  $("photoPreview").innerHTML = "";
+  $("photoCount").textContent = "Maximum 10 photos allowed. Please select again.";
+  alert("একবারে সর্বোচ্চ ১০টি ছবি যোগ করা যাবে।");
   return;
  }
- window.open("https://wa.me/"+WHATSAPP_NUMBER+"?text="+encodeURIComponent(text),"_blank","noopener");
-}
 
-function contact(){
- whatsApp("Hello, I have an enquiry about Unique Online Service Buy & Sell.");
-}
+ const invalid = files.find(file => !file.type.startsWith("image/"));
 
-function enquire(id){
- const p=products.find(x=>x.id===id);
- if(!p)return;
- const text=[
-  "Hello, I am interested in this listing:",
-  (p.brand||"")+" "+p.name,
-  "Category: "+p.cat,
-  "Price: "+money(p.offer||p.price),
-  p.cat==="Mobile"?"RAM: "+(p.ram||"Not specified")+" | Storage: "+(p.rom||"Not specified"):"",
-  p.cat==="Car"?"Year: "+(p.year||"Not specified")+" | Fuel: "+(p.fuel||"Not specified")+" | KM: "+(p.km||"Not specified"):"",
-  "Condition: "+(p.condition||"Not specified"),
-  "Please share more details."
- ].filter(Boolean).join("\n");
- whatsApp(text);
-}
+ if (invalid) {
+  this.value = "";
+  $("photoPreview").innerHTML = "";
+  $("photoCount").textContent = "Please select image files only.";
+  alert("শুধুমাত্র ছবির ফাইল নির্বাচন করো।");
+  return;
+ }
 
-function showDetails(id){
- const p=products.find(x=>x.id===id);
- if(!p)return;
- let lines=[
-  (p.brand||"")+" "+p.name,
-  "Category: "+p.cat,
-  "Offer price: "+money(p.offer||p.price),
-  p.price?"Original price: "+money(p.price):"",
-  "Condition: "+(p.condition||"Not specified"),
-  p.cat==="Mobile"?"RAM: "+(p.ram||"Not specified")+"\nStorage: "+(p.rom||"Not specified")+"\nColour: "+(p.colour||"Not specified"):"",
-  p.cat==="Car"?"Year: "+(p.year||"Not specified")+"\nFuel: "+(p.fuel||"Not specified")+"\nKilometres: "+(p.km||"Not specified"):"",
-  "Description: "+(p.details||"No description")
- ].filter(Boolean);
- alert(lines.join("\n\n"));
-}
+ selectedPhotos = files;
+ $("photoPreview").innerHTML = "";
+ $("photoCount").textContent =
+  files.length + " photo(s) selected • Original quality • No compression";
 
-function deleteProduct(id){
- const p=products.find(x=>x.id===id);
- if(!p)return;
- if(!confirm('Delete "'+p.name+'"?'))return;
- const old=products;
- products=products.filter(x=>x.id!==id);
- if(!saveProducts())products=old;
- render();
-}
+ files.forEach((file, index) => {
+  const wrap = document.createElement("div");
+  wrap.className = "preview-wrap";
 
-function clearForm(){
- document.getElementById("adForm").reset();
- pendingPhoto="";
- document.getElementById("photoPreview").style.display="none";
- document.getElementById("adMessage").textContent="";
+  const img = document.createElement("img");
+  img.alt = "Selected photo " + (index + 1);
+  img.src = URL.createObjectURL(file);
+  previewUrls.push(img.src);
+  wrap.appendChild(img);
+
+  const remove = document.createElement("button");
+  remove.type = "button";
+  remove.textContent = "×";
+  remove.title = "Remove this photo";
+
+  remove.addEventListener("click", () => {
+   selectedPhotos.splice(index, 1);
+
+   const transfer = new DataTransfer();
+   selectedPhotos.forEach(photo => transfer.items.add(photo));
+   $("adPhoto").files = transfer.files;
+
+   // Refresh preview with the remaining selected images.
+   $("adPhoto").dispatchEvent(new Event("change"));
+  });
+
+  wrap.appendChild(remove);
+  $("photoPreview").appendChild(wrap);
+ });
+});
+
+$("adForm").addEventListener("submit", async function(event) {
+ event.preventDefault();
+
+ if (!db) {
+  alert("Database is not ready. Refresh the page and try again.");
+  return;
+ }
+
+ if (selectedPhotos.length < 1 || selectedPhotos.length > MAX_PHOTOS) {
+  alert("Please select between 1 and 10 photos.");
+  return;
+ }
+
+ const submit = $("submitBtn");
+ submit.disabled = true;
+ submit.textContent = "Saving...";
+
+ try {
+  const cat = $("adCat").value;
+
+  const item = {
+   id: Date.now(),
+   cat,
+   brand: $("adBrand").value.trim(),
+   name: $("adName").value.trim(),
+   ram: cat === "Mobile" ? $("adRam").value : "",
+   rom: cat === "Mobile" ? $("adRom").value : "",
+   colour: cat !== "Car" ? $("adColour").value.trim() : "",
+   year: cat === "Car" ? $("adYear").value : "",
+   fuel: cat === "Car" ? $("adFuel").value : "",
+   km: cat === "Car" ? $("adKm").value : "",
+   price: $("adPrice").value ? Number($("adPrice").value) : 0,
+   offer: Number($("adOffer").value),
+   details: $("adDetails").value.trim(),
+   condition: $("adCondition").value,
+
+   // Store original File objects directly.
+   // No canvas, resizing, JPEG conversion or compression.
+   photos: selectedPhotos.slice(),
+
+   createdAt: Date.now(),
+   icon: cat === "Mobile" ? "📱" : cat === "Car" ? "🚗" : "📦"
+  };
+
+  await putProduct(item);
+  await render();
+
+  $("adMessage").textContent =
+   "Advertisement posted successfully! " + item.photos.length + " original-quality photos saved.";
+
+  clearForm();
+  $("listings").scrollIntoView({behavior:"smooth"});
+
+ } catch(error) {
+  console.error(error);
+  $("adMessage").textContent =
+   "Could not save. Your browser may be out of storage space.";
+  alert("বিজ্ঞাপন সেভ করা যায়নি। ফোনের স্টোরেজ বা ব্রাউজারের জায়গা কম থাকতে পারে।");
+ } finally {
+  submit.disabled = false;
+  submit.textContent = "Post Advertisement";
+ }
+});
+
+function clearForm() {
+ $("adForm").reset();
+ selectedPhotos = [];
+ revokePreviewUrls();
+ $("photoPreview").innerHTML = "";
+ $("photoCount").textContent = "No photos selected";
  updateFields();
 }
 
-document.getElementById("adPhoto").addEventListener("change",function(){
- const file=this.files[0];
- pendingPhoto="";
- const preview=document.getElementById("photoPreview");
+function getProductPhotos(product) {
+ // Supports the new multiple-photo format and old single-photo ads.
+ if (Array.isArray(product.photos)) return product.photos;
+ if (product.photo) return [product.photo];
+ return [];
+}
 
- if(!file){
-  preview.style.display="none";
-  return;
- }
- if(!file.type.startsWith("image/")){
-  alert("Please choose an image file.");
-  this.value="";
-  preview.style.display="none";
-  return;
- }
- if(file.size>MAX_IMAGE_SIZE){
-  alert("Please choose an image smaller than 2 MB.");
-  this.value="";
-  preview.style.display="none";
-  return;
- }
+function photoSource(photo) {
+ if (typeof photo === "string") return photo;
+ return URL.createObjectURL(photo);
+}
 
- const reader=new FileReader();
- reader.onload=function(){
-  pendingPhoto=reader.result;
-  preview.src=pendingPhoto;
-  preview.style.display="block";
- };
- reader.onerror=function(){
-  alert("Could not read this image. Please try another photo.");
-  pendingPhoto="";
- };
- reader.readAsDataURL(file);
+function render() {
+ if (!db) return;
+
+ getAllProducts().then(all => {
+  products = all;
+
+  const q = $("q").value.trim().toLowerCase();
+  let cat = $("cat").value;
+
+  if (cat === "All" && selected !== "All") cat = selected;
+
+  const items = products
+   .filter(p => cat === "All" || p.cat === cat)
+   .filter(p => [
+    p.name,p.brand,p.details,p.condition,p.cat,
+    p.ram,p.rom,p.colour,p.year,p.fuel,p.km
+   ].filter(Boolean).join(" ").toLowerCase().includes(q))
+   .sort((a,b) => (b.createdAt || b.id) - (a.createdAt || a.id));
+
+  const container = $("products");
+  container.innerHTML = "";
+
+  if (!items.length) {
+   container.innerHTML = "<p>No products found.</p>";
+   updateFilterButtons(cat);
+   return;
+  }
+
+  items.forEach(p => {
+   const card = document.createElement("article");
+   card.className = "card";
+
+   const art = document.createElement("div");
+   art.className = "art";
+
+   const photos = getProductPhotos(p);
+
+   if (photos.length) {
+    const img = document.createElement("img");
+    img.alt = p.name || "Product";
+    img.loading = "lazy";
+    img.src = photoSource(photos[0]);
+    img.addEventListener("click", () => openGallery(photos, 0));
+    art.appendChild(img);
+   } else {
+    art.textContent = p.icon || "📦";
+   }
+
+   card.appendChild(art);
+
+   const content = document.createElement("div");
+   content.className = "content";
+
+   const label = document.createElement("div");
+   label.className = "label";
+   label.textContent = (p.cat || "Other").toUpperCase() + " • " + (p.condition || "Used");
+   content.appendChild(label);
+
+   const title = document.createElement("h3");
+   title.textContent = (p.brand ? p.brand + " " : "") + (p.name || "");
+   content.appendChild(title);
+
+   const price = document.createElement("div");
+   price.className = "price";
+   price.textContent = money(p.offer || p.price);
+   content.appendChild(price);
+
+   if (p.price && p.offer && Number(p.price) > Number(p.offer)) {
+    const old = document.createElement("span");
+    old.className = "old-price";
+    old.textContent = money(p.price);
+    content.appendChild(old);
+   }
+
+   let extra = "";
+
+   if (p.cat === "Mobile") {
+    extra = [
+     p.ram && "RAM: " + p.ram,
+     p.rom && "Storage: " + p.rom,
+     p.colour && "Colour: " + p.colour
+    ].filter(Boolean).join(" | ");
+   } else if (p.cat === "Car") {
+    extra = [
+     p.year && "Year: " + p.year,
+     p.fuel && "Fuel: " + p.fuel,
+     p.km && "Driven: " + Number(p.km).toLocaleString("en-IN") + " km"
+    ].filter(Boolean).join(" | ");
+   } else if (p.colour) {
+    extra = "Colour: " + p.colour;
+   }
+
+   const details = document.createElement("div");
+   details.className = "details";
+   details.textContent = [extra, p.details || ""].filter(Boolean).join(" | ");
+   content.appendChild(details);
+
+   if (photos.length) {
+    const photoButton = document.createElement("button");
+    photoButton.className = "secondary";
+    photoButton.style.width = "100%";
+    photoButton.style.marginBottom = "9px";
+    photoButton.textContent = "📷 View Photos (" + photos.length + ")";
+    photoButton.addEventListener("click", () => openGallery(photos, 0));
+    content.appendChild(photoButton);
+   }
+
+   const actions = document.createElement("div");
+   actions.className = "actions";
+
+   const enquireBtn = document.createElement("button");
+   enquireBtn.textContent = "Enquire";
+   enquireBtn.addEventListener("click", () => enquire(p.id));
+   actions.appendChild(enquireBtn);
+
+   const detailsBtn = document.createElement("button");
+   detailsBtn.className = "secondary";
+   detailsBtn.textContent = "Details";
+   detailsBtn.addEventListener("click", () => showDetails(p.id));
+   actions.appendChild(detailsBtn);
+
+   content.appendChild(actions);
+
+   const deleteBtn = document.createElement("button");
+   deleteBtn.style.cssText = "width:100%;margin-top:8px;background:#fee2e2;color:#991b1b";
+   deleteBtn.textContent = "Delete Ad";
+   deleteBtn.addEventListener("click", () => deleteProduct(p.id));
+   content.appendChild(deleteBtn);
+
+   card.appendChild(content);
+   container.appendChild(card);
+  });
+
+  updateFilterButtons(cat);
+ }).catch(error => console.error(error));
+}
+
+function updateFilterButtons(cat) {
+ document.querySelectorAll(".filters button").forEach(button => {
+  const value = button.textContent.trim();
+  const wanted = cat === "All" ? "All" :
+   cat === "Mobile" ? "Mobiles" :
+   cat === "Car" ? "Cars" : "Other";
+  button.classList.toggle("active", value === wanted);
+ });
+}
+
+function openGallery(photos, startIndex) {
+ closeGallery();
+ galleryPhotos = photos;
+ galleryIndex = startIndex;
+ $("viewer").classList.add("open");
+ updateGallery();
+}
+
+function updateGallery() {
+ revokeGalleryUrls();
+
+ if (!galleryPhotos.length) return;
+
+ const photo = galleryPhotos[galleryIndex];
+ $("largeImage").src = photoSource(photo);
+ $("imageNumber").textContent =
+  "Photo " + (galleryIndex + 1) + " of " + galleryPhotos.length;
+
+ const thumbs = $("galleryThumbs");
+ thumbs.innerHTML = "";
+
+ galleryPhotos.forEach((item, index) => {
+  const img = document.createElement("img");
+  img.alt = "Photo " + (index + 1);
+  img.src = photoSource(item);
+  if (index === galleryIndex) img.classList.add("active");
+  img.addEventListener("click", () => {
+   galleryIndex = index;
+   updateGallery();
+  });
+  thumbs.appendChild(img);
+ });
+}
+
+function changePhoto(direction) {
+ if (!galleryPhotos.length) return;
+ galleryIndex = (galleryIndex + direction + galleryPhotos.length) % galleryPhotos.length;
+ updateGallery();
+}
+
+function closeGallery() {
+ $("viewer").classList.remove("open");
+ $("largeImage").removeAttribute("src");
+ $("galleryThumbs").innerHTML = "";
+ revokeGalleryUrls();
+}
+
+$("viewer").addEventListener("click", event => {
+ if (event.target === $("viewer")) closeGallery();
 });
 
-document.getElementById("adForm").addEventListener("submit",function(e){
- e.preventDefault();
-
- const cat=document.getElementById("adCat").value;
- const name=document.getElementById("adName").value.trim();
- const brand=document.getElementById("adBrand").value.trim();
- const offer=Number(document.getElementById("adOffer").value);
- const photo=document.getElementById("adPhoto").files[0];
-
- if(!name||!brand||!offer||offer<=0||!pendingPhoto||!photo){
-  alert("Please fill in all required fields and select a photo.");
-  return;
- }
-
- const details=document.getElementById("adDetails").value.trim();
- const item={
-  id:Date.now(),
-  cat,
-  brand,
-  name,
-  offer,
-  price:document.getElementById("adPrice").value ? Number(document.getElementById("adPrice").value):0,
-  condition:document.getElementById("adCondition").value,
-  details,
-  photo:pendingPhoto,
-  icon:cat==="Mobile"?"📱":cat==="Car"?"🚗":"📦",
-  ram:cat==="Mobile"?document.getElementById("adRam").value:"",
-  rom:cat==="Mobile"?document.getElementById("adRom").value:"",
-  colour:cat!=="Car"?document.getElementById("adColour").value.trim():"",
-  year:cat==="Car"?document.getElementById("adYear").value:"",
-  fuel:cat==="Car"?document.getElementById("adFuel").value:"",
-  km:cat==="Car"?document.getElementById("adKm").value:""
- };
-
- const previous=products;
- products=[item,...products];
- if(!saveProducts()){
-  products=previous;
-  return;
- }
-
- document.getElementById("adMessage").textContent=
-  "Advertisement posted and saved in this browser!";
- clearForm();
- render();
- document.getElementById("listings").scrollIntoView({behavior:"smooth"});
+document.addEventListener("keydown", event => {
+ if (!$("viewer").classList.contains("open")) return;
+ if (event.key === "Escape") closeGallery();
+ if (event.key === "ArrowRight") changePhoto(1);
+ if (event.key === "ArrowLeft") changePhoto(-1);
 });
 
-document.getElementById("year").textContent=new Date().getFullYear();
-updateFields();
-render();
+function whatsApp(text) {
+ if (!WHATSAPP_NUMBER) {
+  alert("Please set WHATSAPP_NUMBER in the code first. Example: 919876543210");
+  return;
+ }
+ window.open(
+  "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encodeURIComponent(text),
+  "_blank",
+  "noopener"
+ );
+}
+
+function contact() {
+ whatsApp("Hello, I have an enquiry about Unique Online Service Buy & Sell.");
+}
+
+function enquire(id) {
+ const p = products.find(item => String(item.id) === String(id));
+ if (!p) return;
+
+ const text = [
+  "Hello, I am interested in this listing:",
+  (p.brand || "") + " " + p.name,
+  "Category: " + p.cat,
+  "Price: " + money(p.offer || p.price),
+  p.cat === "Mobile" ? "RAM: " + (p.ram || "Not specified") + " | Storage: " + (p.rom || "Not specified") : "",
+  p.cat === "Car" ? "Year: " + (p.year || "Not specified") + " | Fuel: " + (p.fuel || "Not specified") + " | KM: " + (p.km || "Not specified") : "",
+  "Condition: " + (p.condition || "Not specified"),
+  "Please share more details."
+ ].filter(Boolean).join("\n");
+
+ whatsApp(text);
+}
+
+function showDetails(id) {
+ const p = products.find(item => String(item.id) === String(id));
+ if (!p) return;
+
+ const lines = [
+  (p.brand || "") + " " + p.name,
+  "Category: " + p.cat,
+  "Offer price: " + money(p.offer || p.price),
+  p.price ? "Original price: " + money(p.price) : "",
+  "Condition: " + (p.condition || "Not specified"),
+  p.cat === "Mobile" ? "RAM: " + (p.ram || "Not specified") + "\nStorage: " + (p.rom || "Not specified") + "\nColour: " + (p.colour || "Not specified") : "",
+  p.cat === "Car" ? "Year: " + (p.year || "Not specified") + "\nFuel: " + (p.fuel || "Not specified") + "\nKilometres: " + (p.km || "Not specified") : "",
+  "Photos: " + getProductPhotos(p).length,
+  "Description: " + (p.details || "No description")
+ ].filter(Boolean);
+
+ alert(lines.join("\n\n"));
+}
+
+async function deleteProduct(id) {
+ const p = products.find(item => String(item.id) === String(id));
+ if (!p) return;
+ if (!confirm('Delete "' + p.name + '"?')) return;
+
+ try {
+  await new Promise((resolve, reject) => {
+   const request = db.transaction(STORE_NAME, "readwrite")
+    .objectStore(STORE_NAME).delete(p.id);
+   request.onsuccess = () => resolve();
+   request.onerror = () => reject(request.error);
+  });
+  await render();
+ } catch(error) {
+  alert("Could not delete this product.");
+ }
+}
+
+async function migrateOldListings() {
+ // Import listings previously saved by the older version, if available.
+ const oldKeys = ["uniqueOnlineServiceListings_v2"];
+
+ for (const key of oldKeys) {
+  let oldItems;
+  try {
+   oldItems = JSON.parse(localStorage.getItem(key) || "[]");
+  } catch(error) {
+   continue;
+  }
+
+  if (!Array.isArray(oldItems) || !oldItems.length) continue;
+
+  const existing = await getAllProducts();
+  const existingIds = new Set(existing.map(item => String(item.id)));
+
+  for (const old of oldItems) {
+   if (existingIds.has(String(old.id))) continue;
+
+   const item = {...old};
+   if (item.photo && !item.photos) item.photos = [item.photo];
+   if (!Array.isArray(item.photos)) item.photos = [];
+   item.createdAt = item.createdAt || item.id || Date.now();
+
+   try {
+    await putProduct(item);
+   } catch(error) {
+    console.warn("Could not import an older listing:", error);
+   }
+  }
+ }
+}
+
+async function init() {
+ $("footerYear").textContent = new Date().getFullYear();
+ updateFields();
+
+ try {
+  db = await openDatabase();
+  await migrateOldListings();
+  await render();
+ } catch(error) {
+  console.error(error);
+  $("products").innerHTML =
+   "<p>Browser storage is unavailable. Please open this website in Chrome and try again.</p>";
+ }
+}
+
+init();
 </script>
 </body>
 </html>
