@@ -41,6 +41,12 @@ h2{margin-top:10px}
 .price{font-size:23px;font-weight:bold}
 .old-price{font-size:14px;color:#64748b;text-decoration:line-through;margin-left:6px}
 .details{color:#64748b;font-size:13px;line-height:1.7;margin:8px 0;overflow-wrap:anywhere}
+
+.condition-badge{display:inline-block;padding:5px 10px;border-radius:999px;font-size:12px;font-weight:800;line-height:1.2;margin:2px 0 5px;border:1px solid transparent}
+.condition-super-mint{background:#ede9fe;color:#6d28d9;border-color:#c4b5fd}
+.condition-mint{background:#d1fae5;color:#047857;border-color:#6ee7b7}
+.condition-good{background:#dbeafe;color:#1d4ed8;border-color:#93c5fd}
+.condition-unknown{background:#f1f5f9;color:#475569;border-color:#cbd5e1}
 .actions{display:flex;gap:8px;flex-wrap:wrap}
 .actions button{flex:1}
 .secondary{background:#f0e7ff;color:#5b21b6}
@@ -1191,15 +1197,13 @@ function renderAdminInventory() {
 function render() {
   clearRenderUrls();
   const container = $("products");
-  const category = $("cat").value || selected || "All";
-  const query = ($("q").value || "").trim().toLowerCase();
-
- const minRaw = $("minPrice").value.trim();
-const maxRaw = $("maxPrice").value.trim();
-
-const minPrice = minRaw === "" ? 0 : Number(minRaw);
-const maxPrice = maxRaw === "" ? Infinity : Number(maxRaw);
-const sortBy = $("sortBy").value || "newest";
+  const category = String($("cat")?.value || selected || "All").trim();
+  const query = String($("q")?.value || "").trim().toLocaleLowerCase();
+  const minRaw = String($("minPrice")?.value || "").trim();
+  const maxRaw = String($("maxPrice")?.value || "").trim();
+  const minPrice = minRaw === "" ? 0 : Number(minRaw);
+  const maxPrice = maxRaw === "" ? Infinity : Number(maxRaw);
+  const sortBy = String($("sortBy")?.value || "newest");
 
 if (
   !Number.isFinite(minPrice) ||
@@ -1216,29 +1220,33 @@ if (minPrice > maxPrice) {
     '<p style="grid-column:1/-1">Minimum price cannot exceed maximum price.</p>';
   return;
 }
+  const normaliseCategory = value => {
+    const c = String(value || "Other").trim().toLocaleLowerCase();
+    if (c.includes("mobile") || c.includes("phone")) return "mobile";
+    if (c.includes("car") || c.includes("vehicle")) return "car";
+    if (c === "all" || c === "all categories") return "all";
+    return "other";
+  };
+  const priceOf = product => {
+    const raw = product.offer ?? product.price ?? 0;
+    return Number(String(raw).replace(/[₹,\s]/g, "")) || 0;
+  };
   const filtered = products.filter(product => {
-    const amount = Number(product.offer || 0);
-    const matchesCategory = category === "All" || product.category === category;
+    const amount = priceOf(product);
+    const matchesCategory = normaliseCategory(category) === "all" || normaliseCategory(product.category) === normaliseCategory(category);
     const matchesPrice = amount >= minPrice && amount <= maxPrice;
     const matchesFavorite = !favoritesOnly || favorites.has(String(product.id));
-
     const searchable = [
-      product.brand,
-      product.name,
-      product.category,
-      product.colour,
-      product.condition,
-      product.description,
-      product.fuel,
-      product.year,
-      product.km
-    ].join(" ").toLowerCase();
-
+      product.brand, product.name, product.model, product.category, product.colour, product.color,
+      product.condition, product.description, product.fuel, product.year, product.km,
+      product.ram, product.rom, product.battery, product.price, product.offer
+    ].filter(value => value !== null && value !== undefined).join(" ").toLocaleLowerCase();
     return matchesCategory && matchesPrice && matchesFavorite && searchable.includes(query);
   });
-  if (sortBy === "low") filtered.sort((a,b) => Number(a.offer||0)-Number(b.offer||0));
-  else if (sortBy === "high") filtered.sort((a,b) => Number(b.offer||0)-Number(a.offer||0));
-  else if (sortBy === "name") filtered.sort((a,b) => String(a.name||"").localeCompare(String(b.name||"")));
+  if (sortBy === "low") filtered.sort((a,b) => priceOf(a)-priceOf(b));
+  else if (sortBy === "high") filtered.sort((a,b) => priceOf(b)-priceOf(a));
+  else if (sortBy === "name") filtered.sort((a,b) => String(a.name || a.model || "").localeCompare(String(b.name || b.model || "")));
+  else filtered.sort((a,b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime());
   if (isAdmin) {
     $("statTotal").textContent = products.length;
     $("statMobiles").textContent = products.filter(p => p.category === "Mobile").length;
@@ -1250,7 +1258,7 @@ if (minPrice > maxPrice) {
 
   if (filtered.length === 0) {
     container.innerHTML =
-      '<p style="grid-column:1/-1;background:white;padding:22px;border-radius:12px">No products found. Be the first to post an advertisement!</p>';
+      '<p style="grid-column:1/-1;background:white;padding:22px;border-radius:12px">No products match your search or filters. Try a different keyword, category or price range.</p>';
     return;
   }
 
@@ -1325,7 +1333,7 @@ if (minPrice > maxPrice) {
           ${oldPrice}
         </div>
         <div class="details">
-          ${escapeHTML(product.condition || "")}<br>
+          <span class="condition-badge condition-${String(product.condition || "unknown").toLowerCase().replace(/[^a-z]+/g, "-").replace(/^-|-$/g, "") || "unknown"}">${escapeHTML(product.condition || "Condition not specified")}</span><br>
           ${extraDetails}
           ${escapeHTML(product.description || "")}
         </div>
@@ -1606,6 +1614,19 @@ $("customerAuthForm").addEventListener("submit",async function(e){e.preventDefau
 
 // ================= START WEBSITE =================
 async function startWebsite() {
+  ["q", "minPrice", "maxPrice"].forEach(id => {
+    const field = $(id);
+    if (field) field.addEventListener("input", render);
+  });
+  ["cat", "sortBy"].forEach(id => {
+    const field = $(id);
+    if (field) field.addEventListener("change", render);
+  });
+  const searchButton = document.querySelector(".search button");
+  if (searchButton) searchButton.addEventListener("click", () => {
+    render();
+    $("listings")?.scrollIntoView({behavior:"smooth"});
+  });
   $("footerYear").textContent = new Date().getFullYear();
   updateFields();
   setLanguage("en");
