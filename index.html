@@ -7,17 +7,17 @@
 
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f3f6fb;color:#172033}
-header{background:#101827;color:white;padding:18px 5%;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+body{margin:0;font-family:Arial,sans-serif;background:#f7f4ff;color:#241b3d}
+header{background:#1d1238;color:white;padding:18px 5%;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .logo{font-size:21px;font-weight:bold}
 nav a{color:white;text-decoration:none;margin:0 8px;font-size:14px}
-.hero{background:linear-gradient(120deg,#172554,#2563eb);color:white;padding:42px 6%}
+.hero{background:linear-gradient(120deg,#241044,#6d28d9 58%,#a855f7);color:white;padding:42px 6%}
 .hero h1{font-size:clamp(30px,5vw,48px);margin:0 0 12px}
 .hero p{line-height:1.6}
 .search{display:flex;gap:8px;max-width:650px;margin-top:20px;flex-wrap:wrap}
 input,select,textarea{padding:13px;border:1px solid #ddd;border-radius:8px;font-size:15px;min-width:0;width:100%;font-family:inherit}
 .search input{flex:1;width:auto}
-button{background:#2563eb;color:white;border:0;border-radius:8px;padding:12px 16px;font-weight:bold;cursor:pointer}
+button{background:#6d28d9;color:white;border:0;border-radius:8px;padding:12px 16px;font-weight:bold;cursor:pointer}
 main{max-width:1150px;margin:auto;padding:26px 16px}
 h2{margin-top:10px}
 .categories{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
@@ -27,20 +27,23 @@ h2{margin-top:10px}
 .cat p{font-size:13px;color:#64748b}
 .filters{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}
 .filters button{background:white;color:#1e293b;border:1px solid #dbe2ea}
-.filters button.active{background:#2563eb;color:white}
+.filters button.active{background:#6d28d9;color:white}
 .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
 .card{background:white;border:1px solid #e2e8f0;border-radius:14px;overflow:hidden;min-width:0}
 .art{height:180px;background:linear-gradient(135deg,#dbeafe,#ede9fe);display:grid;place-items:center;font-size:58px;overflow:hidden}
 .art img{width:100%;height:100%;object-fit:cover;cursor:pointer}
 .content{padding:15px}
-.label{font-size:11px;color:#2563eb;font-weight:bold}
+.label{font-size:11px;color:#7c3aed;font-weight:bold}
+.soldout-badge{display:inline-block;background:#fee2e2;color:#991b1b;font-size:12px;font-weight:800;padding:5px 9px;border-radius:999px;margin:0 0 8px}
+.soldout-btn{background:#fff7ed!important;color:#9a3412!important;border:1px solid #fed7aa!important}
+.whatsapp-btn:disabled{background:#e5e7eb!important;color:#6b7280!important;cursor:not-allowed;opacity:1}
 .content h3{margin:8px 0;overflow-wrap:anywhere}
 .price{font-size:23px;font-weight:bold}
 .old-price{font-size:14px;color:#64748b;text-decoration:line-through;margin-left:6px}
 .details{color:#64748b;font-size:13px;line-height:1.7;margin:8px 0;overflow-wrap:anywhere}
 .actions{display:flex;gap:8px;flex-wrap:wrap}
 .actions button{flex:1}
-.secondary{background:#e8efff;color:#1d4ed8}
+.secondary{background:#f0e7ff;color:#5b21b6}
 .info{background:white;padding:20px;border-radius:12px;margin-top:28px;line-height:1.7}
 .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 .field{margin-bottom:12px}
@@ -53,8 +56,8 @@ h2{margin-top:10px}
 .photo-hint{font-size:12px;color:#64748b;line-height:1.6;margin-top:7px}
 .gallery-thumbs{display:flex;gap:7px;overflow-x:auto;margin-top:10px;padding-bottom:5px}
 .gallery-thumbs img{width:60px;height:60px;object-fit:cover;border-radius:6px;cursor:pointer;border:2px solid transparent}
-.gallery-thumbs img.active{border-color:#2563eb}
-footer{margin-top:30px;background:#101827;color:white;padding:24px 6%;text-align:center;font-size:13px}
+.gallery-thumbs img.active{border-color:#7c3aed}
+footer{margin-top:30px;background:#1d1238;color:white;padding:24px 6%;text-align:center;font-size:13px}
 #viewer{display:none;position:fixed;inset:0;background:#000e;z-index:9999;align-items:center;justify-content:center;padding:15px}
 #viewer.open{display:flex}
 .viewer-box{width:min(900px,100%);text-align:center;color:white}
@@ -81,6 +84,20 @@ footer{margin-top:30px;background:#101827;color:white;padding:24px 6%;text-align
  .art{height:180px}
 }
 
+.card{box-shadow:0 8px 24px #2e10650a;transition:transform .18s ease,box-shadow .18s ease}
+.card:hover{transform:translateY(-3px);box-shadow:0 14px 32px #2e10651a}
+.info{box-shadow:0 8px 28px #2e10650a;border:1px solid #eee7ff}
+.hero{position:relative;overflow:hidden}
+.hero:after{content:"✦";position:absolute;right:8%;top:12%;font-size:90px;color:#ffffff22;pointer-events:none}
+.filter-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:14px 0}
+.filter-row input,.filter-row select{background:#fff;border-color:#e5d9ff}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:14px 0}
+.stat{background:linear-gradient(135deg,#f4eaff,#fff);border:1px solid #e9d5ff;padding:16px;border-radius:12px}
+.stat strong{display:block;font-size:25px;color:#6d28d9;margin-top:5px}
+.favorite-btn{background:#fce7f3;color:#9d174d;min-width:44px}
+.favorite-btn.saved{background:#be185d;color:white}
+.fav-only{background:#fff;color:#5b21b6;border:1px solid #d8b4fe}
+@media(max-width:600px){.filter-row{grid-template-columns:1fr 1fr}.stats{grid-template-columns:1fr 1fr}}
 [hidden]{display:none!important}
 #admin-login{margin-top:24px}
 #loginMessage{font-weight:bold}
@@ -118,6 +135,13 @@ footer{margin-top:30px;background:#101827;color:white;padding:24px 6%;text-align
   </select>
   <button onclick="render()">Search</button>
  </div>
+ <div class="filter-row" aria-label="Price and sort filters">
+  <input id="minPrice" type="number" min="0" placeholder="Min price ₹" oninput="render()" aria-label="Minimum price">
+  <input id="maxPrice" type="number" min="0" placeholder="Max price ₹" oninput="render()" aria-label="Maximum price">
+  <select id="sortBy" onchange="render()" aria-label="Sort products">
+   <option value="newest">Newest first</option><option value="low">Price: low to high</option><option value="high">Price: high to low</option><option value="name">Name A–Z</option>
+  </select>
+ </div>
 </section>
 
 <main>
@@ -145,6 +169,12 @@ footer{margin-top:30px;background:#101827;color:white;padding:24px 6%;text-align
     <p id="loginMessage" role="status"></p>
   </form>
   <p style="font-size:12px;color:#64748b">Admin accounts are created securely in the Supabase Dashboard. Public visitors do not get a sign-up button.</p>
+</section>
+
+<section id="admin-dashboard" class="info" hidden>
+ <h2>📊 Admin Dashboard</h2>
+ <p>Quick overview of the products currently available in your catalogue.</p>
+ <div class="stats"><div class="stat">Total products<strong id="statTotal">0</strong></div><div class="stat">Mobiles<strong id="statMobiles">0</strong></div><div class="stat">Cars<strong id="statCars">0</strong></div></div>
 </section>
 
 <section id="post-ad" class="info" hidden>
@@ -267,9 +297,8 @@ footer{margin-top:30px;background:#101827;color:white;padding:24px 6%;text-align
 
 <section id="listings">
  <h2>Latest Listings</h2>
- <p style="color:#64748b;font-size:14px">
-  Advertisements are saved in this browser. Only post products you are authorised to sell.
- </p>
+ <p style="color:#64748b;font-size:14px">Browse products, compare prices, and save favourites on this device.</p>
+ <div class="filters"><button type="button" id="showAllBtn" class="active" onclick="showFavoritesOnly(false)">🛍️ All Products</button><button type="button" id="showFavBtn" class="fav-only" onclick="showFavoritesOnly(true)">❤️ My Wishlist</button></div>
 
  <div class="filters">
   <button class="active" onclick="pick('All')">All</button>
@@ -321,8 +350,8 @@ const WHATSAPP_NUMBER = "919903087477";
 
 // Paste your Supabase Project URL and publishable/anon key here.
 // NEVER put a service_role or secret key in browser code.
-const SUPABASE_URL = "https://nupqhzpskingfugwwbmr.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_BT0XXfJmaFAsTdap9b03WQ_sAdlX6ri";
+const SUPABASE_URL = "PASTE_YOUR_SUPABASE_PROJECT_URL_HERE";
+const SUPABASE_PUBLISHABLE_KEY = "PASTE_YOUR_SUPABASE_PUBLISHABLE_KEY_HERE";
 const PHOTO_BUCKET = "product-photos";
 const MAX_PHOTOS = 10;
 
@@ -331,6 +360,9 @@ let currentUser = null;
 let isAdmin = false;
 let products = [];
 let selected = "All";
+let favorites = new Set();
+let favoritesOnly = false;
+try { favorites = new Set(JSON.parse(localStorage.getItem("uos_favorites") || "[]").map(String)); } catch (_) { favorites = new Set(); }
 let selectedPhotos = [];
 let galleryPhotos = [];
 let galleryUrls = [];
@@ -862,6 +894,7 @@ async function checkAdmin() {
     isAdmin = !error && !!data;
   }
   $("post-ad").hidden = !isAdmin;
+  $("admin-dashboard").hidden = !isAdmin;
   $("postAdNav").hidden = !isAdmin;
   $("logoutBtn").hidden = !isAdmin;
   $("loginEmail").hidden = isAdmin;
@@ -888,6 +921,11 @@ async function saveProduct(product) {
 async function deleteProduct(id) {
   if (!isAdmin) throw new Error("Admin access required.");
   const { error } = await supabaseClient.from("products").delete().eq("id", id);
+  if (error) throw error;
+}
+async function setProductSoldOut(id, soldOut) {
+  if (!isAdmin) throw new Error("Admin access required.");
+  const { error } = await supabaseClient.from("products").update({ sold_out: soldOut }).eq("id", id);
   if (error) throw error;
 }
 async function uploadPhotos(files) {
@@ -947,6 +985,14 @@ function pick(category) {
   }
 }
 
+function showFavoritesOnly(enabled) {
+  favoritesOnly = enabled;
+  $("showAllBtn").classList.toggle("active", !enabled);
+  $("showFavBtn").classList.toggle("active", enabled);
+  render();
+  $("listings").scrollIntoView({ behavior: "smooth" });
+}
+
 function contact() {
   if (!WHATSAPP_NUMBER) {
     alert("Please add your WhatsApp number in WHATSAPP_NUMBER in the code.");
@@ -960,11 +1006,7 @@ function contact() {
     return;
   }
 
-  window.open(
-    "https://wa.me/" + number,
-    "_blank",
-    "noopener,noreferrer"
-  );
+  window.location.href = "https://api.whatsapp.com/send?phone=" + number;
 }
 
 // ================= SAFE HTML HELPERS =================
@@ -1019,10 +1061,16 @@ function render() {
   const container = $("products");
   const query = $("q").value.trim().toLowerCase();
   const category = $("cat").value;
+  const minPrice = Number($("minPrice")?.value || 0);
+  const maxRaw = $("maxPrice")?.value || "";
+  const maxPrice = maxRaw === "" ? Infinity : Number(maxRaw);
+  const sortBy = $("sortBy")?.value || "newest";
 
   const filtered = products.filter(product => {
-    const matchesCategory =
-      category === "All" || product.category === category;
+    const amount = Number(product.offer || 0);
+    const matchesCategory = category === "All" || product.category === category;
+    const matchesPrice = amount >= minPrice && amount <= maxPrice;
+    const matchesFavorite = !favoritesOnly || favorites.has(String(product.id));
 
     const searchable = [
       product.brand,
@@ -1036,8 +1084,16 @@ function render() {
       product.km
     ].join(" ").toLowerCase();
 
-    return matchesCategory && searchable.includes(query);
+    return matchesCategory && matchesPrice && matchesFavorite && searchable.includes(query);
   });
+  if (sortBy === "low") filtered.sort((a,b) => Number(a.offer||0)-Number(b.offer||0));
+  else if (sortBy === "high") filtered.sort((a,b) => Number(b.offer||0)-Number(a.offer||0));
+  else if (sortBy === "name") filtered.sort((a,b) => String(a.name||"").localeCompare(String(b.name||"")));
+  if (isAdmin) {
+    $("statTotal").textContent = products.length;
+    $("statMobiles").textContent = products.filter(p => p.category === "Mobile").length;
+    $("statCars").textContent = products.filter(p => p.category === "Car").length;
+  }
 
   container.innerHTML = "";
 
@@ -1111,6 +1167,7 @@ function render() {
       <div class="art">${imageContent}</div>
       <div class="content">
         <div class="label">${escapeHTML(product.category || "Other")}</div>
+        ${product.sold_out ? '<div class="soldout-badge">✓ SOLD OUT</div>' : ''}
         <h3>${escapeHTML(product.brand || "")} ${escapeHTML(product.name || "")}</h3>
         <div>
           <span class="price">${formatPrice(product.offer)}</span>
@@ -1124,7 +1181,9 @@ function render() {
         <div class="details">${photos.length} photo(s)</div>
         <div class="actions">
           <button type="button" class="view-btn">View Photos</button>
-          <button type="button" class="secondary whatsapp-btn">WhatsApp</button>
+          <button type="button" class="secondary whatsapp-btn" ${product.sold_out ? "disabled" : ""}>${product.sold_out ? "Sold Out" : "WhatsApp"}</button>
+          ${isAdmin ? `<button type="button" class="soldout-btn">${product.sold_out ? "Mark Available" : "Mark Sold Out"}</button>` : ''}
+          <button type="button" class="favorite-btn ${favorites.has(String(product.id)) ? "saved" : ""}" aria-label="Save to wishlist">${favorites.has(String(product.id)) ? "♥ Saved" : "♡ Save"}</button>
           ${isAdmin ? '<button type="button" class="delete-btn" style="background:#dc2626">Delete</button>' : ''}
         </div>
       </div>
@@ -1146,7 +1205,31 @@ function render() {
       }
     });
 
+    card.querySelector(".favorite-btn").addEventListener("click", () => {
+      const id = String(product.id);
+      if (favorites.has(id)) favorites.delete(id); else favorites.add(id);
+      try { localStorage.setItem("uos_favorites", JSON.stringify([...favorites])); } catch (_) {}
+      render();
+    });
+
+    const soldOutButton = card.querySelector(".soldout-btn");
+    if (soldOutButton) soldOutButton.addEventListener("click", async () => {
+      if (!isAdmin) return;
+      const nextStatus = !product.sold_out;
+      const promptText = nextStatus ? "Mark this product as SOLD OUT?" : "Mark this product as AVAILABLE again?";
+      if (!confirm(promptText)) return;
+      soldOutButton.disabled = true;
+      try {
+        await setProductSoldOut(product.id, nextStatus);
+        await loadProducts();
+      } catch (error) {
+        console.error(error);
+        alert("Could not update product status: " + (error.message || "Unknown error") + "\n\nMake sure you have run the sold_out SQL migration in Supabase.");
+      } finally { soldOutButton.disabled = false; }
+    });
+
     card.querySelector(".whatsapp-btn").addEventListener("click", () => {
+      if (product.sold_out) return;
       if (!WHATSAPP_NUMBER.replace(/\D/g, "")) {
         alert("Please add your WhatsApp number in WHATSAPP_NUMBER.");
         return;
@@ -1158,13 +1241,9 @@ function render() {
         (product.name || "") +
         ". Price: " + formatPrice(product.offer);
 
-      window.open(
-        "https://wa.me/" +
-        WHATSAPP_NUMBER.replace(/\D/g, "") +
-        "?text=" + encodeURIComponent(message),
-        "_blank",
-        "noopener,noreferrer"
-      );
+      const waUrl = "https://api.whatsapp.com/send?phone=" +
+        WHATSAPP_NUMBER.replace(/\D/g, "") + "&text=" + encodeURIComponent(message);
+      window.location.href = waUrl;
     });
 
     const deleteButton = card.querySelector(".delete-btn");
