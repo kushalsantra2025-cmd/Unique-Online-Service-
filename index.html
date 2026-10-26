@@ -80,6 +80,11 @@ footer{margin-top:30px;background:#101827;color:white;padding:24px 6%;text-align
  .full{grid-column:auto}
  .art{height:180px}
 }
+
+[hidden]{display:none!important}
+#admin-login{margin-top:24px}
+#loginMessage{font-weight:bold}
+.admin-status{background:#ecfdf5;color:#065f46;padding:10px 12px;border-radius:8px;margin:12px 0}
 </style>
 </head>
 
@@ -94,7 +99,8 @@ footer{margin-top:30px;background:#101827;color:white;padding:24px 6%;text-align
  <nav>
   <a href="#categories">Categories</a>
   <a href="#listings">Listings</a>
-  <a href="#post-ad">Post Ad</a>
+  <a href="#admin-login">Admin</a>
+  <a href="#post-ad" id="postAdNav" hidden>Post Ad</a>
   <a href="#contact">Contact</a>
  </nav>
 </header>
@@ -125,7 +131,23 @@ footer{margin-top:30px;background:#101827;color:white;padding:24px 6%;text-align
  </div>
 </section>
 
-<section id="post-ad" class="info">
+
+<section id="admin-login" class="info">
+  <h2>🔐 Admin Login</h2>
+  <p style="color:#64748b;font-size:13px">Only authorised admin accounts can publish or delete products.</p>
+  <form id="loginForm">
+    <div class="form-grid">
+      <div class="field"><label for="loginEmail">Admin email</label><input id="loginEmail" type="email" autocomplete="username" required placeholder="admin@example.com"></div>
+      <div class="field"><label for="loginPassword">Password</label><input id="loginPassword" type="password" autocomplete="current-password" required placeholder="Your password"></div>
+    </div>
+    <button type="submit" id="loginBtn">Admin Login</button>
+    <button type="button" class="secondary" id="logoutBtn" hidden>Logout</button>
+    <p id="loginMessage" role="status"></p>
+  </form>
+  <p style="font-size:12px;color:#64748b">Admin accounts are created securely in the Supabase Dashboard. Public visitors do not get a sign-up button.</p>
+</section>
+
+<section id="post-ad" class="info" hidden>
  <h2>📢 Post Your Advertisement</h2>
  <p style="color:#64748b;font-size:13px">Fill in your product information and publish your ad.</p>
 
@@ -289,6 +311,7 @@ footer{margin-top:30px;background:#101827;color:white;padding:24px 6%;text-align
  </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 "use strict";
 
@@ -296,12 +319,16 @@ footer{margin-top:30px;background:#101827;color:white;padding:24px 6%;text-align
 // Example: 919876543210 (digits only)
 const WHATSAPP_NUMBER = "919903087477";
 
-const DB_NAME = "UniqueOnlineServiceDB";
-const DB_VERSION = 1;
-const STORE_NAME = "products";
+// Paste your Supabase Project URL and publishable/anon key here.
+// NEVER put a service_role or secret key in browser code.
+const SUPABASE_URL = "https://nupqhzpskingfugwwbmr.supabase.co/rest/v1/";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_BT0XXfJmaFAsTdap9b03WQ_sAdlX6ri";
+const PHOTO_BUCKET = "product-photos";
 const MAX_PHOTOS = 10;
 
-let db;
+let supabaseClient = null;
+let currentUser = null;
+let isAdmin = false;
 let products = [];
 let selected = "All";
 let selectedPhotos = [];
@@ -807,97 +834,85 @@ function showPhotoPreview(files) {
   });
 }
 
-// ================= INDEXEDDB DATABASE =================
-
-function openDatabase() {
-  return new Promise((resolve, reject) => {
-    if (!("indexedDB" in window)) {
-      reject(new Error("This browser does not support IndexedDB."));
-      return;
-    }
-
-    const request = indexedDB.open(DB_NAME, DB_VERSION);
-
-    request.onupgradeneeded = function(event) {
-      const database = event.target.result;
-
-      if (!database.objectStoreNames.contains(STORE_NAME)) {
-        database.createObjectStore(STORE_NAME, {
-          keyPath: "id",
-          autoIncrement: true
-        });
-      }
-    };
-
-    request.onsuccess = function() {
-      db = request.result;
-
-      db.onversionchange = function() {
-        db.close();
-      };
-
-      resolve(db);
-    };
-
-    request.onerror = function() {
-      reject(request.error || new Error("Database could not be opened."));
-    };
-  });
+// ================= SUPABASE DATABASE =================
+function configReady() {
+  return SUPABASE_URL.startsWith("https://") &&
+    !SUPABASE_URL.includes("PASTE_YOUR") &&
+    SUPABASE_PUBLISHABLE_KEY &&
+    !SUPABASE_PUBLISHABLE_KEY.includes("PASTE_YOUR");
 }
-
-function getAllProducts() {
-  return new Promise((resolve, reject) => {
-    if (!db) {
-      reject(new Error("Database is not ready."));
-      return;
-    }
-
-    const transaction = db.transaction(STORE_NAME, "readonly");
-    const request = transaction.objectStore(STORE_NAME).getAll();
-
-    request.onsuccess = () => resolve(request.result || []);
-    request.onerror = () => reject(request.error);
-  });
+async function initSupabase() {
+  if (!window.supabase || !configReady()) {
+    $("products").innerHTML = '<p style="grid-column:1/-1;background:white;padding:22px;border-radius:12px">Setup needed: add your Supabase Project URL and publishable key in this file, then follow the included setup guide.</p>';
+    $("loginMessage").textContent = "Add Supabase URL and publishable key before logging in.";
+    return false;
+  }
+  supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+  const { data, error } = await supabaseClient.auth.getSession();
+  if (error) console.warn(error);
+  currentUser = data?.session?.user || null;
+  await checkAdmin();
+  return true;
 }
-
-function saveProduct(product) {
-  return new Promise((resolve, reject) => {
-    if (!db) {
-      reject(new Error("Database is not ready."));
-      return;
-    }
-
-    const transaction = db.transaction(STORE_NAME, "readwrite");
-    const request = transaction.objectStore(STORE_NAME).add(product);
-
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
+async function checkAdmin() {
+  isAdmin = false;
+  if (currentUser && supabaseClient) {
+    const { data, error } = await supabaseClient
+      .from("admin_users").select("user_id").eq("user_id", currentUser.id).maybeSingle();
+    isAdmin = !error && !!data;
+  }
+  $("post-ad").hidden = !isAdmin;
+  $("postAdNav").hidden = !isAdmin;
+  $("logoutBtn").hidden = !isAdmin;
+  $("loginEmail").hidden = isAdmin;
+  $("loginPassword").hidden = isAdmin;
+  $("loginBtn").hidden = isAdmin;
+  const labels = document.querySelectorAll('#loginForm label');
+  labels.forEach(label => label.hidden = isAdmin);
+  $("loginMessage").textContent = isAdmin ? "Logged in as authorised admin: " + (currentUser.email || "") : "";
 }
-
-function deleteProduct(id) {
-  return new Promise((resolve, reject) => {
-    if (!db) {
-      reject(new Error("Database is not ready."));
-      return;
-    }
-
-    const transaction = db.transaction(STORE_NAME, "readwrite");
-    const request = transaction.objectStore(STORE_NAME).delete(Number(id));
-
-    request.onsuccess = () => resolve();
-    request.onerror = () => reject(request.error);
-  });
+async function getAllProducts() {
+  if (!supabaseClient) return [];
+  let query = supabaseClient.from("products").select("*").order("created_at", { ascending: false });
+  if (!isAdmin) query = query.eq("published", true);
+  const { data, error } = await query;
+  if (error) throw error;
+  return data || [];
 }
-
+async function saveProduct(product) {
+  if (!isAdmin) throw new Error("Admin access required.");
+  const { data, error } = await supabaseClient.from("products").insert(product).select().single();
+  if (error) throw error;
+  return data;
+}
+async function deleteProduct(id) {
+  if (!isAdmin) throw new Error("Admin access required.");
+  const { error } = await supabaseClient.from("products").delete().eq("id", id);
+  if (error) throw error;
+}
+async function uploadPhotos(files) {
+  const urls = [];
+  for (const file of files) {
+    if (!file.type.startsWith("image/")) throw new Error("Only image files are allowed.");
+    if (file.size > 10 * 1024 * 1024) throw new Error("Each photo must be 10 MB or smaller.");
+    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+    const filePath = `${currentUser.id}/${crypto.randomUUID()}-${safeName}`;
+    const { error } = await supabaseClient.storage.from(PHOTO_BUCKET).upload(filePath, file, {
+      cacheControl: "3600", upsert: false, contentType: file.type
+    });
+    if (error) throw error;
+    const { data } = supabaseClient.storage.from(PHOTO_BUCKET).getPublicUrl(filePath);
+    urls.push(data.publicUrl);
+  }
+  return urls;
+}
 async function loadProducts() {
   try {
     products = await getAllProducts();
     render();
   } catch (error) {
     console.error(error);
-    $("products").innerHTML =
-      "<p>Could not load listings. Please refresh the page.</p>";
+    $("products").innerHTML = '<p style="grid-column:1/-1;background:white;padding:22px;border-radius:12px">Could not load products. Check the Supabase setup and SQL policies.</p>';
   }
 }
 
@@ -973,16 +988,14 @@ function formatPrice(value) {
 }
 
 function getPhotoBlob(photo) {
-  if (photo instanceof Blob) return photo;
-  if (photo && photo.blob instanceof Blob) return photo.blob;
-  return null;
+  return photo instanceof Blob ? photo : (photo && photo.blob instanceof Blob ? photo.blob : null);
 }
-
 function photoURL(photo) {
+  if (typeof photo === "string") return photo;
   const blob = getPhotoBlob(photo);
   return blob ? URL.createObjectURL(blob) : "";
 }
- // ================= PRODUCT LISTINGS =================
+// ================= PRODUCT LISTINGS =================
 
 let renderUrls = [];
 
@@ -992,10 +1005,9 @@ function clearRenderUrls() {
 }
 
 function makePhotoURL(photo) {
+  if (typeof photo === "string") return photo;
   const blob = getPhotoBlob(photo);
-
   if (!blob) return "";
-
   const url = URL.createObjectURL(blob);
   renderUrls.push(url);
   return url;
@@ -1113,7 +1125,7 @@ function render() {
         <div class="actions">
           <button type="button" class="view-btn">View Photos</button>
           <button type="button" class="secondary whatsapp-btn">WhatsApp</button>
-          <button type="button" class="delete-btn" style="background:#dc2626">Delete</button>
+          ${isAdmin ? '<button type="button" class="delete-btn" style="background:#dc2626">Delete</button>' : ''}
         </div>
       </div>
     `;
@@ -1155,15 +1167,15 @@ function render() {
       );
     });
 
-    card.querySelector(".delete-btn").addEventListener("click", async () => {
-      if (!confirm("Delete this advertisement from this browser?")) return;
-
+    const deleteButton = card.querySelector(".delete-btn");
+    if (deleteButton) deleteButton.addEventListener("click", async () => {
+      if (!isAdmin || !confirm("Delete this product permanently?")) return;
       try {
         await deleteProduct(product.id);
         await loadProducts();
       } catch (error) {
         console.error(error);
-        alert("Could not delete the advertisement.");
+        alert("Could not delete product: " + (error.message || "Unknown error"));
       }
     });
 
@@ -1188,47 +1200,25 @@ function openGallery(photos, startIndex) {
 
 function showGalleryPhoto() {
   const photo = galleryPhotos[galleryIndex];
-
   if (!photo) return;
-
-  const blob = getPhotoBlob(photo);
-
-  if (!blob) return;
-
-  galleryUrls.forEach(url => URL.revokeObjectURL(url));
+  galleryUrls.forEach(url => { if (url.startsWith("blob:")) URL.revokeObjectURL(url); });
   galleryUrls = [];
-
-  const url = URL.createObjectURL(blob);
-  galleryUrls.push(url);
-
+  const url = photoURL(photo);
+  if (!url) return;
+  if (url.startsWith("blob:")) galleryUrls.push(url);
   $("largeImage").src = url;
-  $("imageNumber").textContent =
-    (galleryIndex + 1) + " / " + galleryPhotos.length;
-
+  $("imageNumber").textContent = (galleryIndex + 1) + " / " + galleryPhotos.length;
   const thumbs = $("galleryThumbs");
   thumbs.innerHTML = "";
-
   galleryPhotos.forEach((item, index) => {
-    const itemBlob = getPhotoBlob(item);
-
-    if (!itemBlob) return;
-
-    const thumbUrl = URL.createObjectURL(itemBlob);
-    galleryUrls.push(thumbUrl);
-
+    const thumbUrl = photoURL(item);
+    if (!thumbUrl) return;
+    if (thumbUrl.startsWith("blob:")) galleryUrls.push(thumbUrl);
     const img = document.createElement("img");
     img.src = thumbUrl;
     img.alt = "Photo " + (index + 1);
-
-    if (index === galleryIndex) {
-      img.classList.add("active");
-    }
-
-    img.addEventListener("click", () => {
-      galleryIndex = index;
-      showGalleryPhoto();
-    });
-
+    if (index === galleryIndex) img.classList.add("active");
+    img.addEventListener("click", () => { galleryIndex = index; showGalleryPhoto(); });
     thumbs.appendChild(img);
   });
 }
@@ -1247,7 +1237,7 @@ function closeGallery() {
   $("viewer").classList.remove("open");
   $("largeImage").removeAttribute("src");
 
-  galleryUrls.forEach(url => URL.revokeObjectURL(url));
+  galleryUrls.forEach(url => { if (url.startsWith("blob:")) URL.revokeObjectURL(url); });
   galleryUrls = [];
   galleryPhotos = [];
 }
@@ -1265,119 +1255,113 @@ document.addEventListener("keydown", function(event) {
 });
 
 // ================= POST ADVERTISEMENT =================
-
 $("adForm").addEventListener("submit", async function(event) {
   event.preventDefault();
-
+  if (!isAdmin || !supabaseClient) {
+    alert("Please log in with an authorised admin account first.");
+    return;
+  }
   const category = $("adCat").value;
   const brand = $("adBrand").value;
   const name = $("adName").value.trim();
   const offer = Number($("adOffer").value);
   const price = $("adPrice").value;
   const battery = $("adBattery").value;
-
-  if (!name || !brand) {
-    alert("Please enter the brand and model/product name.");
-    return;
-  }
-
-  if (!Number.isFinite(offer) || offer <= 0) {
-    alert("Please enter a valid selling price.");
-    return;
-  }
-
-  if (selectedPhotos.length > MAX_PHOTOS) {
-    alert("You can upload a maximum of 10 photos.");
-    return;
-  }
-
+  if (!name || !brand) return alert("Please enter the brand and model/product name.");
+  if (!Number.isFinite(offer) || offer <= 0) return alert("Please enter a valid selling price.");
+  if (selectedPhotos.length > MAX_PHOTOS) return alert("You can upload a maximum of 10 photos.");
+  if (selectedPhotos.length === 0) return alert("Please select at least one photo.");
   if (category === "Mobile" && brand === "Apple" && battery !== "") {
-    const batteryNumber = Number(battery);
-
-    if (
-      !Number.isFinite(batteryNumber) ||
-      batteryNumber < 1 ||
-      batteryNumber > 100
-    ) {
-      alert("iPhone Battery Health must be between 1 and 100.");
-      return;
-    }
+    const n = Number(battery);
+    if (!Number.isFinite(n) || n < 1 || n > 100) return alert("iPhone Battery Health must be between 1 and 100.");
   }
-
-  const product = {
-    category,
-    brand,
-    name,
-    ram: category === "Mobile" ? $("adRam").value : "",
-    rom: category === "Mobile" ? $("adRom").value : "",
-    battery:
-      category === "Mobile" && brand === "Apple"
-        ? battery
-        : "",
-    colour: $("adColour").value.trim(),
-    year: category === "Car" ? $("adYear").value : "",
-    fuel: category === "Car" ? $("adFuel").value : "",
-    km: category === "Car" ? $("adKm").value : "",
-    condition: $("adCondition").value,
-    price: price,
-    offer: offer,
-    description: $("adDetails").value.trim(),
-
-    // Original image files are saved without compression.
-    photos: selectedPhotos.slice(),
-
-    createdAt: new Date().toISOString()
-  };
-
   const submitButton = $("submitBtn");
   submitButton.disabled = true;
-  submitButton.textContent = "Saving...";
-
+  submitButton.textContent = "Uploading photos and publishing...";
+  $("adMessage").textContent = "";
   try {
+    const photoUrls = await uploadPhotos(selectedPhotos);
+    const product = {
+      category, brand, name,
+      ram: category === "Mobile" ? $("adRam").value : "",
+      rom: category === "Mobile" ? $("adRom").value : "",
+      battery: category === "Mobile" && brand === "Apple" ? battery : "",
+      colour: $("adColour").value.trim(),
+      year: category === "Car" ? $("adYear").value : "",
+      fuel: category === "Car" ? $("adFuel").value : "",
+      km: category === "Car" ? $("adKm").value : "",
+      condition: $("adCondition").value,
+      price: price ? Number(price) : null,
+      offer,
+      description: $("adDetails").value.trim(),
+      photos: photoUrls,
+      published: true
+    };
     await saveProduct(product);
-
-    $("adMessage").textContent =
-      "Advertisement posted successfully!";
-
+    $("adMessage").textContent = "Product published successfully! Everyone can now see it.";
     clearForm();
     await loadProducts();
-
     $("listings").scrollIntoView({ behavior: "smooth" });
   } catch (error) {
     console.error(error);
-
-    $("adMessage").textContent =
-      "Could not save the advertisement. Please try again.";
-
-    alert(
-      "Could not save the advertisement. Your browser may have limited storage. Please try again."
-    );
+    $("adMessage").textContent = "Could not publish product: " + (error.message || "Please check your Supabase setup.");
+    alert("Publish failed. Check that the SQL setup is complete and that the admin account is authorised.\n\n" + (error.message || ""));
   } finally {
     submitButton.disabled = false;
-    submitButton.textContent =
-      translations[$("languageSelect").value].submit;
+    submitButton.textContent = translations[$("languageSelect").value].submit;
   }
 });
 
-// ================= START WEBSITE =================
-
-async function startWebsite() {
-  $("footerYear").textContent = new Date().getFullYear();
-
-  updateFields();
-  setLanguage("en");
-
+// ================= ADMIN AUTH =================
+$("loginForm").addEventListener("submit", async function(event) {
+  event.preventDefault();
+  if (!supabaseClient) {
+    $("loginMessage").textContent = "First add the Supabase URL and publishable key in the code.";
+    return;
+  }
+  const btn = $("loginBtn");
+  btn.disabled = true;
+  btn.textContent = "Signing in...";
+  $("loginMessage").textContent = "";
   try {
-    await openDatabase();
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
+      email: $("loginEmail").value.trim(),
+      password: $("loginPassword").value
+    });
+    if (error) throw error;
+    currentUser = data.user;
+    await checkAdmin();
+    if (!isAdmin) {
+      await supabaseClient.auth.signOut();
+      currentUser = null;
+      await checkAdmin();
+      throw new Error("This account is not on the admin allow-list. Add its user ID to public.admin_users in Supabase SQL Editor.");
+    }
+    $("loginPassword").value = "";
     await loadProducts();
   } catch (error) {
-    console.error(error);
-
-    $("products").innerHTML =
-      "<p>Could not initialise local storage. Please try another browser.</p>";
+    $("loginMessage").textContent = error.message || "Login failed.";
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Admin Login";
   }
-}
+});
+$("logoutBtn").addEventListener("click", async function() {
+  if (supabaseClient) await supabaseClient.auth.signOut();
+  currentUser = null;
+  isAdmin = false;
+  await checkAdmin();
+  await loadProducts();
+});
 
+// ================= START WEBSITE =================
+async function startWebsite() {
+  $("footerYear").textContent = new Date().getFullYear();
+  updateFields();
+  setLanguage("en");
+  const ready = await initSupabase();
+  if (ready) await loadProducts();
+}
 startWebsite();
 </script>
 </body>
