@@ -41,12 +41,12 @@ h2{margin-top:10px}
 .price{font-size:23px;font-weight:bold}
 .old-price{font-size:14px;color:#64748b;text-decoration:line-through;margin-left:6px}
 .details{color:#64748b;font-size:13px;line-height:1.7;margin:8px 0;overflow-wrap:anywhere}
-
 .condition-badge{display:inline-block;padding:5px 10px;border-radius:999px;font-size:12px;font-weight:800;line-height:1.2;margin:2px 0 5px;border:1px solid transparent}
 .condition-super-mint{background:#ede9fe;color:#6d28d9;border-color:#c4b5fd}
 .condition-mint{background:#d1fae5;color:#047857;border-color:#6ee7b7}
 .condition-good{background:#dbeafe;color:#1d4ed8;border-color:#93c5fd}
 .condition-unknown{background:#f1f5f9;color:#475569;border-color:#cbd5e1}
+
 .actions{display:flex;gap:8px;flex-wrap:wrap}
 .actions button{flex:1}
 .secondary{background:#f0e7ff;color:#5b21b6}
@@ -152,14 +152,14 @@ footer{margin-top:30px;background:#1d1238;color:white;padding:24px 6%;text-align
  <h1>Buy Smart. Sell Simply.</h1>
  <p>Discover mobiles, cars and more in one place.</p>
  <div class="search">
-  <input id="q" placeholder="Search products..." oninput="render()">
+  <input id="q" placeholder="Search products..." oninput="render()" onkeydown="if(event.key==='Enter'){event.preventDefault();searchAndShowResults()}">
   <select id="cat" onchange="render()" style="width:auto;flex:1">
    <option value="All">All Categories</option>
    <option value="Mobile">Mobile</option>
    <option value="Car">Car</option>
    <option value="Other">Other</option>
   </select>
-  <button onclick="render()">Search</button>
+  <button type="button" onclick="searchAndShowResults()">Search</button>
  </div>
  <div class="filter-row" aria-label="Price and sort filters">
   <input id="minPrice" type="number" min="0" placeholder="Min price ₹" oninput="render()" aria-label="Minimum price">
@@ -1101,6 +1101,24 @@ function escapeHTML(value) {
   })[character]);
 }
 
+function conditionBadgeHTML(value) {
+  const label = String(value || "Condition not specified").trim();
+  const key = label.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  let className = "condition-unknown";
+  let inlineStyle = "background:#f1f5f9;color:#475569;border-color:#cbd5e1;";
+  if (key === "super-mint" || key === "supermint") {
+    className = "condition-super-mint";
+    inlineStyle = "background:#ede9fe;color:#6d28d9;border:1px solid #c4b5fd;";
+  } else if (key === "mint") {
+    className = "condition-mint";
+    inlineStyle = "background:#d1fae5;color:#047857;border:1px solid #6ee7b7;";
+  } else if (key === "good") {
+    className = "condition-good";
+    inlineStyle = "background:#dbeafe;color:#1d4ed8;border:1px solid #93c5fd;";
+  }
+  return `<span class="condition-badge ${className}" style="${inlineStyle}display:inline-block;padding:5px 10px;border-radius:999px;font-size:12px;font-weight:800;line-height:1.2;margin:2px 0 5px">${escapeHTML(label)}</span>`;
+}
+
 function formatPrice(value) {
   const amount = Number(value);
 
@@ -1191,6 +1209,15 @@ function renderAdminInventory() {
     actions.append(statusBtn, deleteBtn);
     tr.append(name, category, price, status, actions);
     tbody.appendChild(tr);
+  });
+}
+
+function searchAndShowResults() {
+  // Render the filtered products first, then bring the results into view.
+  render();
+  requestAnimationFrame(() => {
+    const listings = document.getElementById("listings");
+    if (listings) listings.scrollIntoView({ behavior: "smooth", block: "start" });
   });
 }
 
@@ -1333,7 +1360,7 @@ if (minPrice > maxPrice) {
           ${oldPrice}
         </div>
         <div class="details">
-          <span class="condition-badge condition-${String(product.condition || "unknown").toLowerCase().replace(/[^a-z]+/g, "-").replace(/^-|-$/g, "") || "unknown"}">${escapeHTML(product.condition || "Condition not specified")}</span><br>
+          ${conditionBadgeHTML(product.condition)}<br>
           ${extraDetails}
           ${escapeHTML(product.description || "")}
         </div>
