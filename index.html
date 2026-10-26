@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unique Online Service Buy & Sell</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f3f6fb;color:#172033}
+header{background:#101827;color:white;padding:18px 5%;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.logo{font-size:21px;font-weight:bold}nav a{color:white;text-decoration:none;margin:0 8px;font-size:14px}
+.hero{background:linear-gradient(120deg,#172554,#2563eb);color:white;padding:42px 6%}
+.hero h1{font-size:clamp(30px,5vw,48px);margin:0 0 12px}.hero p{line-height:1.6}
+.search{display:flex;gap:8px;max-width:650px;margin-top:20px;flex-wrap:wrap}
+input,select{padding:13px;border:1px solid #ddd;border-radius:8px;font-size:15px;min-width:0}
+.search input{flex:1}
+button{background:#2563eb;color:white;border:0;border-radius:8px;padding:12px 16px;font-weight:bold;cursor:pointer}
+main{max-width:1150px;margin:auto;padding:26px 16px}
+h2{margin-top:10px}.categories{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.cat{background:white;padding:18px;border-radius:12px;text-align:center;cursor:pointer;border:1px solid #e2e8f0}
+.cat span{font-size:30px}.cat h3{margin-bottom:5px}.cat p{font-size:13px;color:#64748b}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}
+.filters button{background:white;color:#1e293b;border:1px solid #dbe2ea}.filters button.active{background:#2563eb;color:white}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.card{background:white;border:1px solid #e2e8f0;border-radius:14px;overflow:hidden}
+.art{height:150px;background:linear-gradient(135deg,#dbeafe,#ede9fe);display:grid;place-items:center;font-size:58px}
+.content{padding:15px}.label{font-size:11px;color:#2563eb;font-weight:bold}.content h3{margin:8px 0}
+.price{font-size:23px;font-weight:bold}.details{color:#64748b;font-size:13px;line-height:1.7;margin:8px 0}
+.actions{display:flex;gap:8px}.actions button{flex:1}.secondary{background:#e8efff;color:#1d4ed8}
+.info{background:white;padding:20px;border-radius:12px;margin-top:28px;line-height:1.7}
+footer{margin-top:30px;background:#101827;color:white;padding:24px 6%;text-align:center;font-size:13px}
+@media(max-width:700px){.categories{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}header{padding:15px}nav{width:100%}.art{height:120px;font-size:45px}.content{padding:10px}.content h3{font-size:15px}.actions{flex-direction:column}}
+@media(max-width:390px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+<div class="logo">🛍️ Unique Online Service<br><small>BUY & SELL</small></div>
+<nav><a href="#categories">Categories</a><a href="#listings">Listings</a><a href="#contact">Contact</a></nav>
+</header>
+<section class="hero">
+<h1>Buy Smart. Sell Simply.</h1>
+<p>Discover mobiles, cars and more in one place.</p>
+<div class="search">
+<input id="q" placeholder="Search products..." oninput="render()">
+<select id="cat" onchange="render()"><option>All</option><option>Mobile</option><option>Car</option><option>Other</option></select>
+<button onclick="render()">Search</button>
+</div>
+</section>
+<main>
+<section id="categories">
+<h2>Shop by Category</h2>
+<div class="categories">
+<div class="cat" onclick="pick('Mobile')"><span>📱</span><h3>Mobiles</h3><p>New and used phones</p></div>
+<div class="cat" onclick="pick('Car')"><span>🚗</span><h3>Cars</h3><p>Cars for sale</p></div>
+<div class="cat" onclick="pick('Other')"><span>🎧</span><h3>Electronics</h3><p>Gadgets and accessories</p></div>
+<div class="cat" onclick="pick('Other')"><span>🛍️</span><h3>Other Products</h3><p>More great finds</p></div>
+</div>
+</section>
+<section id="listings">
+<h2>Latest Listings</h2>
+<p style="color:#64748b;font-size:14px">Sample products are shown below. Replace them with real listings before launch.</p>
+<div class="filters">
+<button class="active" onclick="pick('All')">All</button><button onclick="pick('Mobile')">Mobiles</button><button onclick="pick('Car')">Cars</button><button onclick="pick('Other')">Other</button>
+</div>
+<div id="products" class="grid"></div>
+</section>
+<section class="info" id="contact">
+<h2>Contact Us</h2>
+<p>Interested in a product? Contact Unique Online Service Buy & Sell for details.</p>
+<button onclick="contact()">Contact on WhatsApp</button>
+<p style="font-size:12px;color:#64748b">Before publishing, set your WhatsApp number in the code.</p>
+</section>
+</main>
+<footer>© <span id="year"></span> Unique Online Service Buy & Sell<br>Mobiles • Cars • Other Products</footer>
+<script>
+// Add your WhatsApp number with country code, digits only. Example: 91XXXXXXXXXX
+const WHATSAPP_NUMBER = "";
+const products = [
+{id:1,cat:"Mobile",icon:"📱",name:"Sample Android Phone",price:"Add Price",details:"Brand / Model: Add details | RAM / Storage: Add details | Colour: Add details",condition:"Used / New"},
+{id:2,cat:"Mobile",icon:"🍎",name:"Sample iPhone",price:"Add Price",details:"Battery Health: Add % | Storage: Add details | Colour: Add details",condition:"Mint / Super Mint / Open Box"},
+{id:3,cat:"Car",icon:"🚗",name:"Sample Car",price:"Add Price",details:"Make / Model: Add details | Year: Add details | Fuel: Add details",condition:"Add condition"},
+{id:4,cat:"Other",icon:"🎧",name:"Sample Electronics",price:"Add Price",details:"Brand: Add details | Warranty: Add details",condition:"New / Used"}
+];
+let selected="All";
+function safe(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function render(){
+let q=document.getElementById("q").value.toLowerCase();
+let cat=document.getElementById("cat").value;
+if(cat==="All")cat=selected;
+let items=products.filter(p=>(cat==="All"||p.cat===cat)&&(p.name+" "+p.details+" "+p.condition+" "+p.cat).toLowerCase().includes(q));
+document.getElementById("products").innerHTML=items.length?items.map(p=>'<article class="card"><div class="art">'+p.icon+'</div><div class="content"><div class="label">'+safe(p.cat.toUpperCase())+' • '+safe(p.condition)+'</div><h3>'+safe(p.name)+'</h3><div class="price">'+safe(p.price)+'</div><div class="details">'+safe(p.details)+'</div><div class="actions"><button onclick="enquire('+p.id+')">Enquire</button><button class="secondary" onclick="copyItem('+p.id+')">Details</button></div></div></article>').join(""):'<p>No products found.</p>';
+document.querySelectorAll(".filters button").forEach(b=>b.classList.toggle("active",b.textContent.trim()===(cat==="All"?"All":cat==="Mobile"?"Mobiles":cat==="Car"?"Cars":"Other")));
+}
+function pick(c){selected=c;document.getElementById("cat").value=c==="All"?"All":c;render();document.getElementById("listings").scrollIntoView({behavior:"smooth"})}
+function contact(){
+if(!WHATSAPP_NUMBER){alert("Please add your WhatsApp number to WHATSAPP_NUMBER in index.html first.");return}
+window.open("https://wa.me/"+WHATSAPP_NUMBER+"?text="+encodeURIComponent("Hello, I have an enquiry about Unique Online Service Buy & Sell."),"_blank")
+}
+function enquire(id){
+let p=products.find(x=>x.id===id);
+if(!WHATSAPP_NUMBER){alert("Please add your WhatsApp number to WHATSAPP_NUMBER in index.html first.");return}
+window.open("https://wa.me/"+WHATSAPP_NUMBER+"?text="+encodeURIComponent("Hello, I am interested in "+p.name+". Please share details."),"_blank")
+}
+function copyItem(id){let p=products.find(x=>x.id===id);alert(p.name+"\n"+p.price+"\n"+p.details)}
+document.getElementById("year").textContent=new Date().getFullYear();
+render();
+</script>
+</body>
+</html>
