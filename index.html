@@ -55,6 +55,38 @@ footer{margin-top:30px;background:#101827;color:white;padding:24px 6%;text-align
 <div class="cat" onclick="pick('Other')"><span>🎧</span><h3>Electronics</h3><p>Gadgets and accessories</p></div>
 <div class="cat" onclick="pick('Other')"><span>🛍️</span><h3>Other Products</h3><p>More great finds</p></div>
 </div>
+  <section id="post-ad" class="info">
+  <h2>📢 Post Your Advertisement</h2>
+
+  <form id="adForm">
+    <p>Category</p>
+    <select id="adCat" required>
+      <option value="Mobile">📱 Mobile</option>
+      <option value="Car">🚗 Car</option>
+      <option value="Other">🛍️ Other</option>
+    </select>
+
+    <p>Product Name / Model</p>
+    <input id="adName" required
+      placeholder="e.g. Samsung Galaxy S21">
+
+    <p>Price (₹)</p>
+    <input id="adPrice" type="number" min="1"
+      required placeholder="Enter price">
+
+    <p>Product Photo</p>
+    <input id="adPhoto" type="file"
+      accept="image/*" required>
+
+    <p>Description</p>
+    <textarea id="adDetails" required
+      placeholder="Condition, year, storage, etc."
+      style="width:100%;min-height:100px;padding:12px"></textarea>
+
+    <button type="submit">Post Advertisement</button>
+  </form>
+  <p id="adMessage"></p>
+</section>
 </section>
 <section id="listings">
 <h2>Latest Listings</h2>
@@ -104,6 +136,42 @@ window.open("https://wa.me/"+WHATSAPP_NUMBER+"?text="+encodeURIComponent("Hello,
 function copyItem(id){let p=products.find(x=>x.id===id);alert(p.name+"\n"+p.price+"\n"+p.details)}
 document.getElementById("year").textContent=new Date().getFullYear();
 render();
+  document.getElementById("adForm").addEventListener("submit", function(e) {
+  e.preventDefault();
+
+  const file = document.getElementById("adPhoto").files[0];
+  if (!file) return;
+
+  if (file.size > 2 * 1024 * 1024) {
+    alert("Please choose an image smaller than 2 MB.");
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = function() {
+    const item = {
+      id: Date.now(),
+      cat: document.getElementById("adCat").value,
+      icon: "📦",
+      name: document.getElementById("adName").value,
+      price: "₹" + document.getElementById("adPrice").value,
+      details: document.getElementById("adDetails").value,
+      condition: "Seller listing",
+      photo: reader.result
+    };
+
+    products.unshift(item);
+
+    document.getElementById("adMessage").textContent =
+      "Advertisement added successfully!";
+
+    document.getElementById("adForm").reset();
+    render();
+  };
+
+  reader.readAsDataURL(file);
+});
 </script>
 </body>
 </html>
