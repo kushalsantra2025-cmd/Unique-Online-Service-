@@ -92,6 +92,15 @@ footer{margin-top:30px;background:#1d1238;color:white;padding:24px 6%;text-align
 .filter-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:14px 0}
 .filter-row input,.filter-row select{background:#fff;border-color:#e5d9ff}
 .stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:14px 0}
+.admin-table th,.admin-table td{padding:11px 10px;text-align:left;border-bottom:1px solid #e9e5f5;font-size:13px}
+.admin-table th{background:#f6f2ff;color:#33205f;font-weight:700}
+.admin-table td{color:#273044}
+.admin-table .admin-action{border:0;border-radius:7px;padding:7px 10px;margin:2px;cursor:pointer;font-weight:600}
+.admin-table .admin-delete{background:#fee2e2;color:#b91c1c}
+.admin-table .admin-status{background:#ede9fe;color:#5b21b6}
+.admin-status-pill{display:inline-block;border-radius:999px;padding:4px 8px;background:#dcfce7;color:#166534;font-size:11px;font-weight:700}
+.admin-status-pill.sold{background:#fee2e2;color:#b91c1c}
+
 .stat{background:linear-gradient(135deg,#f4eaff,#fff);border:1px solid #e9d5ff;padding:16px;border-radius:12px}
 .stat strong{display:block;font-size:25px;color:#6d28d9;margin-top:5px}
 .favorite-btn{background:#fce7f3;color:#9d174d;min-width:44px}
@@ -186,6 +195,16 @@ footer{margin-top:30px;background:#1d1238;color:white;padding:24px 6%;text-align
  <h2>📊 Admin Dashboard</h2>
  <p>Quick overview of the products currently available in your catalogue.</p>
  <div class="stats"><div class="stat">Total products<strong id="statTotal">0</strong></div><div class="stat">Mobiles<strong id="statMobiles">0</strong></div><div class="stat">Cars<strong id="statCars">0</strong></div></div>
+ <div class="admin-inventory">
+   <h3 style="margin:22px 0 12px">📦 Product Inventory</h3>
+   <p id="adminInventoryMessage" style="color:#64748b;font-size:13px">Products loaded from your catalogue will appear here.</p>
+   <div style="overflow-x:auto">
+    <table class="admin-table" style="width:100%;border-collapse:collapse;min-width:620px">
+     <thead><tr><th>Product</th><th>Category</th><th>Price</th><th>Status</th><th>Action</th></tr></thead>
+     <tbody id="adminProductRows"><tr><td colspan="5">Loading products…</td></tr></tbody>
+    </table>
+   </div>
+ </div>
 </section>
 
 <section id="post-ad" class="info" hidden>
@@ -984,10 +1003,28 @@ async function uploadPhotos(files) {
 async function loadProducts() {
   try {
     products = await getAllProducts();
+  } catch (error) {
+    console.error("Supabase product query error:", error);
+    const message = String(error?.message || error || "Unknown error");
+    const safeMessage = message.replace(/[&<>"]/g, ch => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[ch]));
+    $("products").innerHTML = `<div style="grid-column:1/-1;background:#fff7ed;border:1px solid #fed7aa;padding:22px;border-radius:12px;color:#9a3412">
+      <strong>Could not load products.</strong>
+      <p style="margin:10px 0">Supabase returned this error:</p>
+      <code style="display:block;white-space:pre-wrap;overflow-wrap:anywhere">${safeMessage}</code>
+      <p style="margin:10px 0 0;font-size:13px">Send this exact error message for the correct fix. Do not share any secret/service-role key.</p>
+    </div>`;
+    const inventoryMessage = $("adminInventoryMessage");
+    const inventoryRows = $("adminProductRows");
+    if (inventoryMessage) inventoryMessage.textContent = "Supabase query failed: " + message;
+    if (inventoryRows) inventoryRows.innerHTML = `<tr><td colspan="5" style="color:#b91c1c;white-space:normal">${safeMessage}</td></tr>`;
+    return;
+  }
+  try {
     render();
   } catch (error) {
-    console.error(error);
-    $("products").innerHTML = '<p style="grid-column:1/-1;background:white;padding:22px;border-radius:12px">Could not load products. Check the Supabase setup and SQL policies.</p>';
+    console.error("Product rendering error:", error);
+    const message = String(error?.message || error || "Unknown rendering error");
+    $("products").innerHTML = `<p style="grid-column:1/-1;background:#fff7ed;padding:18px;border-radius:12px;color:#9a3412">Products loaded, but the page could not display them: ${message.replace(/[&<>"]/g, ch => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[ch]))}</p>`;
   }
 }
 
@@ -1092,8 +1129,68 @@ function makePhotoURL(photo) {
   return url;
 }
 
+function renderAdminInventory() {
+  const tbody = $("adminProductRows");
+  const message = $("adminInventoryMessage");
+  if (!tbody || !message) return;
+  if (!isAdmin) {
+    tbody.innerHTML = '<tr><td colspan="5">Log in as an administrator to manage products.</td></tr>';
+    message.textContent = "Admin-only product management.";
+    return;
+  }
+  message.textContent = products.length
+    ? `Showing ${products.length} product(s) from the database.`
+    : "No products are currently returned by the database.";
+  if (!products.length) {
+    tbody.innerHTML = '<tr><td colspan="5">No products found. Check the Supabase products table and access policies if you expected products here.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = "";
+  products.forEach(product => {
+    const tr = document.createElement("tr");
+    const name = document.createElement("td");
+    name.textContent = [product.brand, product.name].filter(Boolean).join(" ") || "Unnamed product";
+    const category = document.createElement("td");
+    category.textContent = product.category || "—";
+    const price = document.createElement("td");
+    price.textContent = typeof formatPrice === "function" ? formatPrice(product.offer) : `₹${product.offer ?? "—"}`;
+    const status = document.createElement("td");
+    const pill = document.createElement("span");
+    pill.className = "admin-status-pill" + (product.sold_out ? " sold" : "");
+    pill.textContent = product.sold_out ? "Sold out" : (product.published === false ? "Unpublished" : "Available");
+    status.appendChild(pill);
+    const actions = document.createElement("td");
+    const statusBtn = document.createElement("button");
+    statusBtn.type = "button";
+    statusBtn.className = "admin-action admin-status";
+    statusBtn.textContent = product.sold_out ? "Mark available" : "Mark sold out";
+    statusBtn.addEventListener("click", async () => {
+      if (!isAdmin || !confirm(product.sold_out ? "Mark this product as available?" : "Mark this product as sold out?")) return;
+      statusBtn.disabled = true;
+      try { await setProductSoldOut(product.id, !product.sold_out); await loadProducts(); }
+      catch (err) { alert("Could not update product: " + (err.message || "Unknown error")); }
+      finally { statusBtn.disabled = false; }
+    });
+    const deleteBtn = document.createElement("button");
+    deleteBtn.type = "button";
+    deleteBtn.className = "admin-action admin-delete";
+    deleteBtn.textContent = "Delete";
+    deleteBtn.addEventListener("click", async () => {
+      if (!isAdmin || !confirm("Delete this product permanently?")) return;
+      deleteBtn.disabled = true;
+      try { await deleteProduct(product.id); await loadProducts(); }
+      catch (err) { alert("Could not delete product: " + (err.message || "Unknown error")); }
+      finally { deleteBtn.disabled = false; }
+    });
+    actions.append(statusBtn, deleteBtn);
+    tr.append(name, category, price, status, actions);
+    tbody.appendChild(tr);
+  });
+}
+
 function render() {
   clearRenderUrls();
+  const container = $("products");
   const category = $("cat").value || selected || "All";
   const query = ($("q").value || "").trim().toLowerCase();
 
@@ -1147,6 +1244,7 @@ if (minPrice > maxPrice) {
     $("statMobiles").textContent = products.filter(p => p.category === "Mobile").length;
     $("statCars").textContent = products.filter(p => p.category === "Car").length;
   }
+  renderAdminInventory();
 
   container.innerHTML = "";
 
