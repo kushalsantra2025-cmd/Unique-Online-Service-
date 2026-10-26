@@ -98,7 +98,7 @@ footer{margin-top:30px;background:#1d1238;color:white;padding:24px 6%;text-align
 .favorite-btn.saved{background:#be185d;color:white}
 .fav-only{background:#fff;color:#5b21b6;border:1px solid #d8b4fe}
 @media(max-width:600px){.filter-row{grid-template-columns:1fr 1fr}.stats{grid-template-columns:1fr 1fr}}
-[hidden]{display:none!important}
+.profile-wrap{position:relative;z-index:50}.profile-trigger{background:#fff;color:#241b3d;border-radius:999px;padding:10px 14px;white-space:nowrap}.profile-menu{position:absolute;right:0;top:calc(100% + 10px);width:245px;background:#fff;color:#241b3d;border-radius:16px;padding:10px;box-shadow:0 18px 50px #10052c35;border:1px solid #ece8f8}.profile-menu-head{padding:12px;border-bottom:1px solid #eee;margin-bottom:5px;display:grid;gap:4px}.profile-menu-head small{color:#64748b;overflow-wrap:anywhere}.profile-menu a,.profile-menu>button{display:block;width:100%;text-align:left;text-decoration:none;color:#241b3d;background:#fff;padding:11px 12px;border-radius:9px;font-size:14px}.profile-menu a:hover,.profile-menu>button:hover{background:#f3edff}.profile-menu .menu-admin{background:#6d28d9;color:white;margin:5px 0}.profile-menu .menu-customer{background:#2563eb;color:white}.profile-menu .menu-logout{color:#b91c1c}.customer-profile{scroll-margin-top:20px}.profile-heading{display:flex;align-items:center;gap:14px}.profile-heading h2{margin:0}.profile-heading p{color:#64748b;margin:5px 0}.avatar{width:66px;height:66px;border-radius:50%;display:grid;place-items:center;background:#e9e5f7;font-size:34px}.profile-shortcuts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:22px 0}.profile-shortcuts button{background:#fff;color:#241b3d;border:1px solid #e6e2ee;display:grid;gap:8px;place-items:center;min-height:88px;box-shadow:0 4px 12px #241b3d0a}.profile-shortcuts span{font-size:13px}.profile-list{background:#fff;border:1px solid #e6e2ee;border-radius:14px;padding:5px 14px;margin:12px 0 24px;box-shadow:0 5px 16px #241b3d0a}.profile-list button,.profile-list label{width:100%;display:flex;align-items:center;gap:14px;text-align:left;color:#241b3d;background:#fff;border-radius:8px;padding:15px 5px;border-bottom:1px solid #f0edf5;font-size:15px}.profile-list button:last-child{border-bottom:0}.profile-list button span,.profile-list label span{flex:1}.profile-list b{font-size:22px;color:#94a3b8;font-weight:400}.profile-list select{width:auto;max-width:125px;padding:7px}.profile-notice{color:#5b21b6;font-weight:bold;line-height:1.5}.auth-overlay,.simple-modal{position:fixed;inset:0;background:#100a20b8;z-index:10000;display:grid;place-items:center;padding:18px}.auth-card,.simple-modal-card{position:relative;background:white;color:#241b3d;border-radius:20px;padding:28px;width:min(460px,100%);box-shadow:0 20px 60px #0004}.auth-card h2{margin-bottom:6px}.auth-card p{color:#64748b;font-size:14px}.auth-card label{display:block;font-weight:bold;font-size:13px;margin:12px 0 6px}.auth-brand{display:grid;gap:3px;color:#5b21b6;font-size:20px}.auth-brand small{font-size:12px;color:#64748b}.auth-close{position:absolute;right:12px;top:12px;background:#f1f0f6;color:#241b3d;padding:8px 11px}.auth-actions{display:flex;gap:10px;margin-top:15px}.auth-actions button{flex:1}.simple-modal-card{max-height:85vh;overflow:auto}.simple-modal-card h2{padding-right:30px}@media(max-width:700px){.profile-wrap{margin-left:auto}.profile-trigger{font-size:13px;padding:9px 10px}.profile-shortcuts{grid-template-columns:repeat(2,minmax(0,1fr))}.profile-menu{right:0}header{gap:10px}header nav{order:3}.profile-heading h2{font-size:22px}}[hidden]{display:none!important}
 #admin-login{margin-top:24px}
 #loginMessage{font-weight:bold}
 .admin-status{background:#ecfdf5;color:#065f46;padding:10px 12px;border-radius:8px;margin:12px 0}
@@ -108,6 +108,17 @@ footer{margin-top:30px;background:#1d1238;color:white;padding:24px 6%;text-align
 <body>
 <header>
  <div class="logo">🛍️ Unique Online Service<br><small>BUY & SELL</small></div>
+ <div class="profile-wrap">
+  <button type="button" class="profile-trigger" onclick="toggleProfileMenu()" aria-expanded="false">👤 <span id="profileTriggerLabel">Profile / Login</span> ▾</button>
+  <div class="profile-menu" id="profileMenu" hidden>
+   <div class="profile-menu-head"><strong id="menuUserName">Welcome!</strong><small id="menuUserEmail">Choose how to continue</small></div>
+   <a href="#customer-profile" onclick="openCustomerProfile();closeProfileMenu()">👤 My Profile</a>
+   <a href="#listings" onclick="closeProfileMenu()">♡ Wishlist / Products</a>
+   <button type="button" class="menu-admin" onclick="openAdminLogin()">🔐 Admin Login</button>
+   <button type="button" class="menu-customer" onclick="openCustomerLogin()">🛍️ Customer Login</button>
+   <button type="button" class="menu-logout" id="customerLogoutBtn" onclick="customerLogout()" hidden>↪ Logout</button>
+  </div>
+ </div>
  <select id="languageSelect" aria-label="Choose language" onchange="setLanguage(this.value)" style="width:auto;max-width:145px">
   <option value="en">English</option>
   <option value="bn">বাংলা</option>
@@ -116,7 +127,7 @@ footer{margin-top:30px;background:#1d1238;color:white;padding:24px 6%;text-align
  <nav>
   <a href="#categories">Categories</a>
   <a href="#listings">Listings</a>
-  <a href="#admin-login">Admin</a>
+  <a href="#customer-profile" onclick="openCustomerProfile()">Profile</a>
   <a href="#post-ad" id="postAdNav" hidden>Post Ad</a>
   <a href="#contact">Contact</a>
  </nav>
@@ -156,7 +167,7 @@ footer{margin-top:30px;background:#1d1238;color:white;padding:24px 6%;text-align
 </section>
 
 
-<section id="admin-login" class="info">
+<section id="admin-login" class="info" hidden>
   <h2>🔐 Admin Login</h2>
   <p style="color:#64748b;font-size:13px">Only authorised admin accounts can publish or delete products.</p>
   <form id="loginForm">
@@ -309,6 +320,32 @@ footer{margin-top:30px;background:#1d1238;color:white;padding:24px 6%;text-align
 
  <div id="products" class="grid"></div>
 </section>
+
+<section class="info customer-profile" id="customer-profile" hidden>
+ <div class="profile-heading"><div><span class="avatar">👤</span></div><div><h2 id="customerGreeting">Hello, Customer</h2><p id="customerEmailLabel">Sign in to manage your account</p></div></div>
+ <div class="profile-shortcuts">
+  <button type="button" onclick="profileNotice('Your orders will appear here after order tracking is connected.')">🛍️ <span>Your orders</span></button>
+  <button type="button" onclick="showFavoritesOnly(true);location.hash='listings'">♡ <span>Wishlist</span></button>
+  <button type="button" onclick="profileNotice('Coupons will be available when promotions are configured.')">🎟️ <span>Coupons</span></button>
+  <button type="button" onclick="trackOrder()">🚚 <span>Track order</span></button>
+ </div>
+ <h3>Account Settings</h3><div class="profile-list">
+  <button type="button" onclick="editCustomerProfile()">♙ <span>Edit profile</span><b>›</b></button>
+  <button type="button" onclick="editAddress()">⌖ <span>Saved addresses</span><b>›</b></button>
+  <label>文 <span>Select language</span><select onchange="setLanguage(this.value)"><option value="en">English</option><option value="bn">বাংলা</option><option value="hi">हिन्दी</option></select></label>
+  <button type="button" onclick="profileNotice('Notification preferences can be configured in a future update.')">♧ <span>Notification settings</span><b>›</b></button>
+ </div>
+ <h3>My Activity</h3><div class="profile-list"><button type="button" onclick="profileNotice('Your product reviews will appear here.')">☆ <span>Reviews</span><b>›</b></button><button type="button" onclick="profileNotice('Product questions and answers will appear here.')">▢ <span>Questions & Answers</span><b>›</b></button></div>
+ <h3>Legal & Info</h3><div class="profile-list"><button type="button" onclick="showPolicy('About Us','Unique Online Service Buy & Sell is a marketplace concept for discovering and listing products.')">ⓘ <span>About Us</span><b>›</b></button><button type="button" onclick="showPolicy('Refund Policy','Refund terms depend on the seller and the agreed transaction. Please contact support before purchasing.')">↻ <span>Refund Policy</span><b>›</b></button><button type="button" onclick="showPolicy('Return Policy','Please confirm the product condition and return terms with the seller before buying.')">◇ <span>Return Policy</span><b>›</b></button><button type="button" onclick="showPolicy('Privacy Policy','Account information should be used only to provide marketplace services.')">⬡ <span>Privacy Policy</span><b>›</b></button><button type="button" onclick="showPolicy('Shipping Policy','Shipping and delivery arrangements must be confirmed with the seller.')">🚚 <span>Shipping Policy</span><b>›</b></button><button type="button" onclick="showPolicy('Terms & Conditions','Use the marketplace responsibly and verify product details with the seller before payment.')">▤ <span>Terms & Conditions</span><b>›</b></button></div>
+ <p id="profileNotice" role="status" class="profile-notice"></p>
+</section>
+<div class="auth-overlay" id="customerAuthOverlay" hidden>
+ <div class="auth-card"><button class="auth-close" type="button" onclick="closeCustomerLogin()">✕</button><div class="auth-brand">🛍️ <strong>Unique</strong><small>Online Service · Buy & Sell</small></div>
+  <h2 id="customerAuthTitle">Customer Login</h2><p>Sign in to save favourites and manage your profile.</p>
+  <form id="customerAuthForm"><label for="customerAuthEmail">Email address</label><input id="customerAuthEmail" type="email" required autocomplete="email" placeholder="you@example.com"><label for="customerAuthPassword">Password</label><input id="customerAuthPassword" type="password" required minlength="6" autocomplete="current-password" placeholder="At least 6 characters"><div class="auth-actions"><button type="submit" id="customerAuthSubmit">Login</button><button type="button" class="secondary" onclick="toggleCustomerSignup()" id="customerSignupToggle">Create account</button></div><p id="customerAuthMessage" role="status"></p></form>
+ </div>
+</div>
+<div class="simple-modal" id="simpleModal" hidden><div class="simple-modal-card"><button type="button" class="auth-close" onclick="closeSimpleModal()">✕</button><h2 id="simpleModalTitle"></h2><div id="simpleModalBody"></div><button type="button" onclick="closeSimpleModal()">Close</button></div></div>
 
 <section class="info" id="contact">
  <h2>Contact Us</h2>
@@ -1057,6 +1094,8 @@ function makePhotoURL(photo) {
 
 function render() {
   clearRenderUrls();
+  const category = $("cat").value || selected || "All";
+  const query = ($("q").value || "").trim().toLowerCase();
 
  const minRaw = $("minPrice").value.trim();
 const maxRaw = $("maxPrice").value.trim();
@@ -1447,11 +1486,32 @@ $("logoutBtn").addEventListener("click", async function() {
   await loadProducts();
 });
 
+// ================= PROFILE MENU + CUSTOMER ACCOUNT =================
+let customerSignupMode = false;
+function toggleProfileMenu(){const menu=$("profileMenu");menu.hidden=!menu.hidden;document.querySelector(".profile-trigger").setAttribute("aria-expanded",String(!menu.hidden));}
+function closeProfileMenu(){$("profileMenu").hidden=true;document.querySelector(".profile-trigger").setAttribute("aria-expanded","false");}
+function openAdminLogin(){closeProfileMenu();document.getElementById("admin-login").hidden=false;location.hash="admin-login";document.getElementById("loginEmail").focus({preventScroll:true});}
+function openCustomerLogin(){closeProfileMenu();customerSignupMode=false;$ ("customerAuthTitle").textContent="Customer Login";$ ("customerAuthSubmit").textContent="Login";$ ("customerSignupToggle").textContent="Create account";$ ("customerAuthMessage").textContent="";$ ("customerAuthOverlay").hidden=false;}
+function closeCustomerLogin(){$("customerAuthOverlay").hidden=true;}
+function toggleCustomerSignup(){customerSignupMode=!customerSignupMode;$ ("customerAuthTitle").textContent=customerSignupMode?"Create Customer Account":"Customer Login";$ ("customerAuthSubmit").textContent=customerSignupMode?"Sign Up":"Login";$ ("customerSignupToggle").textContent=customerSignupMode?"Back to login":"Create account";$ ("customerAuthMessage").textContent="";}
+function openCustomerProfile(){closeProfileMenu();$("customer-profile").hidden=false;location.hash="customer-profile";updateCustomerProfile();}
+function updateCustomerProfile(){const email=currentUser?.email||localStorage.getItem("uos_customer_email")||"Guest account";$("customerGreeting").textContent=currentUser?"Hello, "+(email.split("@")[0]||"Customer"):"Hello, Customer";$("customerEmailLabel").textContent=email;$("menuUserName").textContent=currentUser?(email.split("@")[0]||"Welcome!"):"Welcome!";$("menuUserEmail").textContent=email==="Guest account"?"Choose how to continue":email;$("profileTriggerLabel").textContent=currentUser?(email.split("@")[0]||"My Account"):"Profile / Login";$("customerLogoutBtn").hidden=!currentUser;}
+function profileNotice(message){$("profileNotice").textContent=message;}
+function closeSimpleModal(){$("simpleModal").hidden=true;}
+function showPolicy(title,body){$("simpleModalTitle").textContent=title;$("simpleModalBody").textContent=body;$("simpleModal").hidden=false;}
+function editCustomerProfile(){const name=prompt("Enter your display name",currentUser?.email?.split("@")[0]||"");if(name!==null){localStorage.setItem("uos_customer_name",name);$("customerGreeting").textContent="Hello, "+(name||"Customer");profileNotice("Display name saved on this device.");}}
+function editAddress(){const address=prompt("Enter your delivery/contact address",localStorage.getItem("uos_customer_address")||"");if(address!==null){localStorage.setItem("uos_customer_address",address);profileNotice(address?"Address saved on this device.":"Saved address cleared.");}}
+function trackOrder(){const order=prompt("Enter your order ID to track:");if(order)profileNotice("Order "+order+": live tracking is not connected yet. Please contact the seller for an update.");}
+async function customerLogout(){try{if(supabaseClient&&currentUser)await supabaseClient.auth.signOut();}catch(e){console.warn(e)}currentUser=null;isAdmin=false;localStorage.removeItem("uos_customer_email");await checkAdmin();await loadProducts();updateCustomerProfile();closeProfileMenu();profileNotice("You have logged out.");}
+$("customerAuthForm").addEventListener("submit",async function(e){e.preventDefault();const email=$("customerAuthEmail").value.trim(),password=$("customerAuthPassword").value;const msg=$("customerAuthMessage"),btn=$("customerAuthSubmit");msg.textContent="";if(!supabaseClient){msg.textContent="Customer account needs Supabase setup. You can still browse and save wishlist items on this device.";return;}btn.disabled=true;btn.textContent=customerSignupMode?"Creating account…":"Signing in…";try{let result;if(customerSignupMode)result=await supabaseClient.auth.signUp({email,password});else result=await supabaseClient.auth.signInWithPassword({email,password});if(result.error)throw result.error;if(result.data.user){currentUser=result.data.user;localStorage.setItem("uos_customer_email",email);await checkAdmin();await loadProducts();updateCustomerProfile();closeCustomerLogin();openCustomerProfile();if(customerSignupMode&&!result.data.session)profileNotice("Account created. Check your email to confirm it, then log in.");}}catch(err){msg.textContent=err.message||"Could not complete sign in.";}finally{btn.disabled=false;btn.textContent=customerSignupMode?"Sign Up":"Login";}});
+// Fix selected category binding and keep profile status in sync.
+
 // ================= START WEBSITE =================
 async function startWebsite() {
   $("footerYear").textContent = new Date().getFullYear();
   updateFields();
   setLanguage("en");
+  updateCustomerProfile();
   const ready = await initSupabase();
   if (ready) await loadProducts();
 }
