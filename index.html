@@ -4,174 +4,499 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Unique Online Service Buy & Sell</title>
+
 <style>
-*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f3f6fb;color:#172033}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f3f6fb;color:#172033}
 header{background:#101827;color:white;padding:18px 5%;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.logo{font-size:21px;font-weight:bold}nav a{color:white;text-decoration:none;margin:0 8px;font-size:14px}
+.logo{font-size:21px;font-weight:bold}
+nav a{color:white;text-decoration:none;margin:0 8px;font-size:14px}
 .hero{background:linear-gradient(120deg,#172554,#2563eb);color:white;padding:42px 6%}
-.hero h1{font-size:clamp(30px,5vw,48px);margin:0 0 12px}.hero p{line-height:1.6}
+.hero h1{font-size:clamp(30px,5vw,48px);margin:0 0 12px}
+.hero p{line-height:1.6}
 .search{display:flex;gap:8px;max-width:650px;margin-top:20px;flex-wrap:wrap}
-input,select{padding:13px;border:1px solid #ddd;border-radius:8px;font-size:15px;min-width:0}
-.search input{flex:1}
+input,select,textarea{padding:13px;border:1px solid #ddd;border-radius:8px;font-size:15px;min-width:0;width:100%;font-family:inherit}
+.search input{flex:1;width:auto}
 button{background:#2563eb;color:white;border:0;border-radius:8px;padding:12px 16px;font-weight:bold;cursor:pointer}
 main{max-width:1150px;margin:auto;padding:26px 16px}
-h2{margin-top:10px}.categories{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+h2{margin-top:10px}
+.categories{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
 .cat{background:white;padding:18px;border-radius:12px;text-align:center;cursor:pointer;border:1px solid #e2e8f0}
-.cat span{font-size:30px}.cat h3{margin-bottom:5px}.cat p{font-size:13px;color:#64748b}
+.cat span{font-size:30px}
+.cat h3{margin-bottom:5px}
+.cat p{font-size:13px;color:#64748b}
 .filters{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}
-.filters button{background:white;color:#1e293b;border:1px solid #dbe2ea}.filters button.active{background:#2563eb;color:white}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-.card{background:white;border:1px solid #e2e8f0;border-radius:14px;overflow:hidden}
-.art{height:150px;background:linear-gradient(135deg,#dbeafe,#ede9fe);display:grid;place-items:center;font-size:58px}
-.content{padding:15px}.label{font-size:11px;color:#2563eb;font-weight:bold}.content h3{margin:8px 0}
-.price{font-size:23px;font-weight:bold}.details{color:#64748b;font-size:13px;line-height:1.7;margin:8px 0}
-.actions{display:flex;gap:8px}.actions button{flex:1}.secondary{background:#e8efff;color:#1d4ed8}
+.filters button{background:white;color:#1e293b;border:1px solid #dbe2ea}
+.filters button.active{background:#2563eb;color:white}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.card{background:white;border:1px solid #e2e8f0;border-radius:14px;overflow:hidden;min-width:0}
+.art{height:180px;background:linear-gradient(135deg,#dbeafe,#ede9fe);display:grid;place-items:center;font-size:58px;overflow:hidden}
+.art img{width:100%;height:100%;object-fit:cover}
+.content{padding:15px}
+.label{font-size:11px;color:#2563eb;font-weight:bold}
+.content h3{margin:8px 0;overflow-wrap:anywhere}
+.price{font-size:23px;font-weight:bold}
+.old-price{font-size:14px;color:#64748b;text-decoration:line-through;margin-left:6px}
+.details{color:#64748b;font-size:13px;line-height:1.7;margin:8px 0;overflow-wrap:anywhere}
+.actions{display:flex;gap:8px}
+.actions button{flex:1}
+.secondary{background:#e8efff;color:#1d4ed8}
 .info{background:white;padding:20px;border-radius:12px;margin-top:28px;line-height:1.7}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.field{margin-bottom:12px}
+.field label{display:block;font-weight:bold;font-size:14px;margin-bottom:6px}
+.full{grid-column:1/-1}
+#photoPreview{max-width:180px;max-height:150px;object-fit:contain;display:none;margin-top:10px;border-radius:8px}
 footer{margin-top:30px;background:#101827;color:white;padding:24px 6%;text-align:center;font-size:13px}
-@media(max-width:700px){.categories{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}header{padding:15px}nav{width:100%}.art{height:120px;font-size:45px}.content{padding:10px}.content h3{font-size:15px}.actions{flex-direction:column}}
-@media(max-width:390px){.grid{grid-template-columns:1fr}}
+@media(max-width:700px){
+ .categories{grid-template-columns:repeat(2,1fr)}
+ .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ header{padding:15px}
+ nav{width:100%}
+ .art{height:120px;font-size:45px}
+ .content{padding:10px}
+ .content h3{font-size:15px}
+ .actions{flex-direction:column}
+ .actions button{width:100%}
+}
+@media(max-width:430px){
+ .grid{grid-template-columns:1fr}
+ .form-grid{grid-template-columns:1fr}
+ .full{grid-column:auto}
+}
 </style>
 </head>
+
 <body>
 <header>
-<div class="logo">🛍️ Unique Online Service<br><small>BUY & SELL</small></div>
-<nav><a href="#categories">Categories</a><a href="#listings">Listings</a><a href="#contact">Contact</a></nav>
+ <div class="logo">🛍️ Unique Online Service<br><small>BUY & SELL</small></div>
+ <nav>
+  <a href="#categories">Categories</a>
+  <a href="#listings">Listings</a>
+  <a href="#post-ad">Post Ad</a>
+  <a href="#contact">Contact</a>
+ </nav>
 </header>
+
 <section class="hero">
-<h1>Buy Smart. Sell Simply.</h1>
-<p>Discover mobiles, cars and more in one place.</p>
-<div class="search">
-<input id="q" placeholder="Search products..." oninput="render()">
-<select id="cat" onchange="render()"><option>All</option><option>Mobile</option><option>Car</option><option>Other</option></select>
-<button onclick="render()">Search</button>
-</div>
+ <h1>Buy Smart. Sell Simply.</h1>
+ <p>Discover mobiles, cars and more in one place.</p>
+ <div class="search">
+  <input id="q" placeholder="Search products..." oninput="render()">
+  <select id="cat" onchange="render()" style="width:auto;flex:1">
+   <option value="All">All Categories</option>
+   <option value="Mobile">Mobile</option>
+   <option value="Car">Car</option>
+   <option value="Other">Other</option>
+  </select>
+  <button onclick="render()">Search</button>
+ </div>
 </section>
+
 <main>
 <section id="categories">
-<h2>Shop by Category</h2>
-<div class="categories">
-<div class="cat" onclick="pick('Mobile')"><span>📱</span><h3>Mobiles</h3><p>New and used phones</p></div>
-<div class="cat" onclick="pick('Car')"><span>🚗</span><h3>Cars</h3><p>Cars for sale</p></div>
-<div class="cat" onclick="pick('Other')"><span>🎧</span><h3>Electronics</h3><p>Gadgets and accessories</p></div>
-<div class="cat" onclick="pick('Other')"><span>🛍️</span><h3>Other Products</h3><p>More great finds</p></div>
-</div>
-  <section id="post-ad" class="info">
-  <h2>📢 Post Your Advertisement</h2>
+ <h2>Shop by Category</h2>
+ <div class="categories">
+  <div class="cat" onclick="pick('Mobile')"><span>📱</span><h3>Mobiles</h3><p>New and used phones</p></div>
+  <div class="cat" onclick="pick('Car')"><span>🚗</span><h3>Cars</h3><p>Cars for sale</p></div>
+  <div class="cat" onclick="pick('Other')"><span>🎧</span><h3>Electronics</h3><p>Gadgets and accessories</p></div>
+  <div class="cat" onclick="pick('Other')"><span>🛍️</span><h3>Other Products</h3><p>More great finds</p></div>
+ </div>
+</section>
 
-  <form id="adForm">
-    <p>Category</p>
-    <select id="adCat" required>
-      <option value="Mobile">📱 Mobile</option>
-      <option value="Car">🚗 Car</option>
-      <option value="Other">🛍️ Other</option>
+<section id="post-ad" class="info">
+ <h2>📢 Post Your Advertisement</h2>
+ <p style="color:#64748b;font-size:13px">Fill in your product information and publish your ad.</p>
+
+ <form id="adForm">
+  <div class="field">
+   <label for="adCat">Category *</label>
+   <select id="adCat" required onchange="updateFields()">
+    <option value="Mobile">📱 Mobile</option>
+    <option value="Car">🚗 Car</option>
+    <option value="Other">🛍️ Other Products</option>
+   </select>
+  </div>
+
+  <div class="form-grid">
+   <div class="field">
+    <label for="adBrand">Brand *</label>
+    <input id="adBrand" required placeholder="e.g. Samsung, Maruti">
+   </div>
+   <div class="field">
+    <label for="adName">Model / Product Name *</label>
+    <input id="adName" required placeholder="e.g. Galaxy S21">
+   </div>
+
+   <div class="field" id="ramField">
+    <label for="adRam">RAM</label>
+    <select id="adRam">
+     <option value="">Select RAM</option>
+     <option>2 GB</option><option>3 GB</option><option>4 GB</option>
+     <option>6 GB</option><option>8 GB</option><option>12 GB</option>
+     <option>16 GB</option><option>Other</option>
     </select>
+   </div>
 
-    <p>Product Name / Model</p>
-    <input id="adName" required
-      placeholder="e.g. Samsung Galaxy S21">
+   <div class="field" id="romField">
+    <label for="adRom">ROM / Storage</label>
+    <select id="adRom">
+     <option value="">Select Storage</option>
+     <option>32 GB</option><option>64 GB</option><option>128 GB</option>
+     <option>256 GB</option><option>512 GB</option>
+     <option>1 TB</option><option>Other</option>
+    </select>
+   </div>
 
-    <p>Price (₹)</p>
-    <input id="adPrice" type="number" min="1"
-      required placeholder="Enter price">
+   <div class="field" id="colourField">
+    <label for="adColour">Colour</label>
+    <input id="adColour" placeholder="e.g. Black">
+   </div>
 
-    <p>Product Photo</p>
-    <input id="adPhoto" type="file"
-      accept="image/*" required>
+   <div class="field" id="yearField" hidden>
+    <label for="adYear">Manufacturing / Registration Year</label>
+    <input id="adYear" type="number" min="1950" max="2100" placeholder="e.g. 2022">
+   </div>
 
-    <p>Description</p>
-    <textarea id="adDetails" required
-      placeholder="Condition, year, storage, etc."
-      style="width:100%;min-height:100px;padding:12px"></textarea>
+   <div class="field" id="fuelField" hidden>
+    <label for="adFuel">Fuel Type</label>
+    <select id="adFuel">
+     <option value="">Select fuel</option>
+     <option>Petrol</option><option>Diesel</option>
+     <option>CNG</option><option>Electric</option><option>Hybrid</option>
+    </select>
+   </div>
 
-    <button type="submit">Post Advertisement</button>
-  </form>
-  <p id="adMessage"></p>
+   <div class="field" id="kmField" hidden>
+    <label for="adKm">Kilometres Driven</label>
+    <input id="adKm" type="number" min="0" placeholder="e.g. 45000">
+   </div>
+
+   <div class="field">
+    <label for="adCondition">Condition *</label>
+    <select id="adCondition" required>
+     <option value="Used">Used</option>
+     <option value="New">New</option>
+     <option value="Mint">Mint</option>
+     <option value="Super Mint">Super Mint</option>
+     <option value="Open Box">Open Box</option>
+    </select>
+   </div>
+
+   <div class="field">
+    <label for="adPrice">Original Price (₹)</label>
+    <input id="adPrice" type="number" min="0" placeholder="e.g. 25000">
+   </div>
+
+   <div class="field">
+    <label for="adOffer">Offer / Selling Price (₹) *</label>
+    <input id="adOffer" type="number" min="1" required placeholder="e.g. 19999">
+   </div>
+
+   <div class="field full">
+    <label for="adPhoto">Product Photo * (max 2 MB)</label>
+    <input id="adPhoto" type="file" accept="image/*" required>
+    <img id="photoPreview" alt="Product photo preview">
+   </div>
+
+   <div class="field full">
+    <label for="adDetails">Description *</label>
+    <textarea id="adDetails" required rows="4" placeholder="Condition, features, history and other details"></textarea>
+   </div>
+  </div>
+
+  <button type="submit">Post Advertisement</button>
+  <button type="button" class="secondary" onclick="clearForm()">Clear Form</button>
+ </form>
+ <p id="adMessage" role="status"></p>
 </section>
-</section>
+
 <section id="listings">
-<h2>Latest Listings</h2>
-<p style="color:#64748b;font-size:14px">Sample products are shown below. Replace them with real listings before launch.</p>
-<div class="filters">
-<button class="active" onclick="pick('All')">All</button><button onclick="pick('Mobile')">Mobiles</button><button onclick="pick('Car')">Cars</button><button onclick="pick('Other')">Other</button>
-</div>
-<div id="products" class="grid"></div>
+ <h2>Latest Listings</h2>
+ <p style="color:#64748b;font-size:14px">Advertisements are saved in this browser. Only post products you are authorised to sell.</p>
+ <div class="filters">
+  <button class="active" onclick="pick('All')">All</button>
+  <button onclick="pick('Mobile')">Mobiles</button>
+  <button onclick="pick('Car')">Cars</button>
+  <button onclick="pick('Other')">Other</button>
+ </div>
+ <div id="products" class="grid"></div>
 </section>
+
 <section class="info" id="contact">
-<h2>Contact Us</h2>
-<p>Interested in a product? Contact Unique Online Service Buy & Sell for details.</p>
-<button onclick="contact()">Contact on WhatsApp</button>
-<p style="font-size:12px;color:#64748b">Before publishing, set your WhatsApp number in the code.</p>
+ <h2>Contact Us</h2>
+ <p>Interested in a product? Contact Unique Online Service Buy & Sell.</p>
+ <button onclick="contact()">Contact on WhatsApp</button>
+ <p style="font-size:12px;color:#64748b">Set your WhatsApp number in WHATSAPP_NUMBER in the code before publishing.</p>
 </section>
 </main>
-<footer>© <span id="year"></span> Unique Online Service Buy & Sell<br>Mobiles • Cars • Other Products</footer>
+
+<footer>
+ © <span id="year"></span> Unique Online Service Buy & Sell<br>
+ Mobiles • Cars • Other Products
+</footer>
+
 <script>
-// Add your WhatsApp number with country code, digits only. Example: 91XXXXXXXXXX
-const WHATSAPP_NUMBER = "";
-const products = [
-{id:1,cat:"Mobile",icon:"📱",name:"Sample Android Phone",price:"Add Price",details:"Brand / Model: Add details | RAM / Storage: Add details | Colour: Add details",condition:"Used / New"},
-{id:2,cat:"Mobile",icon:"🍎",name:"Sample iPhone",price:"Add Price",details:"Battery Health: Add % | Storage: Add details | Colour: Add details",condition:"Mint / Super Mint / Open Box"},
-{id:3,cat:"Car",icon:"🚗",name:"Sample Car",price:"Add Price",details:"Make / Model: Add details | Year: Add details | Fuel: Add details",condition:"Add condition"},
-{id:4,cat:"Other",icon:"🎧",name:"Sample Electronics",price:"Add Price",details:"Brand: Add details | Warranty: Add details",condition:"New / Used"}
+// Replace this with your WhatsApp number including country code.
+// India example: "919876543210" (digits only, no + or spaces).
+const WHATSAPP_NUMBER = "919903087477";
+
+// Local browser storage only. Listings are not shared between devices.
+const STORAGE_KEY = "uniqueOnlineServiceListings_v2";
+const MAX_IMAGE_SIZE = 2 * 1024 * 1024;
+
+const defaultProducts = [
+ {id:1,cat:"Mobile",brand:"Sample Brand",name:"Sample Android Phone",ram:"8 GB",rom:"128 GB",colour:"Black",price:25000,offer:19999,details:"Example listing. Replace with a real advertisement.",condition:"Used",icon:"📱"},
+ {id:2,cat:"Car",brand:"Sample Brand",name:"Sample Car",year:"2022",fuel:"Petrol",km:"25000",price:600000,offer:550000,details:"Example listing. Replace with a real advertisement.",condition:"Used",icon:"🚗"},
+ {id:3,cat:"Other",brand:"Sample Brand",name:"Sample Headphones",colour:"Black",price:2000,offer:1500,details:"Example listing. Replace with a real advertisement.",condition:"New",icon:"🎧"}
 ];
-let selected="All";
-function safe(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+
+let products = loadProducts();
+let selected = "All";
+let pendingPhoto = "";
+
+function loadProducts(){
+ try {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  return saved ? JSON.parse(saved) : defaultProducts.map(p=>({...p}));
+ } catch(e) {
+  return defaultProducts.map(p=>({...p}));
+ }
+}
+
+function saveProducts(){
+ try {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(products));
+  return true;
+ } catch(e) {
+  alert("Browser storage is full. Remove some old listings or use a smaller photo.");
+  return false;
+ }
+}
+
+function safe(s){
+ return String(s ?? "").replace(/[&<>"']/g,c=>({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+ }[c]));
+}
+
+function money(value){
+ const n=Number(value);
+ return Number.isFinite(n) && n>0 ? "₹"+n.toLocaleString("en-IN") : "Price on request";
+}
+
+function updateFields(){
+ const cat=document.getElementById("adCat").value;
+ const isMobile=cat==="Mobile";
+ const isCar=cat==="Car";
+
+ document.getElementById("ramField").hidden=!isMobile;
+ document.getElementById("romField").hidden=!isMobile;
+ document.getElementById("colourField").hidden=isCar;
+ document.getElementById("yearField").hidden=!isCar;
+ document.getElementById("fuelField").hidden=!isCar;
+ document.getElementById("kmField").hidden=!isCar;
+}
+
 function render(){
-let q=document.getElementById("q").value.toLowerCase();
-let cat=document.getElementById("cat").value;
-if(cat==="All")cat=selected;
-let items=products.filter(p=>(cat==="All"||p.cat===cat)&&(p.name+" "+p.details+" "+p.condition+" "+p.cat).toLowerCase().includes(q));
-document.getElementById("products").innerHTML=items.length?items.map(p=>'<article class="card"><div class="art">'+(p.photo?'<img src="'+p.photo+'" style="width:100%;height:180px;object-fit:cover;">':p.icon)+'</div><div class="content"><div class="label">'+safe(p.cat.toUpperCase())+' • '+safe(p.condition)+'</div><h3>'+safe(p.name)+'</h3><div class="price">'+safe(p.price)+'</div><div class="details">'+safe(p.details)+'</div><div class="actions"><button onclick="enquire('+p.id+')">Enquire</button><button class="secondary" onclick="copyItem('+p.id+')">Details</button></div></div></article>').join(""):'<p>No products found.</p>';
-document.querySelectorAll(".filters button").forEach(b=>b.classList.toggle("active",b.textContent.trim()===(cat==="All"?"All":cat==="Mobile"?"Mobiles":cat==="Car"?"Cars":"Other")));
-}
-function pick(c){selected=c;document.getElementById("cat").value=c==="All"?"All":c;render();document.getElementById("listings").scrollIntoView({behavior:"smooth"})}
-function contact(){
-if(!WHATSAPP_NUMBER){alert("Please add your WhatsApp number to WHATSAPP_NUMBER in index.html first.");return}
-window.open("https://wa.me/"+WHATSAPP_NUMBER+"?text="+encodeURIComponent("Hello, I have an enquiry about Unique Online Service Buy & Sell."),"_blank")
-}
-function enquire(id){
-let p=products.find(x=>x.id===id);
-if(!WHATSAPP_NUMBER){alert("Please add your WhatsApp number to WHATSAPP_NUMBER in index.html first.");return}
-window.open("https://wa.me/"+WHATSAPP_NUMBER+"?text="+encodeURIComponent("Hello, I am interested in "+p.name+". Please share details."),"_blank")
-}
-function copyItem(id){let p=products.find(x=>x.id===id);alert(p.name+"\n"+p.price+"\n"+p.details)}
-document.getElementById("year").textContent=new Date().getFullYear();
-render();
-  document.getElementById("adForm").addEventListener("submit", function(e) {
-  e.preventDefault();
+ const q=document.getElementById("q").value.trim().toLowerCase();
+ let cat=document.getElementById("cat").value;
+ if(cat==="All" && selected!=="All") cat=selected;
 
-  const file = document.getElementById("adPhoto").files[0];
-  if (!file) return;
+ const items=products.filter(p=>
+  (cat==="All"||p.cat===cat) &&
+  [p.name,p.brand,p.details,p.condition,p.cat,p.ram,p.rom,p.colour,p.year,p.fuel,p.km]
+   .filter(Boolean).join(" ").toLowerCase().includes(q)
+ );
 
-  if (file.size > 2 * 1024 * 1024) {
-    alert("Please choose an image smaller than 2 MB.");
-    return;
+ document.getElementById("products").innerHTML=items.length ? items.map(p=>{
+  const image=p.photo
+   ? '<img src="'+p.photo+'" alt="'+safe(p.name)+'" loading="lazy">'
+   : safe(p.icon || (p.cat==="Car"?"🚗":p.cat==="Mobile"?"📱":"📦"));
+
+  let extra="";
+  if(p.cat==="Mobile"){
+   extra=[p.ram&&"RAM: "+p.ram,p.rom&&"Storage: "+p.rom,p.colour&&"Colour: "+p.colour].filter(Boolean).join(" | ");
+  } else if(p.cat==="Car"){
+   extra=[p.year&&"Year: "+p.year,p.fuel&&"Fuel: "+p.fuel,p.km&&"Driven: "+Number(p.km).toLocaleString("en-IN")+" km"].filter(Boolean).join(" | ");
+  } else {
+   extra=p.colour?"Colour: "+p.colour:"";
   }
 
-  const reader = new FileReader();
+  return '<article class="card"><div class="art">'+image+'</div><div class="content">'+
+   '<div class="label">'+safe(p.cat.toUpperCase())+' • '+safe(p.condition||"Used")+'</div>'+
+   '<h3>'+safe(p.brand? p.brand+" "+p.name:p.name)+'</h3>'+
+   '<div class="price">'+money(p.offer||p.price)+'</div>'+
+   (p.price&&p.offer&&Number(p.price)>Number(p.offer)?'<div class="old-price">'+money(p.price)+'</div>':'')+
+   '<div class="details">'+safe(extra?extra+" | ":"")+safe(p.details||"")+'</div>'+
+   '<div class="actions"><button onclick="enquire('+Number(p.id)+')">Enquire</button>'+
+   '<button class="secondary" onclick="showDetails('+Number(p.id)+')">Details</button></div>'+
+   '<div style="margin-top:8px"><button type="button" style="background:#fee2e2;color:#991b1b;width:100%" onclick="deleteProduct('+Number(p.id)+')">Delete Ad</button></div>'+
+   '</div></article>';
+ }).join("") : '<p>No products found.</p>';
 
-  reader.onload = function() {
-    const item = {
-      id: Date.now(),
-      cat: document.getElementById("adCat").value,
-      icon: "📦",
-      name: document.getElementById("adName").value,
-      price: "₹" + document.getElementById("adPrice").value,
-      details: document.getElementById("adDetails").value,
-      condition: "Seller listing",
-      photo: reader.result
-    };
+ document.querySelectorAll(".filters button").forEach(b=>{
+  const value=b.textContent.trim();
+  const wanted=cat==="All"?"All":cat==="Mobile"?"Mobiles":cat==="Car"?"Cars":"Other";
+  b.classList.toggle("active",value===wanted);
+ });
+}
 
-    products.unshift(item);
+function pick(c){
+ selected=c;
+ document.getElementById("cat").value=c;
+ render();
+ document.getElementById("listings").scrollIntoView({behavior:"smooth"});
+}
 
-    document.getElementById("adMessage").textContent =
-      "Advertisement added successfully!";
+function whatsApp(text){
+ if(!WHATSAPP_NUMBER){
+  alert("Please set WHATSAPP_NUMBER in the code first. Example: 919876543210");
+  return;
+ }
+ window.open("https://wa.me/"+WHATSAPP_NUMBER+"?text="+encodeURIComponent(text),"_blank","noopener");
+}
 
-    document.getElementById("adForm").reset();
-    render();
-  };
+function contact(){
+ whatsApp("Hello, I have an enquiry about Unique Online Service Buy & Sell.");
+}
 
-  reader.readAsDataURL(file);
+function enquire(id){
+ const p=products.find(x=>x.id===id);
+ if(!p)return;
+ const text=[
+  "Hello, I am interested in this listing:",
+  (p.brand||"")+" "+p.name,
+  "Category: "+p.cat,
+  "Price: "+money(p.offer||p.price),
+  p.cat==="Mobile"?"RAM: "+(p.ram||"Not specified")+" | Storage: "+(p.rom||"Not specified"):"",
+  p.cat==="Car"?"Year: "+(p.year||"Not specified")+" | Fuel: "+(p.fuel||"Not specified")+" | KM: "+(p.km||"Not specified"):"",
+  "Condition: "+(p.condition||"Not specified"),
+  "Please share more details."
+ ].filter(Boolean).join("\n");
+ whatsApp(text);
+}
+
+function showDetails(id){
+ const p=products.find(x=>x.id===id);
+ if(!p)return;
+ let lines=[
+  (p.brand||"")+" "+p.name,
+  "Category: "+p.cat,
+  "Offer price: "+money(p.offer||p.price),
+  p.price?"Original price: "+money(p.price):"",
+  "Condition: "+(p.condition||"Not specified"),
+  p.cat==="Mobile"?"RAM: "+(p.ram||"Not specified")+"\nStorage: "+(p.rom||"Not specified")+"\nColour: "+(p.colour||"Not specified"):"",
+  p.cat==="Car"?"Year: "+(p.year||"Not specified")+"\nFuel: "+(p.fuel||"Not specified")+"\nKilometres: "+(p.km||"Not specified"):"",
+  "Description: "+(p.details||"No description")
+ ].filter(Boolean);
+ alert(lines.join("\n\n"));
+}
+
+function deleteProduct(id){
+ const p=products.find(x=>x.id===id);
+ if(!p)return;
+ if(!confirm('Delete "'+p.name+'"?'))return;
+ const old=products;
+ products=products.filter(x=>x.id!==id);
+ if(!saveProducts())products=old;
+ render();
+}
+
+function clearForm(){
+ document.getElementById("adForm").reset();
+ pendingPhoto="";
+ document.getElementById("photoPreview").style.display="none";
+ document.getElementById("adMessage").textContent="";
+ updateFields();
+}
+
+document.getElementById("adPhoto").addEventListener("change",function(){
+ const file=this.files[0];
+ pendingPhoto="";
+ const preview=document.getElementById("photoPreview");
+
+ if(!file){
+  preview.style.display="none";
+  return;
+ }
+ if(!file.type.startsWith("image/")){
+  alert("Please choose an image file.");
+  this.value="";
+  preview.style.display="none";
+  return;
+ }
+ if(file.size>MAX_IMAGE_SIZE){
+  alert("Please choose an image smaller than 2 MB.");
+  this.value="";
+  preview.style.display="none";
+  return;
+ }
+
+ const reader=new FileReader();
+ reader.onload=function(){
+  pendingPhoto=reader.result;
+  preview.src=pendingPhoto;
+  preview.style.display="block";
+ };
+ reader.onerror=function(){
+  alert("Could not read this image. Please try another photo.");
+  pendingPhoto="";
+ };
+ reader.readAsDataURL(file);
 });
+
+document.getElementById("adForm").addEventListener("submit",function(e){
+ e.preventDefault();
+
+ const cat=document.getElementById("adCat").value;
+ const name=document.getElementById("adName").value.trim();
+ const brand=document.getElementById("adBrand").value.trim();
+ const offer=Number(document.getElementById("adOffer").value);
+ const photo=document.getElementById("adPhoto").files[0];
+
+ if(!name||!brand||!offer||offer<=0||!pendingPhoto||!photo){
+  alert("Please fill in all required fields and select a photo.");
+  return;
+ }
+
+ const details=document.getElementById("adDetails").value.trim();
+ const item={
+  id:Date.now(),
+  cat,
+  brand,
+  name,
+  offer,
+  price:document.getElementById("adPrice").value ? Number(document.getElementById("adPrice").value):0,
+  condition:document.getElementById("adCondition").value,
+  details,
+  photo:pendingPhoto,
+  icon:cat==="Mobile"?"📱":cat==="Car"?"🚗":"📦",
+  ram:cat==="Mobile"?document.getElementById("adRam").value:"",
+  rom:cat==="Mobile"?document.getElementById("adRom").value:"",
+  colour:cat!=="Car"?document.getElementById("adColour").value.trim():"",
+  year:cat==="Car"?document.getElementById("adYear").value:"",
+  fuel:cat==="Car"?document.getElementById("adFuel").value:"",
+  km:cat==="Car"?document.getElementById("adKm").value:""
+ };
+
+ const previous=products;
+ products=[item,...products];
+ if(!saveProducts()){
+  products=previous;
+  return;
+ }
+
+ document.getElementById("adMessage").textContent=
+  "Advertisement posted and saved in this browser!";
+ clearForm();
+ render();
+ document.getElementById("listings").scrollIntoView({behavior:"smooth"});
+});
+
+document.getElementById("year").textContent=new Date().getFullYear();
+updateFields();
+render();
 </script>
 </body>
 </html>
