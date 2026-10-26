@@ -2,353 +2,1383 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Unique Online Service Buy & Sell</title>
+
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,sans-serif;background:#f3f6fb;color:#172033}
-header{background:#101827;color:white;padding:18px 5%;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+header{background:#101827;color:white;padding:18px 5%;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .logo{font-size:21px;font-weight:bold}
-nav a{color:white;text-decoration:none;margin:0 7px}
-select,input,textarea{width:100%;padding:12px;border:1px solid #d4dbe5;border-radius:8px;font-size:15px;background:white}
+nav a{color:white;text-decoration:none;margin:0 8px;font-size:14px}
+.hero{background:linear-gradient(120deg,#172554,#2563eb);color:white;padding:42px 6%}
+.hero h1{font-size:clamp(30px,5vw,48px);margin:0 0 12px}
+.hero p{line-height:1.6}
+.search{display:flex;gap:8px;max-width:650px;margin-top:20px;flex-wrap:wrap}
+input,select,textarea{padding:13px;border:1px solid #ddd;border-radius:8px;font-size:15px;min-width:0;width:100%;font-family:inherit}
+.search input{flex:1;width:auto}
 button{background:#2563eb;color:white;border:0;border-radius:8px;padding:12px 16px;font-weight:bold;cursor:pointer}
-.hero{background:linear-gradient(120deg,#172554,#2563eb);color:white;padding:38px 6%}
-.hero h1{font-size:clamp(28px,5vw,44px);margin-top:0}
-main{max-width:1100px;margin:auto;padding:22px 15px}
-.panel,.card,.info{background:white;border:1px solid #e2e8f0;border-radius:13px;padding:18px;margin-bottom:20px}
-.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.field{display:flex;flex-direction:column;gap:7px}
-.full{grid-column:1/-1}
-label{font-size:14px;font-weight:bold}
-.categories,.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
-.cat{background:white;border:1px solid #e2e8f0;border-radius:12px;padding:16px;text-align:center;cursor:pointer}
+main{max-width:1150px;margin:auto;padding:26px 16px}
+h2{margin-top:10px}
+.categories{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.cat{background:white;padding:18px;border-radius:12px;text-align:center;cursor:pointer;border:1px solid #e2e8f0}
 .cat span{font-size:30px}
-.filters{display:flex;gap:8px;flex-wrap:wrap;margin:15px 0}
-.filters button{background:white;color:#172033;border:1px solid #d4dbe5}
+.cat h3{margin-bottom:5px}
+.cat p{font-size:13px;color:#64748b}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}
+.filters button{background:white;color:#1e293b;border:1px solid #dbe2ea}
 .filters button.active{background:#2563eb;color:white}
-.art{font-size:48px;text-align:center;background:#e8efff;border-radius:8px;padding:20px}
-.price{font-size:22px;font-weight:bold;color:#166534}
-.details{color:#64748b;font-size:14px;line-height:1.7}
-.card h3{overflow-wrap:anywhere}
-.actions{display:flex;gap:8px;margin-top:12px}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.card{background:white;border:1px solid #e2e8f0;border-radius:14px;overflow:hidden;min-width:0}
+.art{height:180px;background:linear-gradient(135deg,#dbeafe,#ede9fe);display:grid;place-items:center;font-size:58px;overflow:hidden}
+.art img{width:100%;height:100%;object-fit:cover;cursor:pointer}
+.content{padding:15px}
+.label{font-size:11px;color:#2563eb;font-weight:bold}
+.content h3{margin:8px 0;overflow-wrap:anywhere}
+.price{font-size:23px;font-weight:bold}
+.old-price{font-size:14px;color:#64748b;text-decoration:line-through;margin-left:6px}
+.details{color:#64748b;font-size:13px;line-height:1.7;margin:8px 0;overflow-wrap:anywhere}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
 .actions button{flex:1}
 .secondary{background:#e8efff;color:#1d4ed8}
-.hidden{display:none!important}
-footer{background:#101827;color:white;text-align:center;padding:24px}
-#language{width:auto;max-width:150px}
-@media(max-width:650px){
- header{padding:14px}
+.info{background:white;padding:20px;border-radius:12px;margin-top:28px;line-height:1.7}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.field{margin-bottom:12px}
+.field label{display:block;font-weight:bold;font-size:14px;margin-bottom:6px}
+.full{grid-column:1/-1}
+#photoPreview{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:10px}
+.preview-wrap{position:relative;min-width:0}
+.preview-wrap img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;border:1px solid #ddd}
+.preview-wrap button{position:absolute;top:4px;right:4px;padding:3px 7px;background:#dc2626;border-radius:50%}
+.photo-hint{font-size:12px;color:#64748b;line-height:1.6;margin-top:7px}
+.gallery-thumbs{display:flex;gap:7px;overflow-x:auto;margin-top:10px;padding-bottom:5px}
+.gallery-thumbs img{width:60px;height:60px;object-fit:cover;border-radius:6px;cursor:pointer;border:2px solid transparent}
+.gallery-thumbs img.active{border-color:#2563eb}
+footer{margin-top:30px;background:#101827;color:white;padding:24px 6%;text-align:center;font-size:13px}
+#viewer{display:none;position:fixed;inset:0;background:#000e;z-index:9999;align-items:center;justify-content:center;padding:15px}
+#viewer.open{display:flex}
+.viewer-box{width:min(900px,100%);text-align:center;color:white}
+#largeImage{max-width:100%;max-height:70vh;object-fit:contain;margin-top:12px}
+.viewer-controls{display:flex;justify-content:center;align-items:center;gap:12px;margin:12px 0;flex-wrap:wrap}
+.viewer-controls button{background:white;color:#172033}
+.viewer-close{background:#dc2626;margin-bottom:10px}
+@media(max-width:700px){
+ .categories{grid-template-columns:repeat(2,1fr)}
+ .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ header{padding:15px}
  nav{width:100%}
- .formgrid{grid-template-columns:1fr}
- .categories,.grid{grid-template-columns:repeat(2,minmax(0,1fr))}
- .panel{padding:13px}
+ .art{height:120px;font-size:45px}
+ .content{padding:10px}
+ .content h3{font-size:15px}
  .actions{flex-direction:column}
+ .actions button{width:100%}
+ #photoPreview{grid-template-columns:repeat(4,minmax(0,1fr))}
 }
-@media(max-width:380px){.categories,.grid{grid-template-columns:1fr}}
+@media(max-width:430px){
+ .grid{grid-template-columns:1fr}
+ .form-grid{grid-template-columns:1fr}
+ .full{grid-column:auto}
+ .art{height:180px}
+}
 </style>
 </head>
+
 <body>
 <header>
  <div class="logo">🛍️ Unique Online Service<br><small>BUY & SELL</small></div>
- <select id="language" aria-label="Select language" onchange="setLanguage(this.value)">
+ <select id="languageSelect" aria-label="Choose language" onchange="setLanguage(this.value)" style="width:auto;max-width:145px">
   <option value="en">English</option>
   <option value="bn">বাংলা</option>
   <option value="hi">हिन्दी</option>
  </select>
  <nav>
-  <a href="#categories" data-i18n="categories">Categories</a>
-  <a href="#post" data-i18n="post">Post Ad</a>
-  <a href="#listings" data-i18n="listings">Listings</a>
+  <a href="#categories">Categories</a>
+  <a href="#listings">Listings</a>
+  <a href="#post-ad">Post Ad</a>
+  <a href="#contact">Contact</a>
  </nav>
 </header>
 
 <section class="hero">
- <h1 data-i18n="headline">Buy Smart. Sell Simply.</h1>
- <p data-i18n="subtitle">Discover mobiles, cars and more in one place.</p>
- <input id="search" data-placeholder="searchPlaceholder" placeholder="Search products..." oninput="render()">
+ <h1>Buy Smart. Sell Simply.</h1>
+ <p>Discover mobiles, cars and more in one place.</p>
+ <div class="search">
+  <input id="q" placeholder="Search products..." oninput="render()">
+  <select id="cat" onchange="render()" style="width:auto;flex:1">
+   <option value="All">All Categories</option>
+   <option value="Mobile">Mobile</option>
+   <option value="Car">Car</option>
+   <option value="Other">Other</option>
+  </select>
+  <button onclick="render()">Search</button>
+ </div>
 </section>
 
 <main>
- <section id="categories">
-  <h2 data-i18n="shopCategory">Shop by Category</h2>
-  <div class="categories">
-   <div class="cat" onclick="chooseCategory('Mobile')"><span>📱</span><h3 data-i18n="mobiles">Mobiles</h3></div>
-   <div class="cat" onclick="chooseCategory('Car')"><span>🚗</span><h3 data-i18n="cars">Cars</h3></div>
-   <div class="cat" onclick="chooseCategory('Other')"><span>🎧</span><h3 data-i18n="other">Other Products</h3></div>
-  </div>
- </section>
+<section id="categories">
+ <h2>Shop by Category</h2>
+ <div class="categories">
+  <div class="cat" onclick="pick('Mobile')"><span>📱</span><h3>Mobiles</h3><p>New and used phones</p></div>
+  <div class="cat" onclick="pick('Car')"><span>🚗</span><h3>Cars</h3><p>Cars for sale</p></div>
+  <div class="cat" onclick="pick('Other')"><span>🎧</span><h3>Electronics</h3><p>Gadgets and accessories</p></div>
+  <div class="cat" onclick="pick('Other')"><span>🛍️</span><h3>Other Products</h3><p>More great finds</p></div>
+ </div>
+</section>
 
- <section id="post" class="panel">
-  <h2 data-i18n="postHeading">📢 Post Your Advertisement</h2>
-  <p data-i18n="postNote">Enter your product details below.</p>
-  <form id="adForm" class="formgrid">
+<section id="post-ad" class="info">
+ <h2>📢 Post Your Advertisement</h2>
+ <p style="color:#64748b;font-size:13px">Fill in your product information and publish your ad.</p>
+
+ <form id="adForm">
+  <div class="field">
+   <label for="adCat">Category *</label>
+   <select id="adCat" required onchange="updateFields()">
+    <option value="Mobile">📱 Mobile</option>
+    <option value="Car">🚗 Car</option>
+    <option value="Other">🛍️ Other Products</option>
+   </select>
+  </div>
+
+  <div class="form-grid">
    <div class="field">
-    <label data-i18n="categoryLabel">Category</label>
-    <select id="adCategory" required onchange="updateProductFields()">
-     <option value="Mobile">Mobile</option>
-     <option value="Car">Car</option>
-     <option value="Other">Other</option>
+    <label for="adBrand">Brand *</label>
+    <select id="adBrand" required onchange="updateModels()"></select>
+   </div>
+
+   <div class="field">
+    <label for="adName">Model / Product Name *</label>
+    <input id="adName" list="modelOptions" required placeholder="Choose or type model name">
+    <datalist id="modelOptions"></datalist>
+   </div>
+
+   <div class="field" id="ramField">
+    <label for="adRam">RAM</label>
+    <select id="adRam">
+     <option value="">Select RAM</option>
+     <option>2 GB</option><option>3 GB</option><option>4 GB</option>
+     <option>6 GB</option><option>8 GB</option><option>12 GB</option>
+     <option>16 GB</option><option>Other</option>
     </select>
    </div>
-   <div class="field">
-    <label data-i18n="brandLabel">Brand</label>
-    <select id="brand" required onchange="updateProductFields()">
-     <option value="iPhone">iPhone</option>
-     <option value="Samsung">Samsung</option>
-     <option value="Other">Other brand</option>
+
+   <div class="field" id="romField">
+    <label for="adRom">ROM / Storage</label>
+    <select id="adRom">
+     <option value="">Select Storage</option>
+     <option>32 GB</option><option>64 GB</option><option>128 GB</option>
+     <option>256 GB</option><option>512 GB</option>
+     <option>1 TB</option><option>Other</option>
     </select>
    </div>
-   <div class="field full">
-    <label data-i18n="productName">Product name / model</label>
-    <input id="productName" required placeholder="e.g. iPhone 13">
+
+   <div class="field" id="batteryField" hidden>
+    <label for="adBattery">iPhone Battery Health (%)</label>
+    <input id="adBattery" type="number" min="1" max="100" placeholder="e.g. 87">
    </div>
-   <div id="batteryField" class="field">
-    <label data-i18n="batteryHealth">iPhone Battery Health (%)</label>
-    <input id="battery" type="number" min="1" max="100" placeholder="e.g. 87">
+
+   <div class="field" id="colourField">
+    <label for="adColour">Colour</label>
+    <input id="adColour" placeholder="e.g. Black">
    </div>
-   <div id="ramField" class="field">
-    <label data-i18n="ramStorage">RAM / Storage</label>
-    <input id="ram" placeholder="e.g. 6GB / 128GB">
+
+   <div class="field" id="yearField" hidden>
+    <label for="adYear">Manufacturing / Registration Year</label>
+    <input id="adYear" type="number" min="1950" max="2100" placeholder="e.g. 2022">
+   </div>
+
+   <div class="field" id="fuelField" hidden>
+    <label for="adFuel">Fuel Type</label>
+    <select id="adFuel">
+     <option value="">Select fuel</option>
+     <option>Petrol</option><option>Diesel</option>
+     <option>CNG</option><option>Electric</option><option>Hybrid</option>
+    </select>
+   </div>
+
+   <div class="field" id="kmField" hidden>
+    <label for="adKm">Kilometres Driven</label>
+    <input id="adKm" type="number" min="0" placeholder="e.g. 45000">
    </div>
    <div class="field">
-    <label data-i18n="originalPrice">Original Price (₹)</label>
-    <input id="originalPrice" type="number" min="0" placeholder="e.g. 30000">
-   </div>
-   <div class="field">
-    <label data-i18n="offerPrice">Offer Price (₹)</label>
-    <input id="offerPrice" type="number" min="0" required placeholder="e.g. 22000">
-   </div>
-   <div class="field">
-    <label data-i18n="condition">Condition</label>
-    <select id="condition">
-     <option value="New">New</option>
+    <label for="adCondition">Condition *</label>
+    <select id="adCondition" required>
      <option value="Used">Used</option>
+     <option value="New">New</option>
      <option value="Mint">Mint</option>
      <option value="Super Mint">Super Mint</option>
      <option value="Open Box">Open Box</option>
     </select>
    </div>
-   <div class="field">
-    <label data-i18n="colour">Colour</label>
-    <input id="colour" placeholder="e.g. Black">
-   </div>
-   <div class="field full">
-    <label data-i18n="description">Description</label>
-    <textarea id="description" rows="3" placeholder="Product details"></textarea>
-   </div>
-   <div class="full">
-    <button type="submit" data-i18n="publish">Publish Advertisement</button>
-   </div>
-  </form>
- </section>
 
- <section id="listings">
-  <h2 data-i18n="latest">Latest Listings</h2>
-  <div class="filters">
-   <button class="active" onclick="chooseCategory('All',this)" data-i18n="all">All</button>
-   <button onclick="chooseCategory('Mobile',this)" data-i18n="mobiles">Mobiles</button>
-   <button onclick="chooseCategory('Car',this)" data-i18n="cars">Cars</button>
-   <button onclick="chooseCategory('Other',this)" data-i18n="other">Other Products</button>
+   <div class="field">
+    <label for="adPrice">Original Price (₹)</label>
+    <input id="adPrice" type="number" min="0" placeholder="e.g. 25000">
+   </div>
+
+   <div class="field">
+    <label for="adOffer">Offer / Selling Price (₹) *</label>
+    <input id="adOffer" type="number" min="1" required placeholder="e.g. 19999">
+   </div>
+
+   <div class="field full">
+    <label for="adPhoto">Product Photos * (Maximum 10 photos)</label>
+    <input id="adPhoto" type="file" accept="image/*" multiple required>
+    <div class="photo-hint">
+     You can add up to 10 original photos. Images will not be resized or compressed.
+    </div>
+    <div id="photoCount" class="photo-hint">No photos selected</div>
+    <div id="photoPreview"></div>
+   </div>
+
+   <div class="field full">
+    <label for="adDetails">Description *</label>
+    <textarea id="adDetails" required rows="4" placeholder="Condition, features, history and other details"></textarea>
+   </div>
   </div>
-  <div id="products" class="grid"></div>
- </section>
- <section class="info">
-  <h2 data-i18n="contact">Contact</h2>
-  <p data-i18n="contactNote">Contact us for product enquiries.</p>
-  <button onclick="contactWhatsApp()" data-i18n="whatsapp">Contact on WhatsApp</button>
- </section>
+
+  <button type="submit" id="submitBtn">Post Advertisement</button>
+  <button type="button" class="secondary" onclick="clearForm()">Clear Form</button>
+ </form>
+
+ <p id="adMessage" role="status"></p>
+</section>
+
+<section id="listings">
+ <h2>Latest Listings</h2>
+ <p style="color:#64748b;font-size:14px">
+  Advertisements are saved in this browser. Only post products you are authorised to sell.
+ </p>
+
+ <div class="filters">
+  <button class="active" onclick="pick('All')">All</button>
+  <button onclick="pick('Mobile')">Mobiles</button>
+  <button onclick="pick('Car')">Cars</button>
+  <button onclick="pick('Other')">Other</button>
+ </div>
+
+ <div id="products" class="grid"></div>
+</section>
+
+<section class="info" id="contact">
+ <h2>Contact Us</h2>
+ <p>Interested in a product? Contact Unique Online Service Buy & Sell.</p>
+ <button onclick="contact()">Contact on WhatsApp</button>
+ <p style="font-size:12px;color:#64748b">
+  Set your WhatsApp number in WHATSAPP_NUMBER in the code before publishing.
+ </p>
+</section>
 </main>
-<footer>© <span id="year"></span> Unique Online Service Buy & Sell</footer>
+
+<footer>
+ © <span id="footerYear"></span> Unique Online Service Buy & Sell<br>
+ Mobiles • Cars • Other Products
+</footer>
+
+<div id="viewer">
+ <div class="viewer-box">
+  <button type="button" class="viewer-close" onclick="closeGallery()">✕ Close</button>
+  <div>
+   <img id="largeImage" alt="Product photo">
+  </div>
+  <div class="viewer-controls">
+   <button type="button" onclick="changePhoto(-1)">❮ Previous</button>
+   <span id="imageNumber"></span>
+   <button type="button" onclick="changePhoto(1)">Next ❯</button>
+  </div>
+  <div id="galleryThumbs" class="gallery-thumbs"></div>
+ </div>
+</div>
 
 <script>
-const WHATSAPP_NUMBER = "919903087477"; // Add your WhatsApp number with country code, digits only.
+"use strict";
 
-const words = {
- en:{
- categories:"Categories",post:"Post Ad",listings:"Listings",
- headline:"Buy Smart. Sell Simply.",subtitle:"Discover mobiles, cars and more in one place.",
- searchPlaceholder:"Search products...",shopCategory:"Shop by Category",
- mobiles:"Mobiles",cars:"Cars",other:"Other Products",
- postHeading:"📢 Post Your Advertisement",postNote:"Enter your product details below.",
- categoryLabel:"Category",brandLabel:"Brand",productName:"Product name / model",
- batteryHealth:"iPhone Battery Health (%)",ramStorage:"RAM / Storage",
- originalPrice:"Original Price (₹)",offerPrice:"Offer Price (₹)",condition:"Condition",
- colour:"Colour",description:"Description",publish:"Publish Advertisement",
- latest:"Latest Listings",all:"All",contact:"Contact",
- contactNote:"Contact us for product enquiries.",whatsapp:"Contact on WhatsApp",
- battery:"Battery Health",storage:"RAM / Storage",noProducts:"No products found.",
- ask:"Hello, I am interested in",price:"Offer Price",brandOther:"Other brand"
- },
- bn:{
- categories:"বিভাগ",post:"বিজ্ঞাপন দিন",listings:"বিজ্ঞাপনসমূহ",
- headline:"সঠিক দামে কিনুন, সহজে বিক্রি করুন।",subtitle:"মোবাইল, গাড়ি ও অন্যান্য পণ্য এক জায়গায়।",
- searchPlaceholder:"পণ্য খুঁজুন...",shopCategory:"বিভাগ অনুযায়ী কিনুন",
- mobiles:"মোবাইল",cars:"গাড়ি",other:"অন্যান্য পণ্য",
- postHeading:"📢 আপনার বিজ্ঞাপন দিন",postNote:"নিচে পণ্যের বিবরণ লিখুন।",
- categoryLabel:"বিভাগ",brandLabel:"ব্র্যান্ড",productName:"পণ্যের নাম / মডেল",
- batteryHealth:"iPhone Battery Health (%)",ramStorage:"RAM / স্টোরেজ",
- originalPrice:"আসল দাম (₹)",offerPrice:"অফার দাম (₹)",condition:"অবস্থা",
- colour:"রং",description:"বিবরণ",publish:"বিজ্ঞাপন প্রকাশ করুন",
- latest:"সাম্প্রতিক বিজ্ঞাপন",all:"সব",contact:"যোগাযোগ",
- contactNote:"পণ্য সম্পর্কে জানতে যোগাযোগ করুন।",whatsapp:"WhatsApp-এ যোগাযোগ",
- battery:"ব্যাটারি হেলথ",storage:"RAM / স্টোরেজ",noProducts:"কোনও পণ্য পাওয়া যায়নি।",
- ask:"আমি এই পণ্যটি সম্পর্কে জানতে চাই:",price:"অফার দাম",brandOther:"অন্যান্য ব্র্যান্ড"
- },
- hi:{
- categories:"श्रेणियाँ",post:"विज्ञापन दें",listings:"विज्ञापन",
- headline:"समझदारी से खरीदें, आसानी से बेचें।",subtitle:"मोबाइल, कार और अन्य उत्पाद एक जगह।",
- searchPlaceholder:"उत्पाद खोजें...",shopCategory:"श्रेणी के अनुसार खरीदें",
- mobiles:"मोबाइल",cars:"कार",other:"अन्य उत्पाद",
- postHeading:"📢 अपना विज्ञापन दें",postNote:"नीचे उत्पाद की जानकारी भरें।",
- categoryLabel:"श्रेणी",brandLabel:"ब्रांड",productName:"उत्पाद का नाम / मॉडल",
- batteryHealth:"iPhone Battery Health (%)",ramStorage:"RAM / स्टोरेज",
- originalPrice:"मूल कीमत (₹)",offerPrice:"ऑफर कीमत (₹)",condition:"स्थिति",
- colour:"रंग",description:"विवरण",publish:"विज्ञापन प्रकाशित करें",
- latest:"नवीनतम विज्ञापन",all:"सभी",contact:"संपर्क",
- contactNote:"उत्पाद के बारे में पूछताछ के लिए संपर्क करें।",whatsapp:"WhatsApp पर संपर्क करें",
- battery:"बैटरी हेल्थ",storage:"RAM / स्टोरेज",noProducts:"कोई उत्पाद नहीं मिला।",
- ask:"मुझे इस उत्पाद में रुचि है:",price:"ऑफर कीमत",brandOther:"अन्य ब्रांड"
- }
+// Enter your WhatsApp number with country code.
+// Example: 919876543210 (digits only)
+const WHATSAPP_NUMBER = "919876543210";
+
+const DB_NAME = "UniqueOnlineServiceDB";
+const DB_VERSION = 1;
+const STORE_NAME = "products";
+const MAX_PHOTOS = 10;
+
+let db;
+let products = [];
+let selected = "All";
+let selectedPhotos = [];
+let galleryPhotos = [];
+let galleryUrls = [];
+let galleryIndex = 0;
+let previewUrls = [];
+
+const $ = id => document.getElementById(id);
+ // ================= BRAND & MODEL OPTIONS =================
+
+const brandLists = {
+  Mobile: [
+    "Apple",
+    "Samsung",
+    "Xiaomi",
+    "Redmi",
+    "POCO",
+    "OnePlus",
+    "OPPO",
+    "vivo",
+    "realme",
+    "Google",
+    "Motorola",
+    "Nothing",
+    "Huawei",
+    "Honor",
+    "Infinix",
+    "Tecno",
+    "Lava",
+    "Nokia",
+    "ASUS",
+    "Sony",
+    "iQOO",
+    "Lenovo",
+    "Micromax",
+    "Itel",
+    "Other"
+  ],
+  Car: [
+    "Maruti Suzuki",
+    "Hyundai",
+    "Tata",
+    "Mahindra",
+    "Toyota",
+    "Honda",
+    "Kia",
+    "MG",
+    "Volkswagen",
+    "Skoda",
+    "Renault",
+    "Nissan",
+    "Ford",
+    "Jeep",
+    "BMW",
+    "Mercedes-Benz",
+    "Audi",
+    "Volvo",
+    "BYD",
+    "Other"
+  ],
+  Other: [
+    "Sony",
+    "Samsung",
+    "LG",
+    "JBL",
+    "boAt",
+    "Apple",
+    "Dell",
+    "HP",
+    "Lenovo",
+    "ASUS",
+    "Acer",
+    "Canon",
+    "Nikon",
+    "Other"
+  ]
 };
 
-let language = "en";
-let selectedCategory = "All";
-let ads = [];
-try { ads = JSON.parse(localStorage.getItem("uos_ads") || "[]"); } catch(e) { ads = []; }
+const modelLists = {
+  Apple: [
+    "iPhone 17 Pro Max", "iPhone 17 Pro", "iPhone 17",
+    "iPhone 16 Pro Max", "iPhone 16 Pro", "iPhone 16 Plus",
+    "iPhone 16", "iPhone 15 Pro Max", "iPhone 15 Pro",
+    "iPhone 15 Plus", "iPhone 15", "iPhone 14 Pro Max",
+    "iPhone 14 Pro", "iPhone 14 Plus", "iPhone 14",
+    "iPhone 13 Pro Max", "iPhone 13 Pro", "iPhone 13",
+    "iPhone 12", "iPhone 11", "iPhone SE"
+  ],
+  Samsung: [
+    "Galaxy S25 Ultra", "Galaxy S25+", "Galaxy S25",
+    "Galaxy S24 Ultra", "Galaxy S24+", "Galaxy S24",
+    "Galaxy S23 Ultra", "Galaxy S23", "Galaxy A56",
+    "Galaxy A55", "Galaxy A35", "Galaxy A15",
+    "Galaxy M55", "Galaxy M35", "Galaxy F55"
+  ],
+  Xiaomi: [
+    "Xiaomi 15", "Xiaomi 14", "Xiaomi 14 Ultra",
+    "Xiaomi 13", "Xiaomi 13 Pro", "Mi 11"
+  ],
+  Redmi: [
+    "Redmi Note 14 Pro+", "Redmi Note 14 Pro",
+    "Redmi Note 14", "Redmi Note 13 Pro+",
+    "Redmi Note 13 Pro", "Redmi Note 13",
+    "Redmi 13C", "Redmi 12", "Redmi A4"
+  ],
+  POCO: [
+    "POCO F7", "POCO F6", "POCO X7 Pro",
+    "POCO X7", "POCO X6 Pro", "POCO X6",
+    "POCO M7 Pro", "POCO M6"
+  ],
+  OnePlus: [
+    "OnePlus 13", "OnePlus 13R", "OnePlus 12",
+    "OnePlus 12R", "OnePlus 11", "OnePlus Nord 4",
+    "OnePlus Nord CE4", "OnePlus Nord CE3"
+  ],
+  OPPO: [
+    "OPPO Find X8", "OPPO Reno 13 Pro",
+    "OPPO Reno 13", "OPPO Reno 12 Pro",
+    "OPPO Reno 12", "OPPO F27 Pro+",
+    "OPPO F25 Pro", "OPPO A3 Pro", "OPPO A79"
+  ],
+  vivo: [
+    "vivo X200 Pro", "vivo X200", "vivo V50",
+    "vivo V40 Pro", "vivo V40", "vivo V30",
+    "vivo T3 Pro", "vivo T3", "vivo Y200",
+    "vivo Y28", "vivo Y18"
+  ],
+  realme: [
+    "realme GT 7 Pro", "realme GT 6",
+    "realme 14 Pro+", "realme 14 Pro",
+    "realme 13 Pro+", "realme 13 Pro",
+    "realme Narzo 70 Pro", "realme P3 Pro",
+    "realme C75", "realme C67"
+  ],
+  Google: [
+    "Pixel 9 Pro XL", "Pixel 9 Pro", "Pixel 9",
+    "Pixel 8 Pro", "Pixel 8", "Pixel 7 Pro",
+    "Pixel 7", "Pixel 6a"
+  ],
+  Motorola: [
+    "Edge 50 Ultra", "Edge 50 Pro", "Edge 50 Fusion",
+    "Edge 40 Neo", "Moto G85", "Moto G75",
+    "Moto G64", "Moto G54", "Moto G34"
+  ],
+  Nothing: [
+    "Nothing Phone (3)", "Nothing Phone (2)",
+    "Nothing Phone (2a)", "Nothing Phone (2a) Plus",
+    "Nothing Phone (1)", "CMF Phone 1"
+  ],
+  Huawei: [
+    "Pura 70", "P60 Pro", "Mate 60 Pro",
+    "Nova 12", "Nova 11"
+  ],
+  Honor: [
+    "Honor Magic7 Pro", "Honor Magic6 Pro",
+    "Honor 200 Pro", "Honor 200", "Honor X9c",
+    "Honor X9b", "Honor X7b"
+  ],
+  Infinix: [
+    "Infinix GT 20 Pro", "Infinix Note 40 Pro",
+    "Infinix Note 40", "Infinix Hot 50 Pro+",
+    "Infinix Hot 40", "Infinix Zero 40"
+  ],
+  Tecno: [
+    "Tecno Camon 30 Pro", "Tecno Camon 30",
+    "Tecno Pova 6 Pro", "Tecno Pova 6",
+    "Tecno Spark 30 Pro", "Tecno Spark 20"
+  ],
+  Lava: [
+    "Lava Agni 3", "Lava Agni 2",
+    "Lava Blaze Curve", "Lava Blaze 5G"
+  ],
+  Nokia: [
+    "Nokia G42", "Nokia G60", "Nokia X30",
+    "Nokia C32", "Nokia 105"
+  ],
+  ASUS: [
+    "ROG Phone 9", "ROG Phone 8",
+    "Zenfone 11 Ultra", "Zenfone 10"
+  ],
+  Sony: [
+    "Xperia 1 VI", "Xperia 5 V",
+    "Xperia 10 VI"
+  ],
+  iQOO: [
+    "iQOO 13", "iQOO 12", "iQOO Neo 10",
+    "iQOO Neo 9 Pro", "iQOO Z9 Turbo",
+    "iQOO Z9", "iQOO Z7 Pro"
+  ],
+  Lenovo: ["Lenovo Legion Phone", "Lenovo K14"],
+  Micromax: ["Micromax IN Note", "Micromax IN 2b"],
+  Itel: ["Itel S25 Ultra", "Itel S24", "Itel P55"],
+  "Maruti Suzuki": [
+    "Swift", "Baleno", "WagonR", "Alto K10",
+    "Dzire", "Brezza", "Ertiga", "Fronx",
+    "Grand Vitara", "Celerio", "Eeco"
+  ],
+  Hyundai: [
+    "Creta", "Venue", "i20", "Grand i10 Nios",
+    "Verna", "Exter", "Alcazar", "Aura"
+  ],
+  Tata: [
+    "Nexon", "Punch", "Harrier", "Safari",
+    "Tiago", "Tigor", "Altroz", "Curvv"
+  ],
+  Mahindra: [
+    "Thar", "Scorpio N", "Scorpio Classic",
+    "XUV700", "XUV 3XO", "Bolero", "XUV400"
+  ],
+  Toyota: [
+    "Fortuner", "Innova Crysta", "Innova Hycross",
+    "Glanza", "Urban Cruiser Hyryder",
+    "Rumion", "Land Cruiser"
+  ],
+  Honda: ["City", "Amaze", "Elevate", "Jazz", "WR-V"],
+  Kia: ["Seltos", "Sonet", "Carens", "Carnival"],
+  MG: ["Hector", "Astor", "Gloster", "Comet EV", "ZS EV"],
+  Volkswagen: ["Virtus", "Taigun", "Polo", "Tiguan"],
+  Skoda: ["Slavia", "Kushaq", "Kodiaq", "Superb"],
+  Renault: ["Kwid", "Triber", "Kiger", "Duster"],
+  Nissan: ["Magnite", "X-Trail", "Sunny"],
+  Ford: ["EcoSport", "Endeavour", "Figo", "Aspire"],
+  Jeep: ["Compass", "Meridian", "Wrangler"],
+  BMW: ["3 Series", "5 Series", "X1", "X3", "X5"],
+  "Mercedes-Benz": ["C-Class", "E-Class", "GLA", "GLC", "GLE"],
+  Audi: ["A4", "A6", "Q3", "Q5", "Q7"],
+  Volvo: ["XC40", "XC60", "XC90", "S90"],
+  BYD: ["Atto 3", "Seal", "eMAX 7"],
+  LG: ["LG TV", "LG Monitor", "LG Refrigerator"],
+  JBL: ["JBL Flip", "JBL Charge", "JBL Tune"],
+  boAt: ["Airdopes", "Rockerz", "Stone Speaker"],
+  Dell: ["Inspiron", "Vostro", "Latitude", "XPS"],
+  HP: ["Pavilion", "Victus", "Envy", "ProBook"],
+  Acer: ["Aspire", "Nitro", "Swift", "Predator"],
+  Canon: ["EOS 1500D", "EOS R50", "EOS 90D"],
+  Nikon: ["D3500", "D7500", "Z50"]
+};
 
-function setLanguage(lang){
- language = words[lang] ? lang : "en";
- document.documentElement.lang = language;
- document.querySelectorAll("[data-i18n]").forEach(el=>{
-  const key = el.dataset.i18n;
-  if(words[language][key]) el.textContent = words[language][key];
- });
- document.querySelectorAll("[data-placeholder]").forEach(el=>{
-  const key = el.dataset.placeholder;
-  if(words[language][key]) el.placeholder = words[language][key];
- });
- render();
+function updateModels() {
+  const category = $("adCat").value;
+  const brand = $("adBrand").value;
+  const models = modelLists[brand] || [];
+
+  $("modelOptions").innerHTML = "";
+
+  models.forEach(model => {
+    const option = document.createElement("option");
+    option.value = model;
+    $("modelOptions").appendChild(option);
+  });
+
+  $("adName").placeholder = category === "Car"
+    ? "Choose or type car model"
+    : category === "Mobile"
+      ? "Choose or type phone model"
+      : "Choose or type product name";
 }
 
-function updateProductFields(){
- const cat = document.getElementById("adCategory").value;
- const brand = document.getElementById("brand");
- const battery = document.getElementById("batteryField");
- const ram = document.getElementById("ramField");
+function updateFields() {
+  const category = $("adCat").value;
+  const oldBrand = $("adBrand").value;
 
- if(cat === "Mobile"){
-  brand.innerHTML = '<option value="iPhone">iPhone</option><option value="Samsung">Samsung</option><option value="Other">Other brand</option>';
-  battery.classList.toggle("hidden", brand.value !== "iPhone");
-  ram.classList.remove("hidden");
- } else {
-  brand.innerHTML = '<option value="Other">Other</option>';
-  battery.classList.add("hidden");
-  ram.classList.add("hidden");
- }
+  $("adBrand").innerHTML = "";
+
+  (brandLists[category] || brandLists.Other).forEach(brand => {
+    const option = document.createElement("option");
+    option.value = brand;
+    option.textContent = brand;
+    $("adBrand").appendChild(option);
+  });
+
+  if ((brandLists[category] || []).includes(oldBrand)) {
+    $("adBrand").value = oldBrand;
+  }
+
+  const isMobile = category === "Mobile";
+  const isCar = category === "Car";
+
+  $("ramField").hidden = !isMobile;
+  $("romField").hidden = !isMobile;
+
+  $("yearField").hidden = !isCar;
+  $("fuelField").hidden = !isCar;
+  $("kmField").hidden = !isCar;
+
+  $("batteryField").hidden =
+    !(isMobile && $("adBrand").value === "Apple");
+
+  $("adBattery").required = false;
+
+  updateModels();
 }
 
-function chooseCategory(cat, btn){
- selectedCategory = cat;
- document.querySelectorAll(".filters button").forEach(b=>b.classList.remove("active"));
- if(btn) btn.classList.add("active");
- else {
-  const buttons = [...document.querySelectorAll(".filters button")];
-  const index = cat === "All" ? 0 : cat === "Mobile" ? 1 : cat === "Car" ? 2 : 3;
-  if(buttons[index]) buttons[index].classList.add("active");
- }
- render();
- if(document.getElementById("listings")) document.getElementById("listings").scrollIntoView({behavior:"smooth"});
-}
+$("adBrand").addEventListener("change", function() {
+  const isAppleMobile =
+    $("adCat").value === "Mobile" &&
+    $("adBrand").value === "Apple";
 
-function esc(s){
- return String(s ?? "").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-}
-
-function render(){
- const q = document.getElementById("search").value.toLowerCase();
- const items = ads.filter(p=>
-  (selectedCategory==="All" || p.category===selectedCategory) &&
-  (p.name+" "+p.brand+" "+p.description+" "+p.condition).toLowerCase().includes(q)
- );
- document.getElementById("products").innerHTML = items.length ? items.map(p=>{
-  const icon = p.category==="Mobile" ? "📱" : p.category==="Car" ? "🚗" : "🎧";
-  const extra = [
-   p.category==="Mobile" && p.brand==="iPhone" && p.battery ? words[language].battery+": "+esc(p.battery)+"%" : "",
-   p.ram ? words[language].storage+": "+esc(p.ram) : "",
-   p.colour ? esc(p.colour) : "",
-   p.description ? esc(p.description) : ""
-  ].filter(Boolean).join(" | ");
-  return `<article class="card">
-   <div class="art">${icon}</div>
-   <h3>${esc(p.name)}</h3>
-   <div>${esc(p.brand)} · ${esc(p.condition)}</div>
-   <p class="price">₹${esc(p.offerPrice)}</p>
-   ${p.originalPrice ? `<p><s>₹${esc(p.originalPrice)}</s></p>` : ""}
-   <p class="details">${extra}</p>
-   <div class="actions">
-    <button onclick="enquire(${Number(p.id)})">${esc(words[language].whatsapp)}</button>
-    <button class="secondary" onclick="showDetails(${Number(p.id)})">${esc(words[language].description)}</button>
-   </div>
-  </article>`;
- }).join("") : `<p>${esc(words[language].noProducts)}</p>`;
-}
-
-document.getElementById("adForm").addEventListener("submit",function(e){
- e.preventDefault();
- const cat = document.getElementById("adCategory").value;
- const brand = document.getElementById("brand").value;
- const battery = document.getElementById("battery").value;
- const offer = Number(document.getElementById("offerPrice").value);
- const original = Number(document.getElementById("originalPrice").value || 0);
-
- if(offer < 0 || original < 0){alert("Please enter valid prices.");return}
- if(cat==="Mobile" && brand==="iPhone" && battery && (Number(battery)<1 || Number(battery)>100)){
-  alert("Battery Health must be between 1 and 100.");return;
- }
- const ad = {
-  id:Date.now(), category:cat, brand,
-  name:document.getElementById("productName").value.trim(),
-  battery:cat==="Mobile" && brand==="iPhone" ? battery : "",
-  ram:cat==="Mobile" ? document.getElementById("ram").value.trim() : "",
-  originalPrice:original, offerPrice:offer,
-  condition:document.getElementById("condition").value,
-  colour:document.getElementById("colour").value.trim(),
-  description:document.getElementById("description").value.trim()
- };
- ads.unshift(ad);
- try { localStorage.setItem("uos_ads",JSON.stringify(ads)); }
- catch(err){ alert("Browser storage is full. Please remove some saved listings."); return; }
- this.reset();
- updateProductFields();
- selectedCategory="All";
- render();
- document.getElementById("listings").scrollIntoView({behavior:"smooth"});
+  $("batteryField").hidden = !isAppleMobile;
+  updateModels();
 });
 
-function showDetails(id){
- const p=ads.find(x=>x.id===id);
- if(p) alert(p.name+"\n"+words[language].price+": ₹"+p.offerPrice+"\n"+(p.description||""));
+// ================= LANGUAGE SUPPORT =================
+
+const translations = {
+  en: {
+    title: "Buy Smart. Sell Simply.",
+    subtitle: "Discover mobiles, cars and more in one place.",
+    categories: "Shop by Category",
+    listings: "Latest Listings",
+    post: "Post Your Advertisement",
+    contact: "Contact Us",
+    search: "Search products...",
+    all: "All Categories",
+    mobile: "Mobile",
+    car: "Car",
+    other: "Other Products",
+    brand: "Brand",
+    model: "Model / Product Name",
+    ram: "RAM",
+    rom: "ROM / Storage",
+    battery: "iPhone Battery Health (%)",
+    colour: "Colour",
+    year: "Manufacturing / Registration Year",
+    fuel: "Fuel Type",
+    km: "Kilometres Driven",
+    condition: "Condition",
+    original: "Original Price (₹)",
+    offer: "Offer / Selling Price (₹)",
+    photos: "Product Photos (Maximum 10 photos)",
+    description: "Description",
+    submit: "Post Advertisement",
+    clear: "Clear Form",
+    whatsapp: "Contact on WhatsApp"
+  },
+
+  bn: {
+    title: "স্মার্টভাবে কিনুন, সহজে বিক্রি করুন",
+    subtitle: "মোবাইল, গাড়ি ও অন্যান্য পণ্য এক জায়গায় খুঁজুন।",
+    categories: "ক্যাটাগরি অনুযায়ী কিনুন",
+    listings: "সাম্প্রতিক বিজ্ঞাপন",
+    post: "আপনার বিজ্ঞাপন দিন",
+    contact: "যোগাযোগ করুন",
+    search: "পণ্য খুঁজুন...",
+    all: "সব ক্যাটাগরি",
+    mobile: "মোবাইল",
+    car: "গাড়ি",
+    other: "অন্যান্য পণ্য",
+    brand: "ব্র্যান্ড",
+    model: "মডেল / পণ্যের নাম",
+    ram: "র‍্যাম",
+    rom: "স্টোরেজ",
+    battery: "আইফোন ব্যাটারি হেলথ (%)",
+    colour: "রং",
+    year: "তৈরি / রেজিস্ট্রেশনের বছর",
+    fuel: "জ্বালানির ধরন",
+    km: "কত কিলোমিটার চলেছে",
+    condition: "পণ্যের অবস্থা",
+    original: "আসল দাম (₹)",
+    offer: "বিক্রির দাম (₹)",
+    photos: "পণ্যের ছবি (সর্বোচ্চ ১০টি)",
+    description: "বিবরণ",
+    submit: "বিজ্ঞাপন পোস্ট করুন",
+    clear: "ফর্ম পরিষ্কার করুন",
+    whatsapp: "WhatsApp-এ যোগাযোগ করুন"
+  },
+
+  hi: {
+    title: "समझदारी से खरीदें, आसानी से बेचें",
+    subtitle: "मोबाइल, कार और अन्य उत्पाद एक ही जगह पाएँ।",
+    categories: "श्रेणी के अनुसार खरीदें",
+    listings: "नवीनतम विज्ञापन",
+    post: "अपना विज्ञापन दें",
+    contact: "संपर्क करें",
+    search: "उत्पाद खोजें...",
+    all: "सभी श्रेणियाँ",
+    mobile: "मोबाइल",
+    car: "कार",
+    other: "अन्य उत्पाद",
+    brand: "ब्रांड",
+    model: "मॉडल / उत्पाद का नाम",
+    ram: "रैम",
+    rom: "स्टोरेज",
+    battery: "iPhone बैटरी हेल्थ (%)",
+    colour: "रंग",
+    year: "निर्माण / पंजीकरण वर्ष",
+    fuel: "ईंधन का प्रकार",
+    km: "चली हुई दूरी (किमी)",
+    condition: "स्थिति",
+    original: "मूल कीमत (₹)",
+    offer: "बिक्री की कीमत (₹)",
+    photos: "उत्पाद की तस्वीरें (अधिकतम 10)",
+    description: "विवरण",
+    submit: "विज्ञापन पोस्ट करें",
+    clear: "फ़ॉर्म साफ़ करें",
+    whatsapp: "WhatsApp पर संपर्क करें"
+  }
+};
+
+function setLanguage(language) {
+  const lang = translations[language] ? language : "en";
+  $("languageSelect").value = lang;
+  document.documentElement.lang = lang;
+
+  const t = translations[lang];
+
+  document.querySelector(".hero h1").textContent = t.title;
+  document.querySelector(".hero p").textContent = t.subtitle;
+  document.querySelector("#categories h2").textContent = t.categories;
+  document.querySelector("#listings h2").textContent = t.listings;
+  document.querySelector("#post-ad h2").textContent = "📢 " + t.post;
+  document.querySelector("#contact h2").textContent = t.contact;
+  $("q").placeholder = t.search;
+
+  const labels = {
+    adBrand: t.brand,
+    adName: t.model,
+    adRam: t.ram,
+    adRom: t.rom,
+    adBattery: t.battery,
+    adColour: t.colour,
+    adYear: t.year,
+    adFuel: t.fuel,
+    adKm: t.km,
+    adCondition: t.condition,
+    adPrice: t.original,
+    adOffer: t.offer,
+    adPhoto: t.photos,
+    adDetails: t.description
+  };
+
+  Object.keys(labels).forEach(id => {
+    const field = $(id);
+    if (!field) return;
+    const label = document.querySelector('label[for="' + id + '"]');
+    if (label) label.textContent = labels[id];
+  });
+
+  $("submitBtn").textContent = t.submit;
+  $("contact").querySelector("button").textContent = t.whatsapp;
+  document.querySelector("#post-ad button.secondary").textContent = t.clear;
+}
+ // ================= PHOTO PREVIEW =================
+
+$("adPhoto").addEventListener("change", function() {
+  clearPreviewUrls();
+
+  const files = Array.from(this.files || []);
+
+  if (files.length > MAX_PHOTOS) {
+    alert("Maximum 10 photos allowed. Please select up to 10 photos.");
+    this.value = "";
+    selectedPhotos = [];
+    showPhotoPreview([]);
+    return;
+  }
+
+  selectedPhotos = files;
+  showPhotoPreview(selectedPhotos);
+});
+
+function clearPreviewUrls() {
+  previewUrls.forEach(url => URL.revokeObjectURL(url));
+  previewUrls = [];
 }
 
-function enquire(id){
- const p=ads.find(x=>x.id===id);
- if(!p) return;
- if(!WHATSAPP_NUMBER){
-  alert("Add your WhatsApp number in the code first.");
-  return;
- }
- const msg=words[language].ask+" "+p.name+" — ₹"+p.offerPrice;
- window.open("https://wa.me/"+WHATSAPP_NUMBER+"?text="+encodeURIComponent(msg),"_blank");
+function showPhotoPreview(files) {
+  const container = $("photoPreview");
+  container.innerHTML = "";
+
+  $("photoCount").textContent =
+    files.length + " photo(s) selected out of " + MAX_PHOTOS;
+
+  files.forEach((file, index) => {
+    const wrap = document.createElement("div");
+    wrap.className = "preview-wrap";
+
+    const img = document.createElement("img");
+    const url = URL.createObjectURL(file);
+    previewUrls.push(url);
+    img.src = url;
+    img.alt = "Photo " + (index + 1);
+
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.textContent = "×";
+    remove.title = "Remove photo";
+
+    remove.addEventListener("click", () => {
+      selectedPhotos.splice(index, 1);
+
+      const transfer = new DataTransfer();
+      selectedPhotos.forEach(photo => transfer.items.add(photo));
+      $("adPhoto").files = transfer.files;
+
+      showPhotoPreview(selectedPhotos);
+    });
+
+    wrap.appendChild(img);
+    wrap.appendChild(remove);
+    container.appendChild(wrap);
+  });
 }
 
-function contactWhatsApp(){
- if(!WHATSAPP_NUMBER){alert("Add your WhatsApp number in the code first.");return}
- window.open("https://wa.me/"+WHATSAPP_NUMBER,"_blank");
+// ================= INDEXEDDB DATABASE =================
+
+function openDatabase() {
+  return new Promise((resolve, reject) => {
+    if (!("indexedDB" in window)) {
+      reject(new Error("This browser does not support IndexedDB."));
+      return;
+    }
+
+    const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+    request.onupgradeneeded = function(event) {
+      const database = event.target.result;
+
+      if (!database.objectStoreNames.contains(STORE_NAME)) {
+        database.createObjectStore(STORE_NAME, {
+          keyPath: "id",
+          autoIncrement: true
+        });
+      }
+    };
+
+    request.onsuccess = function() {
+      db = request.result;
+
+      db.onversionchange = function() {
+        db.close();
+      };
+
+      resolve(db);
+    };
+
+    request.onerror = function() {
+      reject(request.error || new Error("Database could not be opened."));
+    };
+  });
 }
 
-document.getElementById("year").textContent = new Date().getFullYear();
-updateProductFields();
-setLanguage("en");
+function getAllProducts() {
+  return new Promise((resolve, reject) => {
+    if (!db) {
+      reject(new Error("Database is not ready."));
+      return;
+    }
+
+    const transaction = db.transaction(STORE_NAME, "readonly");
+    const request = transaction.objectStore(STORE_NAME).getAll();
+
+    request.onsuccess = () => resolve(request.result || []);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+function saveProduct(product) {
+  return new Promise((resolve, reject) => {
+    if (!db) {
+      reject(new Error("Database is not ready."));
+      return;
+    }
+
+    const transaction = db.transaction(STORE_NAME, "readwrite");
+    const request = transaction.objectStore(STORE_NAME).add(product);
+
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+function deleteProduct(id) {
+  return new Promise((resolve, reject) => {
+    if (!db) {
+      reject(new Error("Database is not ready."));
+      return;
+    }
+
+    const transaction = db.transaction(STORE_NAME, "readwrite");
+    const request = transaction.objectStore(STORE_NAME).delete(Number(id));
+
+    request.onsuccess = () => resolve();
+    request.onerror = () => reject(request.error);
+  });
+}
+
+async function loadProducts() {
+  try {
+    products = await getAllProducts();
+    render();
+  } catch (error) {
+    console.error(error);
+    $("products").innerHTML =
+      "<p>Could not load listings. Please refresh the page.</p>";
+  }
+}
+
+// ================= FORM HELPERS =================
+
+function clearForm() {
+  $("adForm").reset();
+  selectedPhotos = [];
+  clearPreviewUrls();
+  showPhotoPreview([]);
+  updateFields();
+  $("adMessage").textContent = "";
+}
+
+function pick(category) {
+  selected = category;
+  $("cat").value = category;
+
+  document.querySelectorAll(".filters button").forEach(button => {
+    button.classList.toggle(
+      "active",
+      button.textContent.trim().toLowerCase() === category.toLowerCase() ||
+      (category === "All" &&
+       button.textContent.trim().toLowerCase() === "all")
+    );
+  });
+
+  render();
+
+  if (category !== "All") {
+    $("listings").scrollIntoView({ behavior: "smooth" });
+  }
+}
+
+function contact() {
+  if (!WHATSAPP_NUMBER) {
+    alert("Please add your WhatsApp number in WHATSAPP_NUMBER in the code.");
+    return;
+  }
+
+  const number = WHATSAPP_NUMBER.replace(/\D/g, "");
+
+  if (!number) {
+    alert("Please enter a valid WhatsApp number in the code.");
+    return;
+  }
+
+  window.open(
+    "https://wa.me/" + number,
+    "_blank",
+    "noopener,noreferrer"
+  );
+}
+
+// ================= SAFE HTML HELPERS =================
+
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, character => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[character]);
+}
+
+function formatPrice(value) {
+  const amount = Number(value);
+
+  if (!Number.isFinite(amount)) return "₹0";
+
+  return "₹" + amount.toLocaleString("en-IN");
+}
+
+function getPhotoBlob(photo) {
+  if (photo instanceof Blob) return photo;
+  if (photo && photo.blob instanceof Blob) return photo.blob;
+  return null;
+}
+
+function photoURL(photo) {
+  const blob = getPhotoBlob(photo);
+  return blob ? URL.createObjectURL(blob) : "";
+}
+ // ================= PRODUCT LISTINGS =================
+
+let renderUrls = [];
+
+function clearRenderUrls() {
+  renderUrls.forEach(url => URL.revokeObjectURL(url));
+  renderUrls = [];
+}
+
+function makePhotoURL(photo) {
+  const blob = getPhotoBlob(photo);
+
+  if (!blob) return "";
+
+  const url = URL.createObjectURL(blob);
+  renderUrls.push(url);
+  return url;
+}
+
+function render() {
+  clearRenderUrls();
+
+  const container = $("products");
+  const query = $("q").value.trim().toLowerCase();
+  const category = $("cat").value;
+
+  const filtered = products.filter(product => {
+    const matchesCategory =
+      category === "All" || product.category === category;
+
+    const searchable = [
+      product.brand,
+      product.name,
+      product.category,
+      product.colour,
+      product.condition,
+      product.description,
+      product.fuel,
+      product.year,
+      product.km
+    ].join(" ").toLowerCase();
+
+    return matchesCategory && searchable.includes(query);
+  });
+
+  container.innerHTML = "";
+
+  if (filtered.length === 0) {
+    container.innerHTML =
+      '<p style="grid-column:1/-1;background:white;padding:22px;border-radius:12px">No products found. Be the first to post an advertisement!</p>';
+    return;
+  }
+
+  filtered.forEach(product => {
+    const card = document.createElement("article");
+    card.className = "card";
+
+    const photos = Array.isArray(product.photos)
+      ? product.photos
+      : [];
+
+    const firstPhoto = photos.length
+      ? makePhotoURL(photos[0])
+      : "";
+
+    const imageContent = firstPhoto
+      ? `<img src="${escapeHTML(firstPhoto)}" alt="${escapeHTML(product.name)}">`
+      : `<span>${product.category === "Car" ? "🚗" : product.category === "Mobile" ? "📱" : "🛍️"}</span>`;
+
+    let extraDetails = "";
+
+    if (product.category === "Mobile") {
+      if (product.ram) {
+        extraDetails += "RAM: " + escapeHTML(product.ram) + " · ";
+      }
+
+      if (product.rom) {
+        extraDetails += "Storage: " + escapeHTML(product.rom) + " · ";
+      }
+
+      if (product.brand === "Apple" && product.battery) {
+        extraDetails +=
+          "Battery Health: " +
+          escapeHTML(product.battery) +
+          "% · ";
+      }
+    }
+
+    if (product.category === "Car") {
+      if (product.year) {
+        extraDetails += "Year: " + escapeHTML(product.year) + " · ";
+      }
+
+      if (product.fuel) {
+        extraDetails += "Fuel: " + escapeHTML(product.fuel) + " · ";
+      }
+
+      if (product.km !== "" && product.km != null) {
+        extraDetails +=
+          "Driven: " +
+          escapeHTML(Number(product.km).toLocaleString("en-IN")) +
+          " km · ";
+      }
+    }
+
+    if (product.colour) {
+      extraDetails += "Colour: " + escapeHTML(product.colour) + " · ";
+    }
+
+    const oldPrice = Number(product.price) > 0
+      ? `<span class="old-price">${formatPrice(product.price)}</span>`
+      : "";
+
+    card.innerHTML = `
+      <div class="art">${imageContent}</div>
+      <div class="content">
+        <div class="label">${escapeHTML(product.category || "Other")}</div>
+        <h3>${escapeHTML(product.brand || "")} ${escapeHTML(product.name || "")}</h3>
+        <div>
+          <span class="price">${formatPrice(product.offer)}</span>
+          ${oldPrice}
+        </div>
+        <div class="details">
+          ${escapeHTML(product.condition || "")}<br>
+          ${extraDetails}
+          ${escapeHTML(product.description || "")}
+        </div>
+        <div class="details">${photos.length} photo(s)</div>
+        <div class="actions">
+          <button type="button" class="view-btn">View Photos</button>
+          <button type="button" class="secondary whatsapp-btn">WhatsApp</button>
+          <button type="button" class="delete-btn" style="background:#dc2626">Delete</button>
+        </div>
+      </div>
+    `;
+
+    const image = card.querySelector(".art img");
+
+    if (image) {
+      image.addEventListener("click", () => {
+        if (photos.length) openGallery(photos, 0);
+      });
+    }
+
+    card.querySelector(".view-btn").addEventListener("click", () => {
+      if (photos.length) {
+        openGallery(photos, 0);
+      } else {
+        alert("No photos available for this product.");
+      }
+    });
+
+    card.querySelector(".whatsapp-btn").addEventListener("click", () => {
+      if (!WHATSAPP_NUMBER.replace(/\D/g, "")) {
+        alert("Please add your WhatsApp number in WHATSAPP_NUMBER.");
+        return;
+      }
+
+      const message =
+        "Hello, I am interested in " +
+        (product.brand || "") + " " +
+        (product.name || "") +
+        ". Price: " + formatPrice(product.offer);
+
+      window.open(
+        "https://wa.me/" +
+        WHATSAPP_NUMBER.replace(/\D/g, "") +
+        "?text=" + encodeURIComponent(message),
+        "_blank",
+        "noopener,noreferrer"
+      );
+    });
+
+    card.querySelector(".delete-btn").addEventListener("click", async () => {
+      if (!confirm("Delete this advertisement from this browser?")) return;
+
+      try {
+        await deleteProduct(product.id);
+        await loadProducts();
+      } catch (error) {
+        console.error(error);
+        alert("Could not delete the advertisement.");
+      }
+    });
+
+    container.appendChild(card);
+  });
+}
+
+// ================= PHOTO GALLERY =================
+
+function openGallery(photos, startIndex) {
+  galleryPhotos = photos || [];
+  galleryIndex = startIndex || 0;
+
+  if (!galleryPhotos.length) return;
+
+  $("viewer").classList.add("open");
+  $("viewer").setAttribute("aria-modal", "true");
+  $("viewer").setAttribute("role", "dialog");
+
+  showGalleryPhoto();
+}
+
+function showGalleryPhoto() {
+  const photo = galleryPhotos[galleryIndex];
+
+  if (!photo) return;
+
+  const blob = getPhotoBlob(photo);
+
+  if (!blob) return;
+
+  galleryUrls.forEach(url => URL.revokeObjectURL(url));
+  galleryUrls = [];
+
+  const url = URL.createObjectURL(blob);
+  galleryUrls.push(url);
+
+  $("largeImage").src = url;
+  $("imageNumber").textContent =
+    (galleryIndex + 1) + " / " + galleryPhotos.length;
+
+  const thumbs = $("galleryThumbs");
+  thumbs.innerHTML = "";
+
+  galleryPhotos.forEach((item, index) => {
+    const itemBlob = getPhotoBlob(item);
+
+    if (!itemBlob) return;
+
+    const thumbUrl = URL.createObjectURL(itemBlob);
+    galleryUrls.push(thumbUrl);
+
+    const img = document.createElement("img");
+    img.src = thumbUrl;
+    img.alt = "Photo " + (index + 1);
+
+    if (index === galleryIndex) {
+      img.classList.add("active");
+    }
+
+    img.addEventListener("click", () => {
+      galleryIndex = index;
+      showGalleryPhoto();
+    });
+
+    thumbs.appendChild(img);
+  });
+}
+
+function changePhoto(direction) {
+  if (!galleryPhotos.length) return;
+
+  galleryIndex =
+    (galleryIndex + direction + galleryPhotos.length) %
+    galleryPhotos.length;
+
+  showGalleryPhoto();
+}
+
+function closeGallery() {
+  $("viewer").classList.remove("open");
+  $("largeImage").removeAttribute("src");
+
+  galleryUrls.forEach(url => URL.revokeObjectURL(url));
+  galleryUrls = [];
+  galleryPhotos = [];
+}
+
+$("viewer").addEventListener("click", function(event) {
+  if (event.target === this) closeGallery();
+});
+
+document.addEventListener("keydown", function(event) {
+  if (!$("viewer").classList.contains("open")) return;
+
+  if (event.key === "Escape") closeGallery();
+  if (event.key === "ArrowLeft") changePhoto(-1);
+  if (event.key === "ArrowRight") changePhoto(1);
+});
+
+// ================= POST ADVERTISEMENT =================
+
+$("adForm").addEventListener("submit", async function(event) {
+  event.preventDefault();
+
+  const category = $("adCat").value;
+  const brand = $("adBrand").value;
+  const name = $("adName").value.trim();
+  const offer = Number($("adOffer").value);
+  const price = $("adPrice").value;
+  const battery = $("adBattery").value;
+
+  if (!name || !brand) {
+    alert("Please enter the brand and model/product name.");
+    return;
+  }
+
+  if (!Number.isFinite(offer) || offer <= 0) {
+    alert("Please enter a valid selling price.");
+    return;
+  }
+
+  if (selectedPhotos.length > MAX_PHOTOS) {
+    alert("You can upload a maximum of 10 photos.");
+    return;
+  }
+
+  if (category === "Mobile" && brand === "Apple" && battery !== "") {
+    const batteryNumber = Number(battery);
+
+    if (
+      !Number.isFinite(batteryNumber) ||
+      batteryNumber < 1 ||
+      batteryNumber > 100
+    ) {
+      alert("iPhone Battery Health must be between 1 and 100.");
+      return;
+    }
+  }
+
+  const product = {
+    category,
+    brand,
+    name,
+    ram: category === "Mobile" ? $("adRam").value : "",
+    rom: category === "Mobile" ? $("adRom").value : "",
+    battery:
+      category === "Mobile" && brand === "Apple"
+        ? battery
+        : "",
+    colour: $("adColour").value.trim(),
+    year: category === "Car" ? $("adYear").value : "",
+    fuel: category === "Car" ? $("adFuel").value : "",
+    km: category === "Car" ? $("adKm").value : "",
+    condition: $("adCondition").value,
+    price: price,
+    offer: offer,
+    description: $("adDetails").value.trim(),
+
+    // Original image files are saved without compression.
+    photos: selectedPhotos.slice(),
+
+    createdAt: new Date().toISOString()
+  };
+
+  const submitButton = $("submitBtn");
+  submitButton.disabled = true;
+  submitButton.textContent = "Saving...";
+
+  try {
+    await saveProduct(product);
+
+    $("adMessage").textContent =
+      "Advertisement posted successfully!";
+
+    clearForm();
+    await loadProducts();
+
+    $("listings").scrollIntoView({ behavior: "smooth" });
+  } catch (error) {
+    console.error(error);
+
+    $("adMessage").textContent =
+      "Could not save the advertisement. Please try again.";
+
+    alert(
+      "Could not save the advertisement. Your browser may have limited storage. Please try again."
+    );
+  } finally {
+    submitButton.disabled = false;
+    submitButton.textContent =
+      translations[$("languageSelect").value].submit;
+  }
+});
+
+// ================= START WEBSITE =================
+
+async function startWebsite() {
+  $("footerYear").textContent = new Date().getFullYear();
+
+  updateFields();
+  setLanguage("en");
+
+  try {
+    await openDatabase();
+    await loadProducts();
+  } catch (error) {
+    console.error(error);
+
+    $("products").innerHTML =
+      "<p>Could not initialise local storage. Please try another browser.</p>";
+  }
+}
+
+startWebsite();
 </script>
 </body>
 </html>
