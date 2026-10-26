@@ -1058,14 +1058,28 @@ function makePhotoURL(photo) {
 function render() {
   clearRenderUrls();
 
-  const container = $("products");
-  const query = $("q").value.trim().toLowerCase();
-  const category = $("cat").value;
-  const minPrice = Number($("minPrice")?.value || 0);
-  const maxRaw = $("maxPrice")?.value || "";
-  const maxPrice = maxRaw === "" ? Infinity : Number(maxRaw);
-  const sortBy = $("sortBy")?.value || "newest";
+ const minRaw = $("minPrice").value.trim();
+const maxRaw = $("maxPrice").value.trim();
 
+const minPrice = minRaw === "" ? 0 : Number(minRaw);
+const maxPrice = maxRaw === "" ? Infinity : Number(maxRaw);
+const sortBy = $("sortBy").value || "newest";
+
+if (
+  !Number.isFinite(minPrice) ||
+  minPrice < 0 ||
+  (maxRaw !== "" && (!Number.isFinite(maxPrice) || maxPrice < 0))
+) {
+  $("products").innerHTML =
+    '<p style="grid-column:1/-1">Please enter valid prices.</p>';
+  return;
+}
+
+if (minPrice > maxPrice) {
+  $("products").innerHTML =
+    '<p style="grid-column:1/-1">Minimum price cannot exceed maximum price.</p>';
+  return;
+}
   const filtered = products.filter(product => {
     const amount = Number(product.offer || 0);
     const matchesCategory = category === "All" || product.category === category;
