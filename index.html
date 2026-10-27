@@ -364,6 +364,47 @@ body.dark-mode #customer-profile .profile-heading {
     padding: 12px;
   }
 }
+
+/* PREMIUM ADMIN DASHBOARD UPGRADE */
+#admin-dashboard{background:linear-gradient(180deg,#f7f8ff 0%,#eef3ff 100%);border:1px solid #dfe7fb;border-radius:24px;padding:clamp(14px,3vw,28px);box-shadow:0 18px 50px rgba(31,41,85,.12);overflow:hidden}
+#admin-dashboard>.page-heading h2{font-size:clamp(22px,3vw,30px);color:#172554}
+.admin-welcome-hero{position:relative;isolation:isolate;overflow:hidden;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:clamp(22px,4vw,36px);margin:14px 0 22px;border-radius:22px;color:#fff;background:linear-gradient(115deg,#101a46 0%,#4338ca 48%,#8b5cf6 100%);box-shadow:0 16px 32px rgba(67,56,202,.24)}
+.admin-welcome-hero:before,.admin-welcome-hero:after{content:"";position:absolute;z-index:-1;border-radius:50%;background:rgba(255,255,255,.10)}
+.admin-welcome-hero:before{width:240px;height:240px;right:8%;top:-135px}
+.admin-welcome-hero:after{width:170px;height:170px;right:25%;bottom:-125px}
+.admin-welcome-hero h3{font-size:clamp(22px,3.2vw,34px);margin:0 0 9px;color:#fff}
+.admin-welcome-hero p{margin:0;max-width:580px;line-height:1.6;color:#e0e7ff}
+.admin-hero-art{font-size:clamp(48px,8vw,86px);filter:drop-shadow(0 12px 14px rgba(0,0,0,.2));flex-shrink:0;padding:8px}
+.admin-hero-pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.admin-hero-pills span{font-size:12px;font-weight:800;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.12);padding:7px 10px;border-radius:999px;color:white}
+#admin-dashboard>.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:18px 0 24px}
+#admin-dashboard .stat{position:relative;overflow:hidden;background:#fff;border:1px solid #e0e7ff;border-radius:18px;padding:19px;box-shadow:0 8px 20px rgba(30,41,90,.06);font-weight:700;color:#526078;min-height:112px}
+#admin-dashboard .stat:after{content:"";position:absolute;width:75px;height:75px;right:-22px;bottom:-25px;border-radius:50%;background:var(--stat-tint,#e0e7ff);opacity:.7}
+#admin-dashboard .stat:nth-child(1){--stat-tint:#c7d2fe;border-top:4px solid #6366f1}
+#admin-dashboard .stat:nth-child(2){--stat-tint:#bae6fd;border-top:4px solid #0ea5e9}
+#admin-dashboard .stat:nth-child(3){--stat-tint:#bbf7d0;border-top:4px solid #10b981}
+#admin-dashboard .stat:nth-child(4){--stat-tint:#fed7aa;border-top:4px solid #f97316}
+#admin-dashboard .stat strong{display:block;font-size:30px;color:#1e1b4b;margin-top:12px;position:relative;z-index:1}
+.admin-quick-title{margin:26px 0 12px;color:#1e293b;font-size:19px}
+.admin-quick-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin:14px 0 28px}
+.admin-quick-card{display:flex;align-items:center;gap:13px;text-align:left;background:#fff!important;color:#1e293b!important;border:1px solid #e1e7f5!important;border-radius:16px;padding:16px!important;min-height:88px;box-shadow:0 6px 18px rgba(30,41,90,.06);transition:transform .18s,box-shadow .18s}
+.admin-quick-card:hover{transform:translateY(-3px);box-shadow:0 12px 24px rgba(30,41,90,.12)}
+.admin-quick-icon{width:48px;height:48px;display:grid;place-items:center;border-radius:14px;font-size:24px;flex-shrink:0;background:var(--quick-bg,#eef2ff)}
+.admin-quick-card strong{display:block;font-size:14px;margin-bottom:4px}
+.admin-quick-card small{display:block;font-size:12px;color:#64748b;font-weight:500;line-height:1.4}
+#admin-dashboard .admin-inventory{background:#fff;border:1px solid #e0e7f4;border-radius:18px;padding:clamp(13px,2.4vw,22px);box-shadow:0 8px 24px rgba(30,41,90,.05);margin-top:18px!important}
+#admin-dashboard .admin-inventory h3{color:#1e1b4b;font-size:19px;margin-top:2px!important}
+#admin-dashboard .admin-table th{background:#eef2ff;color:#3730a3;padding:13px;text-align:left}
+#admin-dashboard .admin-table td{padding:12px;border-bottom:1px solid #e8edf7}
+#admin-dashboard .admin-offer-form{border:1px solid #e0e7ff;border-radius:14px;padding:14px;background:linear-gradient(135deg,#fafaff,#f3f6ff)}
+body.dark-mode #admin-dashboard{background:#0f172a;border-color:#263449}
+body.dark-mode #admin-dashboard>.page-heading h2,body.dark-mode .admin-quick-title,body.dark-mode #admin-dashboard .admin-inventory h3{color:#e0e7ff}
+body.dark-mode #admin-dashboard .stat,body.dark-mode .admin-quick-card,body.dark-mode #admin-dashboard .admin-inventory{background:#172338!important;color:#e5e7eb!important;border-color:#334155!important}
+body.dark-mode #admin-dashboard .stat strong{color:#f8fafc}
+body.dark-mode .admin-quick-card small{color:#a5b4cc}
+@media(max-width:760px){#admin-dashboard>.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.admin-quick-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.admin-welcome-hero{align-items:flex-start}.admin-hero-art{font-size:52px}}
+@media(max-width:470px){.admin-welcome-hero{padding:20px 16px}.admin-hero-art{font-size:40px}.admin-quick-grid{grid-template-columns:1fr}.admin-quick-card{min-height:72px}#admin-dashboard .stat{padding:14px;min-height:100px}#admin-dashboard .stat strong{font-size:26px}}
+
 </style>
 </head>
 
@@ -486,9 +527,19 @@ body.dark-mode #customer-profile .profile-heading {
 
 <section id="admin-dashboard" class="info" hidden>
  <div class="page-heading"><h2>📊 Admin Dashboard</h2><button class="back-home" type="button" onclick="openAppPage('home')">← Home</button></div>
+ <div class="admin-welcome-hero"><div><h3>Welcome to your Control Center ✨</h3><p>Manage products, customer orders, reviews and homepage promotions from one premium dashboard.</p><div class="admin-hero-pills"><span>🛡️ Admin Control</span><span>🛍️ Buy & Sell</span><span>⚡ Quick Actions</span></div></div><div class="admin-hero-art" aria-hidden="true">📊🛒</div></div>
+ <h3 class="admin-quick-title">⚡ Quick Actions</h3>
+ <div class="admin-quick-grid">
+  <button type="button" class="admin-quick-card" onclick="adminJump('adminInventory')"><span class="admin-quick-icon" style="--quick-bg:#e0e7ff">📦</span><span><strong>Product Inventory</strong><small>Edit, publish or mark sold out</small></span></button>
+  <button type="button" class="admin-quick-card" onclick="adminJump('adminOrdersPanel')"><span class="admin-quick-icon" style="--quick-bg:#d1fae5">🧾</span><span><strong>Customer Orders</strong><small>Manage order status</small></span></button>
+  <button type="button" class="admin-quick-card" onclick="adminJump('adminReviewsPanel')"><span class="admin-quick-icon" style="--quick-bg:#fef3c7">⭐</span><span><strong>Review Moderation</strong><small>Approve or reject reviews</small></span></button>
+  <button type="button" class="admin-quick-card" onclick="adminJump('adminOffersPanel')"><span class="admin-quick-icon" style="--quick-bg:#fce7f3">🎯</span><span><strong>Homepage Offers</strong><small>Promote deals with photos</small></span></button>
+  <button type="button" class="admin-quick-card" onclick="openSellPage()"><span class="admin-quick-icon" style="--quick-bg:#ffedd5">➕</span><span><strong>Post a Product</strong><small>Open the listing form</small></span></button>
+  <button type="button" class="admin-quick-card" onclick="loadProducts();loadAdminOrders();loadAdminReviews();loadAdminOffers();"><span class="admin-quick-icon" style="--quick-bg:#dbeafe">🔄</span><span><strong>Refresh Dashboard</strong><small>Reload products and panels</small></span></button>
+ </div>
  <p>Quick overview of the products currently available in your catalogue.</p>
  <div class="stats"><div class="stat">Total products<strong id="statTotal">0</strong></div><div class="stat">Mobiles<strong id="statMobiles">0</strong></div><div class="stat">Cars<strong id="statCars">0</strong></div><div class="stat">Bikes<strong id="statBikes">0</strong></div></div>
- <div class="admin-inventory">
+ <div class="admin-inventory" id="adminInventory">
    <h3 style="margin:22px 0 12px">📦 Product Inventory</h3>
    <p id="adminInventoryMessage" style="color:#64748b;font-size:13px">Products loaded from your catalogue will appear here.</p>
    <div style="overflow-x:auto">
@@ -498,13 +549,13 @@ body.dark-mode #customer-profile .profile-heading {
     </table>
    </div>
  </div>
- <div class="admin-inventory" style="margin-top:24px">
+ <div class="admin-inventory" id="adminOrdersPanel" style="margin-top:24px">
   <h3>🧾 Customer Orders</h3><p style="color:#64748b;font-size:13px">Update order statuses. Requires the orders SQL migration below.</p><div id="adminOrdersMessage" role="status"></div><div id="adminOrdersList"></div>
  </div>
- <div class="admin-inventory" style="margin-top:24px">
+ <div class="admin-inventory" id="adminReviewsPanel" style="margin-top:24px">
   <h3>⭐ Review Moderation</h3><p style="color:#64748b;font-size:13px">Approve customer reviews before they appear publicly.</p><div id="adminReviewsMessage" role="status"></div><div id="adminReviewsList"></div>
  </div>
- <div class="admin-inventory" style="margin-top:24px">
+ <div class="admin-inventory" id="adminOffersPanel" style="margin-top:24px">
   <h3>🎯 Homepage Offer Slider</h3>
   <p style="color:#64748b;font-size:13px">Add your own offer photo, title and price. Offer records are shared through Supabase.</p>
   <form id="offerForm" class="admin-offer-form">
@@ -1296,6 +1347,14 @@ function showPhotoPreview(files) {
     wrap.appendChild(remove);
     container.appendChild(wrap);
   });
+}
+
+function adminJump(targetId) {
+ const target=document.getElementById(targetId);
+ if(!target) return;
+ target.scrollIntoView({behavior:"smooth",block:"start"});
+ target.style.outline="2px solid #818cf8";
+ setTimeout(()=>{target.style.outline="";},1300);
 }
 
 // ================= SUPABASE DATABASE =================
