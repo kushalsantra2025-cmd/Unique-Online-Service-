@@ -290,7 +290,7 @@ header nav a{cursor:pointer}
    <h3 style="margin:22px 0 12px">📦 Product Inventory</h3>
    <p id="adminInventoryMessage" style="color:#64748b;font-size:13px">Products loaded from your catalogue will appear here.</p>
    <div style="overflow-x:auto">
-    <table class="admin-table" style="width:100%;border-collapse:collapse;min-width:620px">
+    <table class="admin-table" style="width:100%;border-collapse:collapse;min-width:850px">
      <thead><tr><th>Product</th><th>Category</th><th>Price</th><th>Status</th><th>Action</th></tr></thead>
      <tbody id="adminProductRows"><tr><td colspan="5">Loading products…</td></tr></tbody>
     </table>
@@ -1136,6 +1136,71 @@ async function setProductSoldOut(id, soldOut) {
   const { error } = await supabaseClient.from("products").update({ sold_out: soldOut }).eq("id", id);
   if (error) throw error;
 }
+async function updateProductDetails(product) {
+  if (!isAdmin || !supabaseClient) throw new Error("Admin access required.");
+  const brand = prompt("Brand (e.g. Apple, Vivo, Samsung):", product.brand || "");
+  if (brand === null) return false;
+  const name = prompt("Product name/model:", product.name || "");
+  if (name === null) return false;
+  const category = prompt("Category (Mobile, Car, Bike, Other):", product.category || "Other");
+  if (category === null) return false;
+  const offerText = prompt("Selling price (numbers only):", String(product.offer ?? ""));
+  if (offerText === null) return false;
+  const offer = Number(offerText.replace(/[₹,\s]/g, ""));
+  if (!Number.isFinite(offer) || offer <= 0) throw new Error("Enter a valid selling price.");
+  const priceText = prompt("Original price (optional; 0 if none):", String(product.price ?? ""));
+  if (priceText === null) return false;
+  const price = priceText.trim() === "" ? null : Number(priceText.replace(/[₹,\s]/g, ""));
+  if (price !== null && (!Number.isFinite(price) || price < 0)) throw new Error("Enter a valid original price or leave it blank.");
+  const description = prompt("Product description:", product.description || "");
+  if (description === null) return false;
+  const { error } = await supabaseClient.from("products").update({
+    brand: brand.trim(), name: name.trim(), category: category.trim() || "Other",
+    offer, price, description: description.trim()
+  }).eq("id", product.id);
+  if (error) throw error;
+  return true;
+}
+function productShareUrl(product) {
+  const url = new URL(window.location.href);
+  url.searchParams.set("product", String(product.id));
+  url.hash = "";
+  return url.toString();
+}
+async function copyProductLink(product) {
+  const link = productShareUrl(product);
+  try {
+    if (navigator.clipboard && window.isSecureContext) await navigator.clipboard.writeText(link);
+    else {
+      const box = document.createElement("textarea"); box.value = link;
+      box.style.position = "fixed"; box.style.opacity = "0"; document.body.appendChild(box);
+      box.select(); const ok = document.execCommand("copy"); box.remove();
+      if (!ok) throw new Error("Copy not supported by this browser.");
+    }
+    alert("Product link copied. You can share it with customers:\n" + link);
+  } catch (error) {
+    prompt("Copy this product link:", link);
+  }
+}
+function openSharedProductIfRequested() {
+  const productId = new URLSearchParams(window.location.search).get("product");
+  if (!productId) return;
+  const found = products.find(p => String(p.id) === String(productId));
+  if (!found) {
+    openAppPage("products");
+    const q = $("q"); if (q) q.value = "";
+    setTimeout(() => alert("This product link may be invalid, or the product is no longer published."), 100);
+    return;
+  }
+  openAppPage("products");
+  const q = $("q"); if (q) q.value = "";
+  const cat = $("cat"); if (cat) cat.value = "All";
+  render();
+  setTimeout(() => {
+    const card = document.getElementById("product-card-" + String(productId).replace(/[^a-zA-Z0-9_-]/g, "_"));
+    if (card) { card.scrollIntoView({behavior:"smooth", block:"center"}); card.style.outline = "3px solid #7c3aed"; card.style.outlineOffset = "3px"; }
+  }, 150);
+}
 async function uploadPhotos(files) {
   const urls = [];
   for (const file of files) {
@@ -1422,6 +1487,23 @@ function renderAdminInventory() {
       catch (err) { alert("Could not update product: " + (err.message || "Unknown error")); }
       finally { statusBtn.disabled = false; }
     });
+    const editBtn = document.createElement("button");
+    editBtn.type = "button";
+    editBtn.className = "admin-action admin-status";
+    editBtn.textContent = "Edit";
+    editBtn.addEventListener("click", async () => {
+      try {
+        editBtn.disabled = true;
+        const changed = await updateProductDetails(product);
+        if (changed) await loadProducts();
+      } catch (err) { alert("Could not edit product: " + (err.message || "Unknown error")); }
+      finally { editBtn.disabled = false; }
+    });
+    const linkBtn = document.createElement("button");
+    linkBtn.type = "button";
+    linkBtn.className = "admin-action admin-status";
+    linkBtn.textContent = "Copy Product Link";
+    linkBtn.addEventListener("click", () => copyProductLink(product));
     const deleteBtn = document.createElement("button");
     deleteBtn.type = "button";
     deleteBtn.className = "admin-action admin-delete";
@@ -1433,7 +1515,7 @@ function renderAdminInventory() {
       catch (err) { alert("Could not delete product: " + (err.message || "Unknown error")); }
       finally { deleteBtn.disabled = false; }
     });
-    actions.append(statusBtn, deleteBtn);
+    actions.append(editBtn, linkBtn, statusBtn, deleteBtn);
     tr.append(name, category, price, status, actions);
     tbody.appendChild(tr);
   });
@@ -1604,6 +1686,7 @@ if (minPrice > maxPrice) {
   filtered.forEach(product => {
     const card = document.createElement("article");
     card.className = "card";
+    card.id = "product-card-" + String(product.id).replace(/[^a-zA-Z0-9_-]/g, "_");
 
     const photos = Array.isArray(product.photos)
       ? product.photos
@@ -1688,13 +1771,22 @@ if (minPrice > maxPrice) {
           <button type="button" class="detail-btn details-btn">Product Details</button><button type="button" class="view-btn">View Photos</button>
           <button type="button" class="review-btn secondary">☆ Write Review</button><button type="button" class="read-reviews-btn secondary">Read Reviews</button>
           <button type="button" class="secondary whatsapp-btn" ${product.sold_out ? "disabled" : ""}>${product.sold_out ? "Sold Out" : "WhatsApp"}</button>
-          ${isAdmin ? `<button type="button" class="soldout-btn">${product.sold_out ? "Mark Available" : "Mark Sold Out"}</button>` : ''}
+          ${isAdmin ? `<button type="button" class="soldout-btn">${product.sold_out ? "Mark Available" : "Mark Sold Out"}</button><button type="button" class="secondary edit-product-btn">Edit Product</button><button type="button" class="secondary copy-product-link-btn">Copy Product Link</button>` : ''}
           <button type="button" class="favorite-btn ${favorites.has(String(product.id)) ? "saved" : ""}" aria-label="Save to wishlist">${favorites.has(String(product.id)) ? "♥ Saved" : "♡ Save"}</button>
           <button type="button" class="compare-btn">${compareProducts.has(String(product.id)) ? "✓ Selected" : "⚖️ Compare"}</button>
           ${isAdmin ? '<button type="button" class="delete-btn" style="background:#dc2626">Delete</button>' : ''}
         </div>
       </div>
     `;
+
+    const editCardBtn = card.querySelector(".edit-product-btn");
+    if (editCardBtn) editCardBtn.addEventListener("click", async () => {
+      try { editCardBtn.disabled = true; const changed = await updateProductDetails(product); if (changed) await loadProducts(); }
+      catch (error) { alert("Could not edit product: " + (error.message || "Unknown error")); }
+      finally { editCardBtn.disabled = false; }
+    });
+    const copyLinkBtn = card.querySelector(".copy-product-link-btn");
+    if (copyLinkBtn) copyLinkBtn.addEventListener("click", () => copyProductLink(product));
 
     card.querySelector(".details-btn").addEventListener("click", () => {
       const details = [
@@ -2067,12 +2159,25 @@ $("offerForm")?.addEventListener("submit", async function(event) {
   if (file.size > 10 * 1024 * 1024) return alert("Offer image must be 10 MB or smaller.");
   const button = $("offerSubmit"); button.disabled = true; button.textContent = "Publishing...";
   try {
-    const urls = await uploadPhotos([file]);
-    const { error } = await supabaseClient.from("site_offers").insert({title:$ ("offerTitle").value.trim(), price_text:$ ("offerPrice").value.trim(), description:$ ("offerText").value.trim(), image_url:urls[0], active:true, sort_order:Date.now()});
+    let imageUrl;
+    try {
+      const urls = await uploadPhotos([file]);
+      imageUrl = urls[0];
+    } catch (uploadError) {
+      // Small offer images can be stored directly in the offer row when Storage is unavailable.
+      if (file.size > 500 * 1024) throw new Error("Image upload failed. Check that the 'product-photos' Storage bucket exists and its upload policy allows authenticated admins. For temporary fallback, use an image under 500 KB. Details: " + (uploadError.message || "NetworkError"));
+      imageUrl = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result));
+        reader.onerror = () => reject(new Error("Could not read the selected offer image."));
+        reader.readAsDataURL(file);
+      });
+    }
+    const { error } = await supabaseClient.from("site_offers").insert({title:$ ("offerTitle").value.trim(), price_text:$ ("offerPrice").value.trim(), description:$ ("offerText").value.trim(), image_url:imageUrl, active:true, sort_order:Date.now()});
     if (error) throw error;
     $("offerMessage").textContent = "Offer published and visible to visitors.";
     $("offerForm").reset(); await loadAdminOffers();
-  } catch (error) { $("offerMessage").textContent = "Could not publish offer: " + (error.message || "Run the SQL setup and check image upload permissions."); }
+  } catch (error) { $("offerMessage").textContent = "Could not publish offer: " + (error.message || "Check your internet connection, Supabase project URL, site_offers table permissions, and Storage bucket settings."); }
   finally { button.disabled = false; button.textContent = "Publish Offer"; }
 });
 
@@ -2095,7 +2200,10 @@ async function startWebsite() {
   setLanguage("en");
   updateCustomerProfile();
   const ready = await initSupabase();
-  if (ready) await loadProducts();
+  if (ready) {
+    await loadProducts();
+    openSharedProductIfRequested();
+  }
 }
 startWebsite();
 </script>
