@@ -197,7 +197,7 @@ header nav a{cursor:pointer}
  <nav>
   <a href="#home" onclick="openAppPage('home');return false">Home</a>
   <a href="#listings" onclick="openAppPage('products');return false">Products</a>
-  <a href="#post-ad" id="postAdNav" hidden onclick="openAppPage('post-ad');return false">Post Ad</a>
+  <a href="#post-ad" id="postAdNav" hidden onclick="openSellPage();return false">Sell Product</a>
   <a href="#contact" onclick="openAppPage('contact');return false">Contact</a>
  </nav>
 </header>
@@ -240,7 +240,7 @@ header nav a{cursor:pointer}
  <div class="home-options">
   <button class="home-option" type="button" onclick="openAppPage('products')"><span class="option-icon">🛍️</span><strong>Browse Products</strong><small>Explore all mobiles, cars, bikes and more.</small></button>
   <button class="home-option" type="button" onclick="openAppPage('wishlist')"><span class="option-icon">❤️</span><strong>My Wishlist</strong><small>See products you have saved.</small></button>
-  <button class="home-option" type="button" onclick="openAppPage('post-ad')"><span class="option-icon">📢</span><strong>Sell a Product</strong><small>Post an ad with photos and offer price.</small></button>
+  <button class="home-option" type="button" onclick="openSellPage()"><span class="option-icon">📢</span><strong>Sell a Product</strong><small>Post an ad with photos and offer price.</small></button>
   <button class="home-option" type="button" onclick="openAppPage('compare')"><span class="option-icon">⚖️</span><strong>Compare Products</strong><small>Compare selected products side by side.</small></button>
   <button class="home-option" type="button" onclick="openAppPage('profile')"><span class="option-icon">👤</span><strong>My Profile</strong><small>Account, saved details and activity.</small></button>
   <button class="home-option" type="button" onclick="openAppPage('contact')"><span class="option-icon">💬</span><strong>Contact Us</strong><small>Ask about a product on WhatsApp.</small></button>
@@ -291,8 +291,8 @@ header nav a{cursor:pointer}
    <p id="adminInventoryMessage" style="color:#64748b;font-size:13px">Products loaded from your catalogue will appear here.</p>
    <div style="overflow-x:auto">
     <table class="admin-table" style="width:100%;border-collapse:collapse;min-width:850px">
-     <thead><tr><th>Product</th><th>Category</th><th>Price</th><th>Status</th><th>Action</th></tr></thead>
-     <tbody id="adminProductRows"><tr><td colspan="5">Loading products…</td></tr></tbody>
+     <thead><tr><th>Product</th><th>Category</th><th>Price</th><th>Seller / Contact</th><th>Status</th><th>Action</th></tr></thead>
+     <tbody id="adminProductRows"><tr><td colspan="6">Loading products…</td></tr></tbody>
     </table>
    </div>
  </div>
@@ -312,7 +312,7 @@ header nav a{cursor:pointer}
 
 <section id="post-ad" class="info" hidden>
  <div class="page-heading"><h2>📢 Post Your Advertisement</h2><button class="back-home" type="button" onclick="openAppPage('home')">← Home</button></div>
- <p style="color:#64748b;font-size:13px">Fill in your product information and publish your ad.</p>
+ <p style="color:#64748b;font-size:13px">Customer login is required to list a product. Your account email and phone number will be recorded so the admin can identify the seller.</p>
 
  <form id="adForm">
   <div class="field">
@@ -420,6 +420,11 @@ header nav a{cursor:pointer}
     <div id="photoPreview"></div>
    </div>
 
+   <div class="field full">
+    <label for="adSellerPhone">Your Phone Number * (10-digit mobile)</label>
+    <input id="adSellerPhone" type="tel" inputmode="numeric" autocomplete="tel-national" pattern="[6-9][0-9]{9}" minlength="10" maxlength="10" required placeholder="Enter your 10-digit mobile number">
+    <p class="photo-hint">This number and your account email will be visible to the admin for listing verification.</p>
+   </div>
    <div class="field full">
     <label for="adDetails">Description *</label>
     <textarea id="adDetails" required rows="4" placeholder="Condition, features, history and other details"></textarea>
@@ -1101,9 +1106,10 @@ async function checkAdmin() {
       .from("admin_users").select("user_id").eq("user_id", currentUser.id).maybeSingle();
     isAdmin = !error && !!data;
   }
-  $("post-ad").hidden = !isAdmin;
+  // Any signed-in customer may submit a listing; only allow-listed admins see the dashboard.
+  $("post-ad").hidden = !currentUser;
   $("admin-dashboard").hidden = !isAdmin;
-  $("postAdNav").hidden = !isAdmin;
+  $("postAdNav").hidden = !currentUser;
   $("logoutBtn").hidden = !isAdmin;
   $("loginEmail").hidden = isAdmin;
   $("loginPassword").hidden = isAdmin;
@@ -1121,7 +1127,7 @@ async function getAllProducts() {
   return data || [];
 }
 async function saveProduct(product) {
-  if (!isAdmin) throw new Error("Admin access required.");
+  if (!currentUser || !supabaseClient) throw new Error("Please log in with a customer account before listing a product.");
   const { data, error } = await supabaseClient.from("products").insert(product).select().single();
   if (error) throw error;
   return data;
@@ -1159,11 +1165,13 @@ async function updateProductDetails(product) {
   const km = ask("Kilometres driven:", "km"); if (km === null) return false;
   const cc = ask("Engine capacity (CC):", "cc"); if (cc === null) return false;
   const description = ask("Full product description:", "description"); if (description === null) return false;
+  const sellerPhone = ask("Seller phone (10-digit mobile):", "seller_phone"); if (sellerPhone === null) return false;
+  if (sellerPhone.trim() && !/^[6-9][0-9]{9}$/.test(sellerPhone.trim())) throw new Error("Seller phone must be a valid 10-digit Indian mobile number.");
   const patch = {
     brand: brand.trim(), name: name.trim(), category: category.trim() || "Other",
     condition: condition.trim(), offer, price, ram: ram.trim(), rom: rom.trim(),
     battery: battery.trim(), colour: colour.trim(), year: year.trim(), fuel: fuel.trim(),
-    km: km.trim(), cc: cc.trim(), description: description.trim()
+    km: km.trim(), cc: cc.trim(), description: description.trim(), seller_phone: sellerPhone.trim()
   };
   const { error } = await supabaseClient.from("products").update(patch).eq("id", product.id);
   if (error) throw error;
@@ -1290,7 +1298,7 @@ async function loadProducts() {
     const inventoryMessage = $("adminInventoryMessage");
     const inventoryRows = $("adminProductRows");
     if (inventoryMessage) inventoryMessage.textContent = "Supabase query failed: " + message;
-    if (inventoryRows) inventoryRows.innerHTML = `<tr><td colspan="5" style="color:#b91c1c;white-space:normal">${safeMessage}</td></tr>`;
+    if (inventoryRows) inventoryRows.innerHTML = `<tr><td colspan="6" style="color:#b91c1c;white-space:normal">${safeMessage}</td></tr>`;
     return;
   }
   try {
@@ -1315,7 +1323,19 @@ function clearForm() {
 
 
 // ================= SIMPLE HOME + CLICK-TO-OPEN PAGES =================
+let pendingSellAfterLogin = false;
+function openSellPage() {
+  closeProfileMenu();
+  if (!currentUser) {
+    pendingSellAfterLogin = true;
+    openCustomerLogin();
+    return;
+  }
+  pendingSellAfterLogin = false;
+  openAppPage("post-ad");
+}
 function openAppPage(page) {
+ if (page === "post-ad" && !currentUser) { openSellPage(); return; }
  const sections = ['listings','post-ad','admin-login','admin-dashboard','customer-profile','contact'];
  document.body.classList.toggle('home-mode', page === 'home');
  document.body.classList.toggle('page-mode', page !== 'home');
@@ -1470,7 +1490,7 @@ function renderAdminInventory() {
   const message = $("adminInventoryMessage");
   if (!tbody || !message) return;
   if (!isAdmin) {
-    tbody.innerHTML = '<tr><td colspan="5">Log in as an administrator to manage products.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6">Log in as an administrator to manage products.</td></tr>';
     message.textContent = "Admin-only product management.";
     return;
   }
@@ -1478,7 +1498,7 @@ function renderAdminInventory() {
     ? `Showing ${products.length} product(s) from the database.`
     : "No products are currently returned by the database.";
   if (!products.length) {
-    tbody.innerHTML = '<tr><td colspan="5">No products found. Check the Supabase products table and access policies if you expected products here.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6">No products found. Check the Supabase products table and access policies if you expected products here.</td></tr>';
     return;
   }
   tbody.innerHTML = "";
@@ -1490,6 +1510,22 @@ function renderAdminInventory() {
     category.textContent = product.category || "—";
     const price = document.createElement("td");
     price.textContent = typeof formatPrice === "function" ? formatPrice(product.offer) : `₹${product.offer ?? "—"}`;
+    const seller = document.createElement("td");
+    seller.style.whiteSpace = "normal";
+    seller.style.minWidth = "190px";
+    const sellerName = document.createElement("strong");
+    sellerName.textContent = product.seller_email || (product.submitted_by_email || "Admin / legacy listing");
+    seller.appendChild(sellerName);
+    const sellerPhone = document.createElement("div");
+    sellerPhone.style.fontSize = "12px";
+    sellerPhone.style.color = "#64748b";
+    sellerPhone.textContent = product.seller_phone ? "Phone: " + product.seller_phone : "Phone not recorded";
+    seller.appendChild(sellerPhone);
+    const sellerId = document.createElement("div");
+    sellerId.style.fontSize = "11px";
+    sellerId.style.color = "#64748b";
+    sellerId.textContent = product.submitted_by ? "User ID: " + product.submitted_by : "";
+    seller.appendChild(sellerId);
     const status = document.createElement("td");
     const pill = document.createElement("span");
     pill.className = "admin-status-pill" + (product.sold_out ? " sold" : "");
@@ -1536,7 +1572,7 @@ function renderAdminInventory() {
       finally { deleteBtn.disabled = false; }
     });
     actions.append(editBtn, linkBtn, statusBtn, deleteBtn);
-    tr.append(name, category, price, status, actions);
+    tr.append(name, category, price, seller, status, actions);
     tbody.appendChild(tr);
   });
 }
@@ -2017,8 +2053,15 @@ document.addEventListener("keydown", function(event) {
 // ================= POST ADVERTISEMENT =================
 $("adForm").addEventListener("submit", async function(event) {
   event.preventDefault();
-  if (!isAdmin || !supabaseClient) {
-    alert("Please log in with an authorised admin account first.");
+  if (!currentUser || !supabaseClient) {
+    alert("Please log in to a customer account first, then choose Sell a Product.");
+    openCustomerLogin();
+    return;
+  }
+  const sellerPhone = $("adSellerPhone").value.trim();
+  if (!/^[6-9][0-9]{9}$/.test(sellerPhone)) {
+    alert("Please enter a valid 10-digit Indian mobile number.");
+    $("adSellerPhone").focus();
     return;
   }
   const category = $("adCat").value;
@@ -2056,17 +2099,20 @@ $("adForm").addEventListener("submit", async function(event) {
       offer,
       description: $("adDetails").value.trim(),
       photos: photoUrls,
-      published: true
+      published: true,
+      submitted_by: currentUser.id,
+      seller_email: currentUser.email || "",
+      seller_phone: sellerPhone
     };
     await saveProduct(product);
-    $("adMessage").textContent = "Product published successfully! Everyone can now see it.";
+    $("adMessage").textContent = "Product submitted successfully! The admin can see your account email and phone number in Product Inventory.";
     clearForm();
     await loadProducts();
     $("listings").scrollIntoView({ behavior: "smooth" });
   } catch (error) {
     console.error(error);
     $("adMessage").textContent = "Could not publish product: " + (error.message || "Please check your Supabase setup.");
-    alert("Publish failed. Check that the SQL setup is complete and that the admin account is authorised.\n\n" + (error.message || ""));
+    alert("Publish failed. Check the customer-listing SQL migration, Storage upload policy, and products table permissions.\n\n" + (error.message || ""));
   } finally {
     submitButton.disabled = false;
     submitButton.textContent = translations[$("languageSelect").value].submit;
@@ -2132,7 +2178,7 @@ function editCustomerProfile(){const name=prompt("Enter your display name",curre
 function editAddress(){const address=prompt("Enter your delivery/contact address",localStorage.getItem("uos_customer_address")||"");if(address!==null){localStorage.setItem("uos_customer_address",address);profileNotice(address?"Address saved on this device.":"Saved address cleared.");}}
 function trackOrder(){const order=prompt("Enter your order ID to track:");if(order)profileNotice("Order "+order+": live tracking is not connected yet. Please contact the seller for an update.");}
 async function customerLogout(){try{if(supabaseClient&&currentUser)await supabaseClient.auth.signOut();}catch(e){console.warn(e)}currentUser=null;isAdmin=false;localStorage.removeItem("uos_customer_email");await checkAdmin();await loadProducts();updateCustomerProfile();closeProfileMenu();profileNotice("You have logged out.");}
-$("customerAuthForm").addEventListener("submit",async function(e){e.preventDefault();const email=$("customerAuthEmail").value.trim(),password=$("customerAuthPassword").value;const msg=$("customerAuthMessage"),btn=$("customerAuthSubmit");msg.textContent="";if(!supabaseClient){msg.textContent="Customer account needs Supabase setup. You can still browse and save wishlist items on this device.";return;}btn.disabled=true;btn.textContent=customerSignupMode?"Creating account…":"Signing in…";try{let result;if(customerSignupMode)result=await supabaseClient.auth.signUp({email,password});else result=await supabaseClient.auth.signInWithPassword({email,password});if(result.error)throw result.error;if(result.data.user){currentUser=result.data.user;localStorage.setItem("uos_customer_email",email);await checkAdmin();await loadProducts();updateCustomerProfile();closeCustomerLogin();openCustomerProfile();if(customerSignupMode&&!result.data.session)profileNotice("Account created. Check your email to confirm it, then log in.");}}catch(err){msg.textContent=err.message||"Could not complete sign in.";}finally{btn.disabled=false;btn.textContent=customerSignupMode?"Sign Up":"Login";}});
+$("customerAuthForm").addEventListener("submit",async function(e){e.preventDefault();const email=$("customerAuthEmail").value.trim(),password=$("customerAuthPassword").value;const msg=$("customerAuthMessage"),btn=$("customerAuthSubmit");msg.textContent="";if(!supabaseClient){msg.textContent="Customer account needs Supabase setup. You can still browse and save wishlist items on this device.";return;}btn.disabled=true;btn.textContent=customerSignupMode?"Creating account…":"Signing in…";try{let result;if(customerSignupMode)result=await supabaseClient.auth.signUp({email,password});else result=await supabaseClient.auth.signInWithPassword({email,password});if(result.error)throw result.error;if(result.data.user){currentUser=result.data.user;localStorage.setItem("uos_customer_email",email);await checkAdmin();await loadProducts();updateCustomerProfile();closeCustomerLogin();if(pendingSellAfterLogin){pendingSellAfterLogin=false;openAppPage("post-ad");}else{openCustomerProfile();}if(customerSignupMode&&!result.data.session)profileNotice("Account created. Check your email to confirm it, then log in.");}}catch(err){msg.textContent=err.message||"Could not complete sign in.";}finally{btn.disabled=false;btn.textContent=customerSignupMode?"Sign Up":"Login";}});
 // Fix selected category binding and keep profile status in sync.
 
 // ================= START WEBSITE =================
