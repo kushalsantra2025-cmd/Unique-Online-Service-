@@ -112,7 +112,7 @@ footer{margin-top:30px;background:#1d1238;color:white;padding:24px 6%;text-align
 .favorite-btn{background:#fce7f3;color:#9d174d;min-width:44px}
 .favorite-btn.saved{background:#be185d;color:white}
 .fav-only{background:#fff;color:#5b21b6;border:1px solid #d8b4fe}
-@media(max-width:600px){.filter-row{grid-template-columns:1fr 1fr}.stats{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.brand-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.filter-row{grid-template-columns:1fr 1fr}.stats{grid-template-columns:1fr 1fr}}
 .profile-wrap{position:relative;z-index:50}.profile-trigger{background:#fff;color:#241b3d;border-radius:999px;padding:10px 14px;white-space:nowrap}.profile-menu{position:absolute;right:0;top:calc(100% + 10px);width:245px;background:#fff;color:#241b3d;border-radius:16px;padding:10px;box-shadow:0 18px 50px #10052c35;border:1px solid #ece8f8}.profile-menu-head{padding:12px;border-bottom:1px solid #eee;margin-bottom:5px;display:grid;gap:4px}.profile-menu-head small{color:#64748b;overflow-wrap:anywhere}.profile-menu a,.profile-menu>button{display:block;width:100%;text-align:left;text-decoration:none;color:#241b3d;background:#fff;padding:11px 12px;border-radius:9px;font-size:14px}.profile-menu a:hover,.profile-menu>button:hover{background:#f3edff}.profile-menu .menu-admin{background:#6d28d9;color:white;margin:5px 0}.profile-menu .menu-customer{background:#2563eb;color:white}.profile-menu .menu-logout{color:#b91c1c}.customer-profile{scroll-margin-top:20px}.profile-heading{display:flex;align-items:center;gap:14px}.profile-heading h2{margin:0}.profile-heading p{color:#64748b;margin:5px 0}.avatar{width:66px;height:66px;border-radius:50%;display:grid;place-items:center;background:#e9e5f7;font-size:34px}.profile-shortcuts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:22px 0}.profile-shortcuts button{background:#fff;color:#241b3d;border:1px solid #e6e2ee;display:grid;gap:8px;place-items:center;min-height:88px;box-shadow:0 4px 12px #241b3d0a}.profile-shortcuts span{font-size:13px}.profile-list{background:#fff;border:1px solid #e6e2ee;border-radius:14px;padding:5px 14px;margin:12px 0 24px;box-shadow:0 5px 16px #241b3d0a}.profile-list button,.profile-list label{width:100%;display:flex;align-items:center;gap:14px;text-align:left;color:#241b3d;background:#fff;border-radius:8px;padding:15px 5px;border-bottom:1px solid #f0edf5;font-size:15px}.profile-list button:last-child{border-bottom:0}.profile-list button span,.profile-list label span{flex:1}.profile-list b{font-size:22px;color:#94a3b8;font-weight:400}.profile-list select{width:auto;max-width:125px;padding:7px}.profile-notice{color:#5b21b6;font-weight:bold;line-height:1.5}.auth-overlay,.simple-modal{position:fixed;inset:0;background:#100a20b8;z-index:10000;display:grid;place-items:center;padding:18px}.auth-card,.simple-modal-card{position:relative;background:white;color:#241b3d;border-radius:20px;padding:28px;width:min(460px,100%);box-shadow:0 20px 60px #0004}.auth-card h2{margin-bottom:6px}.auth-card p{color:#64748b;font-size:14px}.auth-card label{display:block;font-weight:bold;font-size:13px;margin:12px 0 6px}.auth-brand{display:grid;gap:3px;color:#5b21b6;font-size:20px}.auth-brand small{font-size:12px;color:#64748b}.auth-close{position:absolute;right:12px;top:12px;background:#f1f0f6;color:#241b3d;padding:8px 11px}.auth-actions{display:flex;gap:10px;margin-top:15px}.auth-actions button{flex:1}.simple-modal-card{max-height:85vh;overflow:auto}.simple-modal-card h2{padding-right:30px}@media(max-width:700px){.profile-wrap{margin-left:auto}.profile-trigger{font-size:13px;padding:9px 10px}.profile-shortcuts{grid-template-columns:repeat(2,minmax(0,1fr))}.profile-menu{right:0}header{gap:10px}header nav{order:3}.profile-heading h2{font-size:22px}}[hidden]{display:none!important}
 #admin-login{margin-top:24px}
 #loginMessage{font-weight:bold}
@@ -144,6 +144,34 @@ body{background:#f4f7fb;color:#10213a}header{background:var(--uos-navy)}button{b
 .offer-dots{position:absolute;left:6%;bottom:12px;display:flex;gap:7px;z-index:2}.offer-dot{width:9px;height:9px;padding:0;border-radius:50%;background:#ffffff80;min-width:9px}.offer-dot.active{background:var(--uos-yellow);transform:scale(1.2)}
 @keyframes uosFade{from{opacity:.65}to{opacity:1}}@media(max-width:600px){.offer-slide{min-height:220px;padding:23px 18px 42px}.offer-visual{flex-basis:100px;width:100px;height:105px;font-size:55px}.offer-slide h2{font-size:25px}.offer-slide p{font-size:13px}.offer-dots{left:18px}}
 
+
+/* Clean home page and click-to-open feature pages */
+.app-home{max-width:1150px;margin:0 auto;padding:24px 16px 36px}
+.home-welcome{background:linear-gradient(120deg,#08172f,#123c67 65%,#19708b);color:#fff;border-radius:24px;padding:clamp(24px,5vw,44px);position:relative;overflow:hidden;box-shadow:0 16px 34px #08172f20}
+.home-welcome:after{content:"✦";position:absolute;right:7%;top:4%;font-size:100px;color:#ffffff18;pointer-events:none}
+.home-welcome h1{font-size:clamp(29px,5vw,45px);line-height:1.12;margin:0 0 10px;max-width:700px}
+.home-welcome p{color:#dbeafe;line-height:1.6;max-width:600px;margin:0 0 18px}
+.home-search{display:flex;gap:9px;max-width:680px;position:relative;z-index:1;flex-wrap:wrap}
+.home-search input{flex:1 1 220px;background:#fff}
+.home-search select{flex:0 1 155px;background:#fff}
+.home-section-title{margin:28px 0 13px;font-size:20px;color:#10213a}
+.home-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.home-option{background:#fff;border:1px solid #e2e8f0;border-radius:17px;padding:18px;text-align:left;color:#10213a;min-height:124px;display:flex;flex-direction:column;align-items:flex-start;gap:8px;box-shadow:0 7px 20px #08172f0b;transition:transform .18s,box-shadow .18s}
+.home-option:hover{transform:translateY(-3px);box-shadow:0 13px 28px #08172f18}
+.home-option .option-icon{font-size:27px;width:48px;height:48px;border-radius:14px;background:#eef4fb;display:grid;place-items:center}
+.home-option strong{font-size:15px}.home-option small{font-size:12px;line-height:1.5;color:#64748b;font-weight:400}
+.brand-shop{margin:24px 0 10px}.brand-shop h2{margin:0 0 6px}.brand-shop p{color:#64748b;margin:0 0 14px}.brand-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.brand-tile{background:#fff;color:#172033;border:1px solid #e2e8f0;border-radius:16px;padding:16px 10px;display:flex;align-items:center;justify-content:center;gap:8px;flex-direction:column;min-height:100px;box-shadow:0 5px 16px #1720330a}.brand-tile .brand-logo{width:58px;height:42px;object-fit:contain;display:block}.brand-logo-fallback{width:46px;height:42px;border-radius:12px;background:#f1f5f9;color:#334155;align-items:center;justify-content:center;font-size:24px;font-weight:800}.brand-tile strong{font-size:15px}.brand-tile small{font-size:12px;color:#64748b}.brand-tile:hover{border-color:#6d28d9;transform:translateY(-2px)}.advanced-filters{width:100%;background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:12px 14px;margin:10px 0}.advanced-filters summary{font-weight:700;cursor:pointer;color:#4c1d95}.advanced-filters .filters{margin-top:12px}.home-offer-strip{margin-top:18px;border-radius:16px;padding:16px 18px;background:#fff8dc;border:1px solid #f7df87;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.home-offer-strip strong{color:#10213a}.home-offer-strip p{margin:4px 0 0;color:#64748b;font-size:13px}
+.page-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:8px 0 14px}
+.back-home{background:#eef3f9!important;color:#123c67!important;border:1px solid #dbe4ef!important}
+body.home-mode #categories,body.home-mode #listings,body.home-mode #contact,body.home-mode #post-ad,body.home-mode #admin-login,body.home-mode #admin-dashboard,body.home-mode #customer-profile{display:none!important}
+body.page-mode .hero,body.page-mode #categories{display:none!important}
+body.page-mode main{padding-top:12px}
+body.page-mode #listings,body.page-mode #post-ad,body.page-mode #admin-login,body.page-mode #admin-dashboard,body.page-mode #customer-profile,body.page-mode #contact{scroll-margin-top:14px}
+header nav a{cursor:pointer}
+@media(max-width:700px){.home-options{grid-template-columns:repeat(2,minmax(0,1fr))}.home-option{padding:14px;min-height:120px}.home-search select{flex:1 1 120px}}
+@media(max-width:430px){.home-options{gap:9px}.home-option{padding:12px}.home-option .option-icon{width:42px;height:42px}}
+
 </style>
 </head>
 
@@ -154,8 +182,8 @@ body{background:#f4f7fb;color:#10213a}header{background:var(--uos-navy)}button{b
   <button type="button" class="profile-trigger" onclick="toggleProfileMenu()" aria-expanded="false">👤 <span id="profileTriggerLabel">Profile / Login</span> ▾</button>
   <div class="profile-menu" id="profileMenu" hidden>
    <div class="profile-menu-head"><strong id="menuUserName">Welcome!</strong><small id="menuUserEmail">Choose how to continue</small></div>
-   <a href="#customer-profile" onclick="openCustomerProfile();closeProfileMenu()">👤 My Profile</a>
-   <a href="#listings" onclick="closeProfileMenu()">♡ Wishlist / Products</a>
+   <a href="#customer-profile" onclick="openCustomerProfile();return false">👤 My Profile</a>
+   <a href="#listings" onclick="closeProfileMenu();openAppPage('wishlist');return false">♡ Wishlist / Products</a>
    <button type="button" class="menu-admin" onclick="openAdminLogin()">🔐 Admin Login</button>
    <button type="button" class="menu-customer" onclick="openCustomerLogin()">🛍️ Customer Login</button>
    <button type="button" class="menu-logout" id="customerLogoutBtn" onclick="customerLogout()" hidden>↪ Logout</button>
@@ -167,11 +195,10 @@ body{background:#f4f7fb;color:#10213a}header{background:var(--uos-navy)}button{b
   <option value="hi">हिन्दी</option>
  </select>
  <nav>
-  <a href="#categories">Categories</a>
-  <a href="#listings">Listings</a>
-  <a href="#customer-profile" onclick="openCustomerProfile()">Profile</a>
-  <a href="#post-ad" id="postAdNav" hidden>Post Ad</a>
-  <a href="#contact">Contact</a>
+  <a href="#home" onclick="openAppPage('home');return false">Home</a>
+  <a href="#listings" onclick="openAppPage('products');return false">Products</a>
+  <a href="#post-ad" id="postAdNav" hidden onclick="openAppPage('post-ad');return false">Post Ad</a>
+  <a href="#contact" onclick="openAppPage('contact');return false">Contact</a>
  </nav>
 </header>
 
@@ -179,7 +206,7 @@ body{background:#f4f7fb;color:#10213a}header{background:var(--uos-navy)}button{b
  <h1>Buy Smart. Sell Simply.</h1>
  <p>Discover mobiles, cars and more in one place.</p>
  <div class="search">
-  <input id="q" placeholder="Search products..." oninput="render()" onkeydown="if(event.key==='Enter'){event.preventDefault();searchAndShowResults()}">
+  <input id="heroQ" placeholder="Search products..." oninput="syncHeroSearch();render()" onkeydown="if(event.key==='Enter'){event.preventDefault();searchAndShowResults()}">
   <select id="cat" onchange="render()" style="width:auto;flex:1">
    <option value="All">All Categories</option>
    <option value="Mobile">Mobile</option>
@@ -190,16 +217,45 @@ body{background:#f4f7fb;color:#10213a}header{background:var(--uos-navy)}button{b
   <button type="button" onclick="searchAndShowResults()">Search</button>
  </div>
  <div class="filter-row" aria-label="Price and sort filters">
-  <input id="minPrice" type="number" min="0" placeholder="Min price ₹" oninput="render()" aria-label="Minimum price">
-  <input id="maxPrice" type="number" min="0" placeholder="Max price ₹" oninput="render()" aria-label="Maximum price">
-  <select id="sortBy" onchange="render()" aria-label="Sort products">
+  <input id="heroMinPrice" type="number" min="0" placeholder="Min price ₹" oninput="syncHeroFilters();render()" aria-label="Minimum price">
+  <input id="heroMaxPrice" type="number" min="0" placeholder="Max price ₹" oninput="syncHeroFilters();render()" aria-label="Maximum price">
+  <select id="heroSortBy" onchange="syncHeroFilters();render()" aria-label="Sort products">
    <option value="newest">Newest first</option><option value="low">Price: low to high</option><option value="high">Price: high to low</option><option value="name">Name A–Z</option>
   </select>
  </div>
 </section>
 
+
+<section class="app-home" id="appHome">
+ <div class="home-welcome">
+  <h1>Find Your Next Favourite.</h1>
+  <p>Mobiles, cars, bikes and more — explore quality products and great offers at Unique Online Service.</p>
+  <div class="home-search">
+   <input id="homeSearchInput" type="search" placeholder="Search mobiles, cars, bikes..." aria-label="Search products" onkeydown="if(event.key==='Enter'){event.preventDefault();runHomeSearch()}">
+   <select id="homeSearchCategory" aria-label="Choose category"><option value="All">All categories</option><option value="Mobile">Mobiles</option><option value="Car">Cars</option><option value="Bike">Bikes</option><option value="Other">Other products</option></select>
+   <button type="button" onclick="runHomeSearch()" style="background:var(--uos-yellow);color:#08172f">Search</button>
+  </div>
+ </div>
+ <h2 class="home-section-title">What would you like to do?</h2>
+ <div class="home-options">
+  <button class="home-option" type="button" onclick="openAppPage('products')"><span class="option-icon">🛍️</span><strong>Browse Products</strong><small>Explore all mobiles, cars, bikes and more.</small></button>
+  <button class="home-option" type="button" onclick="openAppPage('wishlist')"><span class="option-icon">❤️</span><strong>My Wishlist</strong><small>See products you have saved.</small></button>
+  <button class="home-option" type="button" onclick="openAppPage('post-ad')"><span class="option-icon">📢</span><strong>Sell a Product</strong><small>Post an ad with photos and offer price.</small></button>
+  <button class="home-option" type="button" onclick="openAppPage('compare')"><span class="option-icon">⚖️</span><strong>Compare Products</strong><small>Compare selected products side by side.</small></button>
+  <button class="home-option" type="button" onclick="openAppPage('profile')"><span class="option-icon">👤</span><strong>My Profile</strong><small>Account, saved details and activity.</small></button>
+  <button class="home-option" type="button" onclick="openAppPage('contact')"><span class="option-icon">💬</span><strong>Contact Us</strong><small>Ask about a product on WhatsApp.</small></button>
+ </div>
+ <section class="brand-shop" id="homeBrandShop">
+  <h2>📱 Shop Mobiles by Brand</h2>
+  <p>Choose a brand to see only its available mobile phones.</p>
+  <div class="brand-grid" id="homeBrandGrid"><div class="brand-tile"><strong>Loading brands…</strong></div></div>
+ </section>
+ <div class="home-offer-strip"><div><strong>✨ Special offers and fresh finds</strong><p>Browse the latest listings and discover great deals.</p></div><button type="button" onclick="openAppPage('products')">Explore Products →</button></div>
+ <div id="homeOfferSlider" class="offer-slider" hidden></div>
+</section>
+
 <main>
-<section id="categories">
+<section id="categories" hidden>
  <h2>Shop by Category</h2>
  <div class="categories">
   <div class="cat" onclick="pick('Mobile')"><span>📱</span><h3>Mobiles</h3><p>New and used phones</p></div>
@@ -212,7 +268,7 @@ body{background:#f4f7fb;color:#10213a}header{background:var(--uos-navy)}button{b
 
 
 <section id="admin-login" class="info" hidden>
-  <h2>🔐 Admin Login</h2>
+  <div class="page-heading"><h2>🔐 Admin Login</h2><button class="back-home" type="button" onclick="openAppPage('home')">← Home</button></div>
   <p style="color:#64748b;font-size:13px">Only authorised admin accounts can publish or delete products.</p>
   <form id="loginForm">
     <div class="form-grid">
@@ -227,7 +283,7 @@ body{background:#f4f7fb;color:#10213a}header{background:var(--uos-navy)}button{b
 </section>
 
 <section id="admin-dashboard" class="info" hidden>
- <h2>📊 Admin Dashboard</h2>
+ <div class="page-heading"><h2>📊 Admin Dashboard</h2><button class="back-home" type="button" onclick="openAppPage('home')">← Home</button></div>
  <p>Quick overview of the products currently available in your catalogue.</p>
  <div class="stats"><div class="stat">Total products<strong id="statTotal">0</strong></div><div class="stat">Mobiles<strong id="statMobiles">0</strong></div><div class="stat">Cars<strong id="statCars">0</strong></div><div class="stat">Bikes<strong id="statBikes">0</strong></div></div>
  <div class="admin-inventory">
@@ -255,7 +311,7 @@ body{background:#f4f7fb;color:#10213a}header{background:var(--uos-navy)}button{b
 </section>
 
 <section id="post-ad" class="info" hidden>
- <h2>📢 Post Your Advertisement</h2>
+ <div class="page-heading"><h2>📢 Post Your Advertisement</h2><button class="back-home" type="button" onclick="openAppPage('home')">← Home</button></div>
  <p style="color:#64748b;font-size:13px">Fill in your product information and publish your ad.</p>
 
  <form id="adForm">
@@ -377,8 +433,8 @@ body{background:#f4f7fb;color:#10213a}header{background:var(--uos-navy)}button{b
  <p id="adMessage" role="status"></p>
 </section>
 
-<section id="listings">
- <h2>Latest Listings</h2>
+<section id="listings" hidden>
+ <div class="page-heading"><h2>Latest Listings</h2><button class="back-home" type="button" onclick="openAppPage('home')">← Home</button></div>
  <p style="color:#64748b;font-size:14px">Browse products, compare prices, and save favourites on this device.</p>
  <div class="filters"><button type="button" id="showAllBtn" class="active" onclick="showFavoritesOnly(false)">🛍️ All Products</button><button type="button" id="showFavBtn" class="fav-only" onclick="showFavoritesOnly(true)">❤️ My Wishlist</button></div>
 
@@ -391,17 +447,29 @@ body{background:#f4f7fb;color:#10213a}header{background:var(--uos-navy)}button{b
  </div>
 
  <div class="filters" style="align-items:center;gap:8px;flex-wrap:wrap">
-  <input id="q" type="search" placeholder="Search brand, model, RAM, year..." oninput="render()" style="min-width:180px;flex:2">
+  <input id="q" type="search" placeholder="Search products..." oninput="render()" style="min-width:180px;flex:2">
   <input id="minPrice" type="number" min="0" placeholder="Min ₹" oninput="render()" style="width:100px">
   <input id="maxPrice" type="number" min="0" placeholder="Max ₹" oninput="render()" style="width:100px">
   <select id="sortBy" onchange="render()" aria-label="Sort products"><option value="newest">Newest first</option><option value="low">Price: low to high</option><option value="high">Price: high to low</option><option value="name">Name A–Z</option></select>
-  <select id="conditionFilter" onchange="render()" aria-label="Filter by condition"><option value="">All conditions</option><option>New</option><option>Used</option><option>Mint</option><option>Super Mint</option><option>Open Box</option></select>
  </div>
+ <details class="advanced-filters"><summary>More filters (Condition, RAM, ROM, Year, Fuel)</summary>
+  <div class="filters" style="align-items:center;gap:8px;flex-wrap:wrap">
+   <select id="conditionFilter" onchange="render()" aria-label="Filter by condition"><option value="">All conditions</option><option>New</option><option>Used</option><option>Mint</option><option>Super Mint</option><option>Open Box</option></select>
+   <input id="brandFilter" type="search" placeholder="Brand" oninput="render()" aria-label="Filter by brand">
+   <input id="ramFilter" type="search" placeholder="RAM (e.g. 8GB)" oninput="render()" aria-label="Filter by RAM">
+   <input id="romFilter" type="search" placeholder="Storage / ROM" oninput="render()" aria-label="Filter by storage">
+   <input id="yearFilter" type="number" min="1900" max="2100" placeholder="Vehicle year" oninput="render()" aria-label="Filter by vehicle year">
+   <select id="fuelFilter" onchange="render()" aria-label="Filter by fuel"><option value="">All fuel types</option><option>Petrol</option><option>Diesel</option><option>Electric</option><option>CNG</option><option>Hybrid</option><option>LPG</option></select>
+   <button type="button" class="secondary" onclick="clearAllFilters()">Clear filters</button>
+  </div>
+ </details>
+ <p id="resultsCount" style="font-size:13px;color:#64748b;margin:8px 0" aria-live="polite">Loading products…</p>
  <div id="comparePanel" class="compare-panel" hidden><strong>⚖️ Compare Products</strong><p id="compareSummary">Select up to 3 products to compare.</p><div class="compare-actions"><button type="button" id="compareNowBtn">Compare now</button><button type="button" id="clearCompareBtn" class="secondary">Clear selection</button></div></div>
   <div id="products" class="grid"></div>
 </section>
 
 <section class="info customer-profile" id="customer-profile" hidden>
+ <div class="page-heading"><h2>My Profile</h2><button class="back-home" type="button" onclick="openAppPage('home')">← Home</button></div>
  <div class="profile-heading"><div><span class="avatar">👤</span></div><div><h2 id="customerGreeting">Hello, Customer</h2><p id="customerEmailLabel">Sign in to manage your account</p></div></div>
  <div class="profile-shortcuts">
   <button type="button" onclick="profileNotice('Your orders will appear here after order tracking is connected.')">🛍️ <span>Your orders</span></button>
@@ -427,8 +495,8 @@ body{background:#f4f7fb;color:#10213a}header{background:var(--uos-navy)}button{b
 </div>
 <div class="simple-modal" id="simpleModal" hidden><div class="simple-modal-card"><button type="button" class="auth-close" onclick="closeSimpleModal()">✕</button><h2 id="simpleModalTitle"></h2><div id="simpleModalBody"></div><button type="button" onclick="closeSimpleModal()">Close</button></div></div>
 
-<section class="info" id="contact">
- <h2>Contact Us</h2>
+<section class="info" id="contact" hidden>
+ <div class="page-heading"><h2>Contact Us</h2><button class="back-home" type="button" onclick="openAppPage('home')">← Home</button></div>
  <p>Interested in a product? Contact Unique Online Service Buy & Sell.</p>
  <button onclick="contact()">Contact on WhatsApp</button>
  <p style="font-size:12px;color:#64748b">
@@ -1084,9 +1152,46 @@ async function uploadPhotos(files) {
   }
   return urls;
 }
+function renderHomeBrands(){
+ const grid=document.getElementById('homeBrandGrid');
+ if(!grid) return;
+ const mobiles=(products||[]).filter(p=>String(p.category||'').toLowerCase().includes('mobile')||String(p.category||'').toLowerCase().includes('phone'));
+ const counts=new Map();
+ mobiles.forEach(p=>{const brand=String(p.brand||'').trim();if(brand) counts.set(brand,(counts.get(brand)||0)+1)});
+ const brands=[...counts.entries()].sort((a,b)=>a[0].localeCompare(b[0]));
+ if(!brands.length){grid.innerHTML='<p style="grid-column:1/-1;color:#64748b;background:#fff;padding:16px;border-radius:12px">এখনও কোনো Mobile Brand-এর পণ্য পোস্ট করা হয়নি। Admin থেকে Vivo, Samsung, Apple/iPhone ইত্যাদির ফোন পোস্ট করলে ব্র্যান্ড এখানে নিজে থেকেই দেখাবে।</p>';return;}
+ const logoSlugs={
+  'apple':'apple','iphone':'apple','samsung':'samsung','xiaomi':'xiaomi','redmi':'xiaomi','poco':'poco','oneplus':'oneplus','oppo':'oppo','vivo':'vivo','realme':'realme','google':'google','motorola':'motorola','nothing':'nothing','huawei':'huawei','honor':'honor','infinix':'infinix','tecno':'tecno','lava':'lava','nokia':'nokia','asus':'asus','sony':'sony','iqoo':'iqoo','lenovo':'lenovo','micromax':'micromax','itel':'itel'
+ };
+ const logoColors={apple:'000000',iphone:'000000',samsung:'1428A0',xiaomi:'FF6900',redmi:'FF6900',poco:'000000',oneplus:'F5010C',oppo:'008B55',vivo:'415FFF',realme:'FFC915',google:'4285F4',motorola:'1E4DB7',nothing:'000000',huawei:'CF0A2C',honor:'000000',infinix:'111111',tecno:'0066FF',lava:'E31E24',nokia:'124191',asus:'000000',sony:'000000',iqoo:'E60012',lenovo:'E2231A',micromax:'D71920',itel:'00AEEF'};
+ const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+ grid.innerHTML=brands.map(([brand,count])=>{
+  const key=brand.toLowerCase().replace(/[^a-z0-9]/g,'');
+  const slug=logoSlugs[key]||logoSlugs[brand.toLowerCase()];
+  const color=logoColors[key]||logoColors[brand.toLowerCase()]||'334155';
+  const logo=slug?`<img class="brand-logo" src="https://cdn.simpleicons.org/${slug}/${color}" alt="${esc(brand)} logo" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='inline-flex'">` : '';
+  const safe=esc(brand);
+  return `<button type="button" class="brand-tile" onclick="openBrandProducts(${JSON.stringify(brand).replace(/</g,'\\u003c')})">${logo}<span class="brand-logo-fallback" style="display:${slug?'none':'inline-flex'}">${safe.slice(0,1).toUpperCase()}</span><strong>${safe}</strong><small>${count} mobile${count===1?'':'s'}</small></button>`;
+ }).join('');
+}
+function openBrandProducts(brand){
+ // Open only the selected brand's mobile listings and clear filters left from a previous visit.
+ selected='Mobile';favoritesOnly=false;
+ const cat=document.getElementById('cat');if(cat)cat.value='Mobile';
+ ['q','heroQ','minPrice','maxPrice','heroMinPrice','heroMaxPrice','conditionFilter','ramFilter','romFilter','yearFilter','fuelFilter'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+ const bf=document.getElementById('brandFilter');if(bf)bf.value=brand;
+ const sort=document.getElementById('sortBy');if(sort)sort.value='newest';
+ const allBtn=document.getElementById('showAllBtn'),favBtn=document.getElementById('showFavBtn');
+ if(allBtn)allBtn.classList.add('active');if(favBtn)favBtn.classList.remove('active');
+ openAppPage('products');
+ const heading=document.querySelector('#listings .page-heading h2');if(heading)heading.textContent=brand+' Mobiles';
+ render();
+}
+
 async function loadProducts() {
   try {
     products = await getAllProducts();
+    renderHomeBrands();
   } catch (error) {
     console.error("Supabase product query error:", error);
     const message = String(error?.message || error || "Unknown error");
@@ -1123,6 +1228,52 @@ function clearForm() {
   $("adMessage").textContent = "";
 }
 
+
+// ================= SIMPLE HOME + CLICK-TO-OPEN PAGES =================
+function openAppPage(page) {
+ const sections = ['listings','post-ad','admin-login','admin-dashboard','customer-profile','contact'];
+ document.body.classList.toggle('home-mode', page === 'home');
+ document.body.classList.toggle('page-mode', page !== 'home');
+ document.getElementById('appHome').hidden = page !== 'home';
+ sections.forEach(id => { const el=document.getElementById(id); if(el) el.hidden = true; });
+ document.getElementById('categories').hidden = true;
+ if(page === 'products' || page === 'wishlist' || page === 'compare') {
+   const el=document.getElementById('listings'); el.hidden=false;
+   favoritesOnly = (page === 'wishlist');
+   const allBtn=document.getElementById('showAllBtn'), favBtn=document.getElementById('showFavBtn');
+   if(allBtn) allBtn.classList.toggle('active', !favoritesOnly);
+   if(favBtn) favBtn.classList.toggle('active', favoritesOnly);
+   render();
+   if(page === 'compare') { const panel=document.getElementById('comparePanel'); if(panel) { panel.hidden=false; panel.scrollIntoView({behavior:'smooth',block:'center'}); } }
+ } else if(page === 'post-ad') {
+   document.getElementById('post-ad').hidden=false;
+ } else if(page === 'profile') {
+   document.getElementById('customer-profile').hidden=false; updateCustomerProfile();
+ } else if(page === 'contact') {
+   document.getElementById('contact').hidden=false;
+ } else if(page === 'admin') {
+   if(isAdmin) document.getElementById('admin-dashboard').hidden=false;
+   else { document.getElementById('admin-login').hidden=false; }
+ } else if(page === 'admin-login') {
+   document.getElementById('admin-login').hidden=false;
+ } else if(page === 'home') {
+   window.scrollTo({top:0,behavior:'smooth'});
+ } else {
+   document.getElementById('appHome').hidden=false;
+ }
+ if(page !== 'home') window.scrollTo({top:0,behavior:'smooth'});
+}
+function runHomeSearch(){
+ const q=document.getElementById('homeSearchInput').value;
+ const cat=document.getElementById('homeSearchCategory').value;
+ document.getElementById('heroQ').value=q;
+ document.getElementById('q').value=q;
+ document.getElementById('cat').value=cat;
+ selected=cat; favoritesOnly=false;
+ openAppPage('products');
+ render();
+}
+
 function pick(category) {
   selected = category;
   $("cat").value = category;
@@ -1138,9 +1289,7 @@ function pick(category) {
 
   render();
 
-  if (category !== "All") {
-    $("listings").scrollIntoView({ behavior: "smooth" });
-  }
+  openAppPage('products');
 }
 
 function showFavoritesOnly(enabled) {
@@ -1148,7 +1297,7 @@ function showFavoritesOnly(enabled) {
   $("showAllBtn").classList.toggle("active", !enabled);
   $("showFavBtn").classList.toggle("active", enabled);
   render();
-  $("listings").scrollIntoView({ behavior: "smooth" });
+  openAppPage(enabled ? 'wishlist' : 'products');
 }
 
 function contact() {
@@ -1326,7 +1475,27 @@ function compareSelectedProducts() {
 $("compareNowBtn")?.addEventListener("click", compareSelectedProducts);
 $("clearCompareBtn")?.addEventListener("click", () => { compareProducts.clear(); updateComparePanel(); render(); });
 
+function syncHeroSearch() {
+  const hero = $("heroQ"), listing = $("q");
+  if (hero && listing) listing.value = hero.value;
+}
+function syncHeroFilters() {
+  const pairs = [["heroMinPrice","minPrice"],["heroMaxPrice","maxPrice"],["heroSortBy","sortBy"]];
+  pairs.forEach(([from,to]) => { if ($(from) && $(to)) $(to).value = $(from).value; });
+}
+function clearAllFilters() {
+  ["q","heroQ","minPrice","maxPrice","heroMinPrice","heroMaxPrice","brandFilter","ramFilter","romFilter","yearFilter"].forEach(id => { if ($(id)) $(id).value = ""; });
+  ["sortBy","heroSortBy"].forEach(id => { if ($(id)) $(id).value = "newest"; });
+  ["conditionFilter","fuelFilter"].forEach(id => { if ($(id)) $(id).value = ""; });
+  if ($("cat")) $("cat").value = "All";
+  selected = "All";
+  render();
+}
+
 function searchAndShowResults() {
+  openAppPage('products');
+  syncHeroSearch();
+  syncHeroFilters();
   // Render the filtered products first, then bring the results into view.
   render();
   requestAnimationFrame(() => {
@@ -1339,13 +1508,18 @@ function render() {
   clearRenderUrls();
   const container = $("products");
   const category = String($("cat")?.value || selected || "All").trim();
-  const query = String($("q")?.value || "").trim().toLocaleLowerCase();
-  const minRaw = String($("minPrice")?.value || "").trim();
-  const maxRaw = String($("maxPrice")?.value || "").trim();
+  const query = String($("q") ? $("q").value : ($("heroQ")?.value || "")).trim().toLocaleLowerCase();
+  const minRaw = String($("minPrice") ? $("minPrice").value : ($("heroMinPrice")?.value || "")).trim();
+  const maxRaw = String($("maxPrice") ? $("maxPrice").value : ($("heroMaxPrice")?.value || "")).trim();
   const minPrice = minRaw === "" ? 0 : Number(minRaw);
   const maxPrice = maxRaw === "" ? Infinity : Number(maxRaw);
-  const sortBy = String($("sortBy")?.value || "newest");
+  const sortBy = String($("sortBy") ? $("sortBy").value : ($("heroSortBy")?.value || "newest"));
   const conditionFilter = String($("conditionFilter")?.value || "").toLocaleLowerCase();
+  const brandFilter = String($("brandFilter")?.value || "").trim().toLocaleLowerCase();
+  const ramFilter = String($("ramFilter")?.value || "").trim().toLocaleLowerCase();
+  const romFilter = String($("romFilter")?.value || "").trim().toLocaleLowerCase();
+  const yearFilter = String($("yearFilter")?.value || "").trim();
+  const fuelFilter = String($("fuelFilter")?.value || "").trim().toLocaleLowerCase();
 
 if (
   !Number.isFinite(minPrice) ||
@@ -1380,17 +1554,37 @@ if (minPrice > maxPrice) {
     const matchesPrice = amount >= minPrice && amount <= maxPrice;
     const matchesFavorite = !favoritesOnly || favorites.has(String(product.id));
     const matchesCondition = !conditionFilter || String(product.condition || "").toLocaleLowerCase() === conditionFilter;
+    const normalizeBrand = value => String(value || "").toLocaleLowerCase().replace(/[^a-z0-9]/g, "");
+    const selectedBrandKey = normalizeBrand(brandFilter);
+    const productBrandKey = normalizeBrand(product.brand);
+    const productNameKey = normalizeBrand([product.name, product.model].filter(Boolean).join(" "));
+    const brandAliases = {
+      apple: ["apple", "iphone"], iphone: ["apple", "iphone"],
+      samsung: ["samsung"], vivo: ["vivo"], oppo: ["oppo"],
+      xiaomi: ["xiaomi", "redmi", "poco"], redmi: ["xiaomi", "redmi"], poco: ["poco", "xiaomi"],
+      oneplus: ["oneplus"], realme: ["realme"], google: ["google", "pixel"], pixel: ["google", "pixel"],
+      motorola: ["motorola"], infinix: ["infinix"], tecno: ["tecno"], nothing: ["nothing"],
+      huawei: ["huawei"], honor: ["honor"], nokia: ["nokia"], iqoo: ["iqoo"], itel: ["itel"], lava: ["lava"]
+    };
+    const aliases = brandAliases[selectedBrandKey] || [selectedBrandKey];
+    const matchesBrand = !selectedBrandKey || aliases.some(alias => productBrandKey === alias || productBrandKey.includes(alias) || productNameKey.includes(alias));
+    const matchesRam = !ramFilter || String(product.ram || "").toLocaleLowerCase().includes(ramFilter);
+    const matchesRom = !romFilter || String(product.rom || "").toLocaleLowerCase().includes(romFilter);
+    const matchesYear = !yearFilter || String(product.year || "") === yearFilter;
+    const matchesFuel = !fuelFilter || String(product.fuel || "").toLocaleLowerCase() === fuelFilter;
     const searchable = [
       product.brand, product.name, product.model, product.category, product.colour, product.color,
       product.condition, product.description, product.fuel, product.year, product.km,
       product.ram, product.rom, product.battery, product.cc, product.price, product.offer
     ].filter(value => value !== null && value !== undefined).join(" ").toLocaleLowerCase();
-    return matchesCategory && matchesPrice && matchesFavorite && matchesCondition && searchable.includes(query);
+    return matchesCategory && matchesPrice && matchesFavorite && matchesCondition && matchesBrand && matchesRam && matchesRom && matchesYear && matchesFuel && searchable.includes(query);
   });
   if (sortBy === "low") filtered.sort((a,b) => priceOf(a)-priceOf(b));
   else if (sortBy === "high") filtered.sort((a,b) => priceOf(b)-priceOf(a));
   else if (sortBy === "name") filtered.sort((a,b) => String(a.name || a.model || "").localeCompare(String(b.name || b.model || "")));
   else filtered.sort((a,b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime());
+  const resultsCount = $("resultsCount");
+  if (resultsCount) resultsCount.textContent = `Showing ${filtered.length} of ${products.length} products`;
   if (isAdmin) {
     $("statTotal").textContent = products.length;
     $("statMobiles").textContent = products.filter(p => p.category === "Mobile").length;
@@ -1813,11 +2007,11 @@ $("logoutBtn").addEventListener("click", async function() {
 let customerSignupMode = false;
 function toggleProfileMenu(){const menu=$("profileMenu");menu.hidden=!menu.hidden;document.querySelector(".profile-trigger").setAttribute("aria-expanded",String(!menu.hidden));}
 function closeProfileMenu(){$("profileMenu").hidden=true;document.querySelector(".profile-trigger").setAttribute("aria-expanded","false");}
-function openAdminLogin(){closeProfileMenu();document.getElementById("admin-login").hidden=false;location.hash="admin-login";document.getElementById("loginEmail").focus({preventScroll:true});}
+function openAdminLogin(){closeProfileMenu();openAppPage("admin-login");document.getElementById("loginEmail").focus({preventScroll:true});}
 function openCustomerLogin(){closeProfileMenu();customerSignupMode=false;$ ("customerAuthTitle").textContent="Customer Login";$ ("customerAuthSubmit").textContent="Login";$ ("customerSignupToggle").textContent="Create account";$ ("customerAuthMessage").textContent="";$ ("customerAuthOverlay").hidden=false;}
 function closeCustomerLogin(){$("customerAuthOverlay").hidden=true;}
 function toggleCustomerSignup(){customerSignupMode=!customerSignupMode;$ ("customerAuthTitle").textContent=customerSignupMode?"Create Customer Account":"Customer Login";$ ("customerAuthSubmit").textContent=customerSignupMode?"Sign Up":"Login";$ ("customerSignupToggle").textContent=customerSignupMode?"Back to login":"Create account";$ ("customerAuthMessage").textContent="";}
-function openCustomerProfile(){closeProfileMenu();$("customer-profile").hidden=false;location.hash="customer-profile";updateCustomerProfile();}
+function openCustomerProfile(){closeProfileMenu();openAppPage("profile");updateCustomerProfile();}
 function updateCustomerProfile(){const email=currentUser?.email||localStorage.getItem("uos_customer_email")||"Guest account";$("customerGreeting").textContent=currentUser?"Hello, "+(email.split("@")[0]||"Customer"):"Hello, Customer";$("customerEmailLabel").textContent=email;$("menuUserName").textContent=currentUser?(email.split("@")[0]||"Welcome!"):"Welcome!";$("menuUserEmail").textContent=email==="Guest account"?"Choose how to continue":email;$("profileTriggerLabel").textContent=currentUser?(email.split("@")[0]||"My Account"):"Profile / Login";$("customerLogoutBtn").hidden=!currentUser;}
 function profileNotice(message){$("profileNotice").textContent=message;}
 function closeSimpleModal(){$("simpleModal").hidden=true;}
@@ -1830,6 +2024,7 @@ $("customerAuthForm").addEventListener("submit",async function(e){e.preventDefau
 // Fix selected category binding and keep profile status in sync.
 
 // ================= START WEBSITE =================
+document.body.classList.add("home-mode");
 let offerSlideIndex = 0;
 function showOfferSlide(index) {
   const slides = [...document.querySelectorAll("#offerSlider .offer-slide")];
