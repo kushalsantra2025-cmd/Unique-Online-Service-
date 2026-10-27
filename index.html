@@ -2185,8 +2185,8 @@ $("customerAuthForm").addEventListener("submit",async function(e){e.preventDefau
 document.body.classList.add("home-mode");
 let offerSlideIndex = 0;
 function showOfferSlide(index) {
-  const slides = [...document.querySelectorAll("#offerSlider .offer-slide")];
-  const dots = [...document.querySelectorAll("#offerSlider .offer-dot")];
+  const slides = [...document.querySelectorAll("#homeOfferSlider .offer-slide")];
+const dots = [...document.querySelectorAll("#homeOfferSlider .offer-dot")];
   if (!slides.length) return;
   offerSlideIndex = ((index % slides.length) + slides.length) % slides.length;
   slides.forEach((slide, i) => slide.classList.toggle("active", i === offerSlideIndex));
@@ -2202,11 +2202,16 @@ async function loadAdminOffers() {
     const { data, error } = await offerQuery.limit(isAdmin ? 100 : 8);
     if (error) throw error;
     const activeOffers = (data || []).filter(o => o.active !== false);
-    const slider = $("offerSlider");
+    const slider = $("homeOfferSlider");
     if (!activeOffers.length) { if (slider) slider.innerHTML = ""; }
     const slides = activeOffers.map((o, i) => `<div class="offer-slide ${i===0?'active':''} ${o.image_url?'has-photo':''}" ${o.image_url ? `style="background-image:url('${escapeHTML(o.image_url)}')"` : ''}><div class="offer-copy"><span class="offer-kicker">🔥 SPECIAL OFFER</span><h2>${escapeHTML(o.title || 'Special Offer')}</h2><p>${escapeHTML(o.description || '')}</p><div class="offer-price">${escapeHTML(o.price_text || '')}</div><div class="offer-note">Contact us on WhatsApp for details.</div></div>${o.image_url ? `<div class="offer-visual"><img src="${escapeHTML(o.image_url)}" alt="${escapeHTML(o.title || 'Offer photo')}"></div>` : '<div class="offer-visual">🏷️</div>'}</div>`).join("");
     const dots = activeOffers.map((_,i) => `<button class="offer-dot ${i===0?'active':''}" type="button" aria-label="Offer ${i+1}" onclick="showOfferSlide(${i})"></button>`).join("");
-    if (slider) slider.innerHTML = slides ? slides + `<div class="offer-dots">${dots}</div>` : "";
+    if (slider) {
+  slider.innerHTML = slides
+    ? slides + `<div class="offer-dots">${dots}</div>`
+    : "";
+  slider.hidden = !activeOffers.length;
+}
     offerSlideIndex = 0;
     const offerList = $("adminOfferList");
     if (offerList && isAdmin) {
@@ -2217,8 +2222,10 @@ async function loadAdminOffers() {
         catch (error) { alert("Could not update offer: " + (error.message || "")); }
       }));
     }
-  } catch (error) { console.info("Custom offers unavailable; default offers remain visible.", error.message || error); }
+ } catch (error) { console.info("Custom offers unavailable; default offers remain visible.", error.message || error); }
 }
+
+loadAdminOffers();
 
 $("offerForm")?.addEventListener("submit", async function(event) {
   event.preventDefault();
