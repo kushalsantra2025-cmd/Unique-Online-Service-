@@ -405,6 +405,18 @@ body.dark-mode .admin-quick-card small{color:#a5b4cc}
 @media(max-width:760px){#admin-dashboard>.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.admin-quick-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.admin-welcome-hero{align-items:flex-start}.admin-hero-art{font-size:52px}}
 @media(max-width:470px){.admin-welcome-hero{padding:20px 16px}.admin-hero-art{font-size:40px}.admin-quick-grid{grid-template-columns:1fr}.admin-quick-card{min-height:72px}#admin-dashboard .stat{padding:14px;min-height:100px}#admin-dashboard .stat strong{font-size:26px}}
 
+
+.admin-live-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:16px 0}
+.admin-live-card{border:1px solid #dbe4f0;border-radius:16px;padding:16px;background:linear-gradient(145deg,#fff,#f5f7ff);box-shadow:0 8px 22px #10213a0b;min-width:0}
+.admin-live-card .live-label{font-size:12px;color:#64748b;font-weight:700;display:flex;gap:7px;align-items:center}
+.admin-live-card strong{display:block;font-size:27px;color:#4338ca;margin-top:8px}
+.admin-live-card small{color:#64748b;display:block;margin-top:5px}
+.admin-tools-row{display:flex;gap:9px;flex-wrap:wrap;margin:14px 0}
+.admin-tools-row button{background:#eef2ff;color:#3730a3;border:1px solid #c7d2fe}
+.admin-notice-box{border:1px solid #c7d2fe;background:linear-gradient(120deg,#eef2ff,#fff);padding:15px;border-radius:14px;margin:14px 0}
+.admin-notice-box h3{margin:0 0 8px}.admin-notice-box p{margin:5px 0;color:#475569}
+.admin-error-box{display:none;border:1px solid #fed7aa;background:#fff7ed;color:#9a3412;padding:12px;border-radius:12px;white-space:pre-wrap;overflow-wrap:anywhere;margin:10px 0}
+@media(max-width:700px){.admin-live-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.admin-live-card{padding:12px}.admin-live-card strong{font-size:23px}}
 </style>
 </head>
 
@@ -538,10 +550,19 @@ body.dark-mode .admin-quick-card small{color:#a5b4cc}
   <button type="button" class="admin-quick-card" onclick="adminJump('adminReviewsPanel')"><span class="admin-quick-icon" style="--quick-bg:#fef3c7">⭐</span><span><strong>Review Moderation</strong><small>Approve or reject reviews</small></span></button>
   <button type="button" class="admin-quick-card" onclick="adminJump('adminOffersPanel')"><span class="admin-quick-icon" style="--quick-bg:#fce7f3">🎯</span><span><strong>Homepage Offers</strong><small>Promote deals with photos</small></span></button>
   <button type="button" class="admin-quick-card" onclick="openSellPage()"><span class="admin-quick-icon" style="--quick-bg:#ffedd5">➕</span><span><strong>Post a Product</strong><small>Open the listing form</small></span></button>
-  <button type="button" class="admin-quick-card" onclick="loadProducts();loadAdminOrders();loadAdminReviews();loadAdminOffers();"><span class="admin-quick-icon" style="--quick-bg:#dbeafe">🔄</span><span><strong>Refresh Dashboard</strong><small>Reload products and panels</small></span></button>
+  <button type="button" class="admin-quick-card" onclick="refreshAdminDashboard()"><span class="admin-quick-icon" style="--quick-bg:#dbeafe">🔄</span><span><strong>Refresh Dashboard</strong><small>Reload products and panels</small></span></button>
  </div>
  <p>Quick overview of the products currently available in your catalogue.</p>
  <div class="stats"><div class="stat">Total products<strong id="statTotal">0</strong></div><div class="stat">Mobiles<strong id="statMobiles">0</strong></div><div class="stat">Cars<strong id="statCars">0</strong></div><div class="stat">Bikes<strong id="statBikes">0</strong></div></div>
+ <div class="admin-live-grid" aria-label="Marketplace statistics">
+  <div class="admin-live-card"><div class="live-label">⏳ Pending listings</div><strong id="statPendingListings">—</strong><small>Waiting for approval</small></div>
+  <div class="admin-live-card"><div class="live-label">🧾 Open orders</div><strong id="statOpenOrders">—</strong><small>Pending or in progress</small></div>
+  <div class="admin-live-card"><div class="live-label">⭐ Pending reviews</div><strong id="statPendingReviews">—</strong><small>Need moderation</small></div>
+  <div class="admin-live-card"><div class="live-label">🏷️ Active offers</div><strong id="statActiveOffers">—</strong><small>Homepage promotions</small></div>
+ </div>
+ <div class="admin-notice-box"><h3>🔔 Admin Notifications</h3><div id="adminNotifications"><p>Notifications will appear after the dashboard refreshes.</p></div></div>
+ <div class="admin-tools-row"><button type="button" onclick="exportAdminBackup()">⬇️ Export Backup (JSON)</button><button type="button" onclick="exportProductsCSV()">📄 Export Products (CSV)</button><button type="button" onclick="showAdminDiagnostics()">🩺 Check Setup / Errors</button></div>
+ <div id="adminDiagnostics" class="admin-error-box" role="status"></div>
  <div class="admin-inventory" id="adminInventory">
    <h3 style="margin:22px 0 12px">📦 Product Inventory</h3>
    <p id="adminInventoryMessage" style="color:#64748b;font-size:13px">Products loaded from your catalogue will appear here.</p>
@@ -1352,6 +1373,93 @@ function showPhotoPreview(files) {
   });
 }
 
+// Admin overview, notifications, export tools and client-side diagnostics.
+const adminClientErrors = [];
+window.addEventListener("error", function(event) {
+  adminClientErrors.push({time:new Date().toISOString(), type:"JavaScript", message:String(event.message || "Unknown browser error").slice(0,500)});
+  if (adminClientErrors.length > 30) adminClientErrors.shift();
+});
+window.addEventListener("unhandledrejection", function(event) {
+  const reason = event.reason;
+  adminClientErrors.push({time:new Date().toISOString(), type:"Promise", message:String(reason?.message || reason || "Unhandled promise rejection").slice(0,500)});
+  if (adminClientErrors.length > 30) adminClientErrors.shift();
+});
+function setAdminCount(id, value) { const el=$(id); if(el) el.textContent=String(value); }
+function renderAdminNotifications(items) {
+ const box=$("adminNotifications"); if(!box)return;
+ box.innerHTML = items.length ? items.map(item=>`<p>${escapeHTML(item)}</p>`).join("") : "<p>✅ No pending admin actions detected from the tables that could be checked.</p>";
+}
+async function loadAdminOverview() {
+ if(!isAdmin || !supabaseClient) return;
+ const notifications=[];
+ setAdminCount("statPendingListings", products.filter(p=>p.published===false).length);
+ if(products.some(p=>p.published===false)) notifications.push("📦 "+products.filter(p=>p.published===false).length+" listing(s) are waiting for approval.");
+ try {
+  const {data,error}=await supabaseClient.from("orders").select("id,status").limit(500);
+  if(error) throw error;
+  const orders=data||[]; const open=orders.filter(o=>["pending","confirmed","processing"].includes(String(o.status||"pending").toLowerCase())).length;
+  setAdminCount("statOpenOrders",open);
+  if(open) notifications.push("🧾 "+open+" order(s) need attention or are in progress.");
+ } catch(e) { setAdminCount("statOpenOrders","N/A"); notifications.push("⚠️ Orders unavailable — check orders SQL/RLS permissions."); }
+ try {
+  const {data,error}=await supabaseClient.from("product_reviews").select("id,approved").eq("approved",false).limit(500);
+  if(error) throw error;
+  const n=(data||[]).length; setAdminCount("statPendingReviews",n); if(n) notifications.push("⭐ "+n+" review(s) waiting for moderation.");
+ } catch(e) { setAdminCount("statPendingReviews","N/A"); notifications.push("⚠️ Reviews unavailable — check product_reviews SQL/RLS permissions."); }
+ try {
+  const {data,error}=await supabaseClient.from("site_offers").select("id").eq("active",true).limit(500);
+  if(error) throw error;
+  const n=(data||[]).length; setAdminCount("statActiveOffers",n); if(!n) notifications.push("🎯 No active homepage offers found.");
+ } catch(e) { setAdminCount("statActiveOffers","N/A"); notifications.push("⚠️ Offers unavailable — check site_offers SQL/RLS permissions."); }
+ renderAdminNotifications(notifications);
+}
+async function refreshAdminDashboard() {
+ if(!supabaseClient) return alert("Supabase is not connected. Check the Project URL and publishable key.");
+ const btns=[...document.querySelectorAll(".admin-quick-card")];
+ try {
+  const {data,error}=await supabaseClient.auth.getSession(); if(error) throw error;
+  currentUser=data?.session?.user||null; await checkAdmin();
+  if(!isAdmin) { const msg=$("loginMessage"); if(msg)msg.textContent="Admin session is not active. Please use Reload / Check Login or sign in again."; return; }
+  await loadProducts(); await loadAdminOrders(); await loadAdminReviews(); await loadAdminOffers(); await loadAdminOverview();
+  const msg=$("adminInventoryMessage"); if(msg)msg.textContent="Dashboard refreshed at "+new Date().toLocaleTimeString()+".";
+ } catch(e) { console.error("Admin refresh failed",e); alert("Dashboard refresh failed: "+(e.message||"Check internet and Supabase permissions.")); }
+}
+function downloadAdminFile(filename, content, mime) {
+ const blob=new Blob([content],{type:mime}); const url=URL.createObjectURL(blob); const a=document.createElement("a"); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),1500);
+}
+async function exportAdminBackup() {
+ if(!isAdmin||!supabaseClient) return alert("Admin access required.");
+ try {
+  const backup={exported_at:new Date().toISOString(),products:products||[],orders:[],reviews:[],offers:[]};
+  for(const [table,key] of [["orders","orders"],["product_reviews","reviews"],["site_offers","offers"]]) {
+   try { const {data,error}=await supabaseClient.from(table).select("*").limit(1000); if(error) throw error; backup[key]=data||[]; }
+   catch(e) { backup[key]={unavailable:true,reason:String(e.message||e)}; }
+  }
+  downloadAdminFile("uos-backup-"+new Date().toISOString().slice(0,10)+".json",JSON.stringify(backup,null,2),"application/json;charset=utf-8");
+  const diag=$("adminDiagnostics"); if(diag){diag.style.display="block";diag.textContent="Backup exported from records currently accessible to this admin session. It is not a full Supabase database backup; records beyond the query limit or blocked by RLS may be missing.";}
+ } catch(e) { alert("Could not export backup: "+(e.message||"Unknown error")); }
+}
+function exportProductsCSV() {
+ if(!isAdmin) return alert("Admin access required.");
+ const rows=products||[]; const keys=["id","brand","name","category","offer","price","condition","ram","rom","battery","colour","year","fuel","km","cc","seller_email","seller_phone","published","sold_out","created_at"];
+ const cell=v=>'"'+String(v==null?"":v).replace(/"/g,'""')+'"';
+ const csv=[keys.map(cell).join(","),...rows.map(p=>keys.map(k=>cell(p[k])).join(","))].join("\r\n");
+ downloadAdminFile("uos-products-"+new Date().toISOString().slice(0,10)+".csv",csv,"text/csv;charset=utf-8");
+}
+async function showAdminDiagnostics() {
+ const box=$("adminDiagnostics"); if(!box)return; box.style.display="block"; box.textContent="Checking Supabase connection, session and table permissions…";
+ const lines=["Time: "+new Date().toLocaleString(),"Supabase configured: "+(!!supabaseClient),"Signed-in user: "+(currentUser?.email||"No active user"),"Admin allow-list: "+(isAdmin?"authorised":"not authorised")];
+ if(supabaseClient) {
+  for(const table of ["products","orders","product_reviews","site_offers"]) {
+   try { const {error}=await supabaseClient.from(table).select("id").limit(1); lines.push(table+": "+(error?"ERROR — "+error.message:"OK")); }
+   catch(e) { lines.push(table+": ERROR — "+(e.message||"unknown")); }
+  }
+ }
+ lines.push("Recent browser errors: "+adminClientErrors.length);
+ adminClientErrors.slice(-8).forEach(e=>lines.push(e.time+" ["+e.type+"] "+e.message));
+ lines.push("Security note: this diagnostic is browser-side only and does not replace Supabase server logs or database backups."); box.textContent=lines.join("\n");
+}
+
 function adminJump(targetId) {
  const target=document.getElementById(targetId);
  if(!target) return;
@@ -1392,6 +1500,7 @@ async function initSupabase() {
           await loadAdminOrders();
           await loadAdminReviews();
           await loadAdminOffers();
+          await loadAdminOverview();
         }
         updateCustomerProfile();
       } catch (authSyncError) {
@@ -1618,6 +1727,7 @@ async function loadProducts() {
   }
   try {
     render();
+    if (isAdmin) await loadAdminOverview();
   } catch (error) {
     console.error("Product rendering error:", error);
     const message = String(error?.message || error || "Unknown rendering error");
@@ -2509,6 +2619,7 @@ async function reloadAdminSession() {
       await loadAdminOrders();
       await loadAdminReviews();
       await loadAdminOffers();
+      await loadAdminOverview();
       message.textContent = "Admin session restored: " + (currentUser?.email || "") + ". Dashboard refreshed.";
     } else if (currentUser) {
       message.textContent = "You are logged in, but this account is not authorised as an admin.";
@@ -2552,6 +2663,8 @@ $("loginForm").addEventListener("submit", async function(event) {
     await loadProducts();
     await loadAdminOrders();
     await loadAdminReviews();
+    await loadAdminOffers();
+    await loadAdminOverview();
   } catch (error) {
     $("loginMessage").textContent = error.message || "Login failed.";
   } finally {
