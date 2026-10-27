@@ -118,55 +118,31 @@ footer{margin-top:30px;background:#1d1238;color:white;padding:24px 6%;text-align
 #loginMessage{font-weight:bold}
 .admin-status{background:#ecfdf5;color:#065f46;padding:10px 12px;border-radius:8px;margin:12px 0}
 
-/* ===== Premium navy + yellow homepage update ===== */
-:root{--uos-navy:#07172f;--uos-navy2:#102b50;--uos-yellow:#ffd43b;--uos-yellow2:#ffb800}
-body{background:#f4f7fb;color:#10213a}
-header,footer{background:var(--uos-navy);color:#fff}
-.logo{letter-spacing:.2px}
-header nav a{font-weight:700}
-header nav a:hover{color:var(--uos-yellow)}
-button{background:var(--uos-yellow);color:#091a31}
-button:hover{filter:brightness(.96)}
-.hero{background:linear-gradient(120deg,#061329,#0d2b52 58%,#174a77);padding:28px 5% 32px}
-.hero:after{content:"";display:none}
-.hero h1{color:#fff;max-width:650px}
-.hero p{color:#dbeafe;max-width:650px}
-.search{max-width:760px}
-.search button{background:var(--uos-yellow);color:#07172f}
-.filter-row input,.filter-row select{border-color:#d6e0ed}
-.cat{border-radius:16px;box-shadow:0 8px 22px #0b25400c;transition:transform .2s,border-color .2s}
-.cat:hover{transform:translateY(-3px);border-color:var(--uos-yellow)}
-.cat span{display:inline-grid;place-items:center;width:58px;height:58px;border-radius:16px;background:#fff6cf}
-.cat h3{color:#10213a}
-.filters button.active{background:var(--uos-navy);color:#fff;border-color:var(--uos-navy)}
-.card{border-radius:16px;box-shadow:0 8px 24px #0b254012}
-.label{color:#0d5a94}
-.price{color:#07172f}
-.info{border-color:#e2e8f0}
-.stat strong{color:#0d5a94}
-.profile-trigger{background:#fff;color:#10213a}
-.profile-menu .menu-admin{background:var(--uos-navy);color:#fff}
-.profile-menu .menu-customer{background:var(--uos-yellow);color:#07172f}
-.gallery-thumbs img.active{border-color:var(--uos-yellow)}
-/* Offer slider */
+:root{--uos-navy:#08172f;--uos-blue:#123c67;--uos-yellow:#ffd32a}
+body{background:#f4f7fb;color:#10213a}header{background:var(--uos-navy)}button{background:var(--uos-navy)}.hero{background:linear-gradient(120deg,#08172f,#123c67 60%,#17618a)}.cat,.card,.info{box-shadow:0 8px 24px #08172f12}
+
+/* Additional upgrade styles */
+.offer-slide.has-photo{background-size:cover;background-position:center;position:relative}
+.offer-slide.has-photo:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#07172fee,#07172f99 65%,#07172f30)}
+.offer-visual img{width:100%;height:100%;object-fit:cover;border-radius:inherit}
+.review-panel{margin-top:10px;padding:10px;border-radius:10px;background:#f8fafc;border:1px solid #e2e8f0}
+.review-panel input,.review-panel textarea{width:100%;margin:5px 0;padding:9px;border:1px solid #cbd5e1;border-radius:8px}
+.admin-offer-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0;padding:14px;border:1px solid #dbe4f0;border-radius:12px}
+.admin-offer-form input,.admin-offer-form textarea{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:8px}
+.admin-offer-form .full{grid-column:1/-1}
+@media(max-width:600px){.admin-offer-form{grid-template-columns:1fr}.admin-offer-form .full{grid-column:auto}}
+
+.compare-panel{background:#fff;border:1px solid #cbd5e1;border-radius:14px;padding:14px;margin:12px 0 18px;box-shadow:0 6px 20px #08172f0b}.compare-panel[hidden]{display:none}.compare-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.compare-btn{background:#e0f2fe!important;color:#075985!important}.discount-badge{display:inline-block;background:#dcfce7;color:#166534;font-size:11px;font-weight:900;padding:5px 8px;border-radius:999px;margin:0 0 8px}.detail-btn{background:#e8eef7!important;color:#123c67!important}
 .offer-slider{position:relative;max-width:1150px;margin:0 auto 22px;border-radius:22px;overflow:hidden;box-shadow:0 18px 38px #0003}
-.offer-slide{display:none;min-height:230px;padding:28px 6%;align-items:center;justify-content:space-between;gap:18px;color:#fff;background:linear-gradient(115deg,#08172e,#123c67 70%,#17618a)}
-.offer-slide.active{display:flex;animation:uosFade .35s ease}
-.offer-copy{max-width:620px;position:relative;z-index:1}
+.offer-slide{display:none;min-height:230px;padding:28px 6%;align-items:center;justify-content:space-between;gap:18px;color:#fff;background:linear-gradient(115deg,#08172f,#123c67 70%,#17618a)}
+.offer-slide.active{display:flex;animation:uosFade .35s ease}.offer-copy{max-width:620px;position:relative;z-index:1}
 .offer-kicker{display:inline-block;background:var(--uos-yellow);color:#07172f;font-weight:900;font-size:11px;letter-spacing:1px;padding:7px 11px;border-radius:999px;margin-bottom:10px}
-.offer-slide h2{font-size:clamp(25px,4vw,40px);line-height:1.08;margin:0 0 10px;color:#fff}
-.offer-slide p{color:#dbeafe;line-height:1.5;margin:0 0 14px}
-.offer-price{font-size:clamp(20px,3vw,28px);font-weight:900;color:var(--uos-yellow)}
-.offer-price del{font-size:15px;color:#cbd5e1;margin-left:8px;font-weight:600}
-.offer-visual{flex:0 0 190px;width:190px;height:160px;border-radius:20px;background:linear-gradient(145deg,#fff4b5,#ffc928);display:grid;place-items:center;font-size:88px;box-shadow:0 14px 30px #0002}
-.offer-slide:nth-child(2){background:linear-gradient(115deg,#07172f,#173e5c 70%,#176b70)}
-.offer-slide:nth-child(3){background:linear-gradient(115deg,#101a32,#27385d 70%,#6048a4)}
-.offer-dots{position:absolute;left:6%;bottom:12px;display:flex;gap:7px;z-index:2}
-.offer-dot{width:9px;height:9px;padding:0;border-radius:50%;background:#ffffff80;min-width:9px}
-.offer-dot.active{background:var(--uos-yellow);transform:scale(1.2)}
-.offer-note{font-size:12px;color:#cbd5e1;margin-top:8px}
-@keyframes uosFade{from{opacity:.5;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
-@media(max-width:600px){.offer-slide{min-height:220px;padding:23px 18px 42px}.offer-visual{flex-basis:100px;width:100px;height:105px;font-size:55px;border-radius:16px}.offer-slide h2{font-size:25px}.offer-slide p{font-size:13px}.offer-price{font-size:21px}.offer-dots{left:18px}.hero{padding:24px 16px}}
+.offer-slide h2{font-size:clamp(25px,4vw,40px);line-height:1.08;margin:0 0 10px;color:#fff}.offer-slide p{color:#dbeafe;line-height:1.5;margin:0 0 14px}
+.offer-price{font-size:clamp(20px,3vw,28px);font-weight:900;color:var(--uos-yellow)}.offer-note{font-size:12px;color:#cbd5e1;margin-top:8px}
+.offer-visual{flex:0 0 190px;width:190px;height:160px;border-radius:20px;background:linear-gradient(145deg,#fff4b5,#ffc928);display:grid;place-items:center;font-size:88px;box-shadow:0 14px 30px #0002;overflow:hidden}
+.offer-slide:nth-child(2){background:linear-gradient(115deg,#07172f,#173e5c 70%,#176b70)}.offer-slide:nth-child(3){background:linear-gradient(115deg,#101a32,#27385d 70%,#6048a4)}
+.offer-dots{position:absolute;left:6%;bottom:12px;display:flex;gap:7px;z-index:2}.offer-dot{width:9px;height:9px;padding:0;border-radius:50%;background:#ffffff80;min-width:9px}.offer-dot.active{background:var(--uos-yellow);transform:scale(1.2)}
+@keyframes uosFade{from{opacity:.65}to{opacity:1}}@media(max-width:600px){.offer-slide{min-height:220px;padding:23px 18px 42px}.offer-visual{flex-basis:100px;width:100px;height:105px;font-size:55px}.offer-slide h2{font-size:25px}.offer-slide p{font-size:13px}.offer-dots{left:18px}}
 
 </style>
 </head>
@@ -208,6 +184,7 @@ button:hover{filter:brightness(.96)}
    <option value="All">All Categories</option>
    <option value="Mobile">Mobile</option>
    <option value="Car">Car</option>
+   <option value="Bike">Bike</option>
    <option value="Other">Other</option>
   </select>
   <button type="button" onclick="searchAndShowResults()">Search</button>
@@ -221,51 +198,13 @@ button:hover{filter:brightness(.96)}
  </div>
 </section>
 
-
-<section class="offer-slider" id="offerSlider" aria-label="Featured offers">
- <div class="offer-slide active">
-  <div class="offer-copy">
-   <span class="offer-kicker">🔥 SPECIAL DEALS</span>
-   <h2>Big Offers. Smart Shopping.</h2>
-   <p>Discover mobiles, cars and great finds at prices you’ll love.</p>
-   <div class="offer-price">Best Offer Prices <del>Shop & Save</del></div>
-   <div class="offer-note">Browse latest listings and contact sellers directly.</div>
-  </div>
-  <div class="offer-visual" aria-hidden="true">📱</div>
- </div>
- <div class="offer-slide">
-  <div class="offer-copy">
-   <span class="offer-kicker">🚗 DRIVE YOUR DEAL</span>
-   <h2>Find Your Next Ride</h2>
-   <p>Explore cars and compare selling prices before you decide.</p>
-   <div class="offer-price">Cars • Great Deals</div>
-   <div class="offer-note">Check vehicle details and contact the seller.</div>
-  </div>
-  <div class="offer-visual" aria-hidden="true">🚘</div>
- </div>
- <div class="offer-slide">
-  <div class="offer-copy">
-   <span class="offer-kicker">✨ FRESH FINDS</span>
-   <h2>Mint. Super Mint. Open Box.</h2>
-   <p>Find products with clear condition details and multiple photos.</p>
-   <div class="offer-price">Shop With Confidence</div>
-   <div class="offer-note">Always confirm condition and price with the seller.</div>
-  </div>
-  <div class="offer-visual" aria-hidden="true">🏷️</div>
- </div>
- <div class="offer-dots" aria-label="Choose offer slide">
-  <button class="offer-dot active" type="button" aria-label="Offer 1" onclick="showOfferSlide(0)"></button>
-  <button class="offer-dot" type="button" aria-label="Offer 2" onclick="showOfferSlide(1)"></button>
-  <button class="offer-dot" type="button" aria-label="Offer 3" onclick="showOfferSlide(2)"></button>
- </div>
-</section>
-
 <main>
 <section id="categories">
  <h2>Shop by Category</h2>
  <div class="categories">
   <div class="cat" onclick="pick('Mobile')"><span>📱</span><h3>Mobiles</h3><p>New and used phones</p></div>
   <div class="cat" onclick="pick('Car')"><span>🚗</span><h3>Cars</h3><p>Cars for sale</p></div>
+  <div class="cat" onclick="pick('Bike')"><span>🏍️</span><h3>Bikes</h3><p>Bikes for sale</p></div>
   <div class="cat" onclick="pick('Other')"><span>🎧</span><h3>Electronics</h3><p>Gadgets and accessories</p></div>
   <div class="cat" onclick="pick('Other')"><span>🛍️</span><h3>Other Products</h3><p>More great finds</p></div>
  </div>
@@ -290,7 +229,7 @@ button:hover{filter:brightness(.96)}
 <section id="admin-dashboard" class="info" hidden>
  <h2>📊 Admin Dashboard</h2>
  <p>Quick overview of the products currently available in your catalogue.</p>
- <div class="stats"><div class="stat">Total products<strong id="statTotal">0</strong></div><div class="stat">Mobiles<strong id="statMobiles">0</strong></div><div class="stat">Cars<strong id="statCars">0</strong></div></div>
+ <div class="stats"><div class="stat">Total products<strong id="statTotal">0</strong></div><div class="stat">Mobiles<strong id="statMobiles">0</strong></div><div class="stat">Cars<strong id="statCars">0</strong></div><div class="stat">Bikes<strong id="statBikes">0</strong></div></div>
  <div class="admin-inventory">
    <h3 style="margin:22px 0 12px">📦 Product Inventory</h3>
    <p id="adminInventoryMessage" style="color:#64748b;font-size:13px">Products loaded from your catalogue will appear here.</p>
@@ -300,6 +239,18 @@ button:hover{filter:brightness(.96)}
      <tbody id="adminProductRows"><tr><td colspan="5">Loading products…</td></tr></tbody>
     </table>
    </div>
+ </div>
+ <div class="admin-inventory" style="margin-top:24px">
+  <h3>🎯 Homepage Offer Slider</h3>
+  <p style="color:#64748b;font-size:13px">Add your own offer photo, title and price. Offer records are shared through Supabase.</p>
+  <form id="offerForm" class="admin-offer-form">
+   <input id="offerTitle" required maxlength="90" placeholder="Offer title (e.g. iPhone 15 Pro Deal)">
+   <input id="offerPrice" required maxlength="70" placeholder="Offer price text (e.g. ₹49,999 only)">
+   <textarea id="offerText" class="full" rows="2" maxlength="180" placeholder="Short offer description"></textarea>
+   <input id="offerPhoto" class="full" type="file" accept="image/*" required>
+   <button type="submit" id="offerSubmit">Publish Offer</button>
+  </form>
+  <p id="offerMessage" role="status"></p><div id="adminOfferList"></div>
  </div>
 </section>
 
@@ -313,6 +264,7 @@ button:hover{filter:brightness(.96)}
    <select id="adCat" required onchange="updateFields()">
     <option value="Mobile">📱 Mobile</option>
     <option value="Car">🚗 Car</option>
+    <option value="Bike">🏍️ Bike</option>
     <option value="Other">🛍️ Other Products</option>
    </select>
   </div>
@@ -377,6 +329,10 @@ button:hover{filter:brightness(.96)}
     <label for="adKm">Kilometres Driven</label>
     <input id="adKm" type="number" min="0" placeholder="e.g. 45000">
    </div>
+   <div class="field" id="ccField" hidden>
+    <label for="adCc">Engine Capacity (CC) — Bike</label>
+    <input id="adCc" type="number" min="1" placeholder="e.g. 150">
+   </div>
    <div class="field">
     <label for="adCondition">Condition *</label>
     <select id="adCondition" required>
@@ -430,10 +386,19 @@ button:hover{filter:brightness(.96)}
   <button class="active" onclick="pick('All')">All</button>
   <button onclick="pick('Mobile')">Mobiles</button>
   <button onclick="pick('Car')">Cars</button>
+  <button onclick="pick('Bike')">Bikes</button>
   <button onclick="pick('Other')">Other</button>
  </div>
 
- <div id="products" class="grid"></div>
+ <div class="filters" style="align-items:center;gap:8px;flex-wrap:wrap">
+  <input id="q" type="search" placeholder="Search brand, model, RAM, year..." oninput="render()" style="min-width:180px;flex:2">
+  <input id="minPrice" type="number" min="0" placeholder="Min ₹" oninput="render()" style="width:100px">
+  <input id="maxPrice" type="number" min="0" placeholder="Max ₹" oninput="render()" style="width:100px">
+  <select id="sortBy" onchange="render()" aria-label="Sort products"><option value="newest">Newest first</option><option value="low">Price: low to high</option><option value="high">Price: high to low</option><option value="name">Name A–Z</option></select>
+  <select id="conditionFilter" onchange="render()" aria-label="Filter by condition"><option value="">All conditions</option><option>New</option><option>Used</option><option>Mint</option><option>Super Mint</option><option>Open Box</option></select>
+ </div>
+ <div id="comparePanel" class="compare-panel" hidden><strong>⚖️ Compare Products</strong><p id="compareSummary">Select up to 3 products to compare.</p><div class="compare-actions"><button type="button" id="compareNowBtn">Compare now</button><button type="button" id="clearCompareBtn" class="secondary">Clear selection</button></div></div>
+  <div id="products" class="grid"></div>
 </section>
 
 <section class="info customer-profile" id="customer-profile" hidden>
@@ -474,7 +439,7 @@ button:hover{filter:brightness(.96)}
 
 <footer>
  © <span id="footerYear"></span> Unique Online Service Buy & Sell<br>
- Mobiles • Cars • Other Products
+ Mobiles • Cars • Bikes • Other Products
 </footer>
 
 <div id="viewer">
@@ -514,6 +479,7 @@ let products = [];
 let selected = "All";
 let favorites = new Set();
 let favoritesOnly = false;
+let compareProducts = new Set();
 try { favorites = new Set(JSON.parse(localStorage.getItem("uos_favorites") || "[]").map(String)); } catch (_) { favorites = new Set(); }
 let selectedPhotos = [];
 let galleryPhotos = [];
@@ -573,6 +539,9 @@ const brandLists = {
     "Volvo",
     "BYD",
     "Other"
+  ],
+  Bike: [
+    "Hero", "Honda", "TVS", "Bajaj", "Royal Enfield", "Yamaha", "Suzuki", "KTM", "Kawasaki", "Jawa", "Harley-Davidson", "Ola Electric", "Ather", "Other"
   ],
   Other: [
     "Sony",
@@ -755,7 +724,22 @@ const modelLists = {
 function updateModels() {
   const category = $("adCat").value;
   const brand = $("adBrand").value;
-  const models = modelLists[brand] || [];
+  const bikeModelLists = {
+    Hero: ["Splendor Plus", "HF Deluxe", "Passion Pro", "Xtreme 125R", "Karizma XMR"],
+    Honda: ["Shine 125", "SP 125", "Unicorn", "Activa 6G", "Hornet 2.0", "CB350"],
+    TVS: ["Apache RTR 160", "Apache RTR 200", "Raider 125", "Jupiter", "NTorq 125", "Ronin"],
+    Bajaj: ["Pulsar 125", "Pulsar NS160", "Pulsar N160", "Pulsar NS200", "Dominar 400", "Platina"],
+    "Royal Enfield": ["Classic 350", "Bullet 350", "Hunter 350", "Meteor 350", "Himalayan", "Interceptor 650"],
+    Yamaha: ["R15", "MT-15", "FZ-S", "Fascino", "Aerox 155", "RayZR"],
+    Suzuki: ["Access 125", "Burgman Street", "Gixxer", "V-Strom SX"],
+    KTM: ["Duke 200", "Duke 250", "Duke 390", "RC 390", "Adventure 390"],
+    Kawasaki: ["Ninja 300", "Ninja 500", "Z650", "Versys 650"],
+    Jawa: ["Jawa 42", "Jawa 350", "Perak"],
+    "Harley-Davidson": ["X440", "Nightster", "Sportster S"],
+    "Ola Electric": ["S1 X", "S1 Pro", "S1 Air"],
+    Ather: ["Rizta", "450X", "450S"]
+  };
+  const models = category === "Bike" ? (bikeModelLists[brand] || []) : (modelLists[brand] || []);
 
   $("modelOptions").innerHTML = "";
 
@@ -767,6 +751,7 @@ function updateModels() {
 
   $("adName").placeholder = category === "Car"
     ? "Choose or type car model"
+    : category === "Bike" ? "Choose or type bike model"
     : category === "Mobile"
       ? "Choose or type phone model"
       : "Choose or type product name";
@@ -791,13 +776,15 @@ function updateFields() {
 
   const isMobile = category === "Mobile";
   const isCar = category === "Car";
+  const isBike = category === "Bike";
 
   $("ramField").hidden = !isMobile;
   $("romField").hidden = !isMobile;
 
-  $("yearField").hidden = !isCar;
-  $("fuelField").hidden = !isCar;
-  $("kmField").hidden = !isCar;
+  $("yearField").hidden = !(isCar || isBike);
+  $("fuelField").hidden = !(isCar || isBike);
+  $("kmField").hidden = !(isCar || isBike);
+  $("ccField").hidden = !isBike;
 
   $("batteryField").hidden =
     !(isMobile && $("adBrand").value === "Apple");
@@ -1036,6 +1023,7 @@ async function initSupabase() {
   if (error) console.warn(error);
   currentUser = data?.session?.user || null;
   await checkAdmin();
+  await loadAdminOffers();
   return true;
 }
 async function checkAdmin() {
@@ -1302,6 +1290,42 @@ function renderAdminInventory() {
   });
 }
 
+function updateComparePanel() {
+  const panel = $("comparePanel");
+  const summary = $("compareSummary");
+  if (!panel || !summary) return;
+  const selectedProducts = [...compareProducts].map(id => products.find(p => String(p.id) === id)).filter(Boolean);
+  panel.hidden = selectedProducts.length === 0;
+  summary.textContent = selectedProducts.length
+    ? selectedProducts.map(p => (p.brand || "") + " " + (p.name || "Product") + " — " + formatPrice(p.offer)).join("  |  ")
+    : "Select up to 3 products to compare.";
+}
+function compareSelectedProducts() {
+  const selectedProducts = [...compareProducts].map(id => products.find(p => String(p.id) === id)).filter(Boolean);
+  if (selectedProducts.length < 2) return alert("Please select at least 2 products to compare.");
+  const rows = selectedProducts.map(p => {
+    const lines = [
+      (p.brand || "") + " " + (p.name || "Product"),
+      "Category: " + (p.category || "Other"),
+      "Condition: " + (p.condition || "Not specified"),
+      "Offer price: " + formatPrice(p.offer),
+      Number(p.price)>0 ? "Original price: " + formatPrice(p.price) : "",
+      p.ram ? "RAM: " + p.ram : "",
+      p.rom ? "Storage: " + p.rom : "",
+      p.battery ? "Battery health: " + p.battery + "%" : "",
+      p.year ? "Year: " + p.year : "",
+      p.fuel ? "Fuel: " + p.fuel : "",
+      p.km !== "" && p.km != null ? "Driven: " + Number(p.km).toLocaleString("en-IN") + " km" : "",
+      p.cc ? "Engine: " + p.cc + " CC" : "",
+      "Availability: " + (p.sold_out ? "Sold Out" : "Available")
+    ].filter(Boolean);
+    return lines.join("\\n");
+  });
+  showPolicy("⚖️ Product Comparison", rows.join("\\n\\n--------------------\\n\\n"));
+}
+$("compareNowBtn")?.addEventListener("click", compareSelectedProducts);
+$("clearCompareBtn")?.addEventListener("click", () => { compareProducts.clear(); updateComparePanel(); render(); });
+
 function searchAndShowResults() {
   // Render the filtered products first, then bring the results into view.
   render();
@@ -1321,6 +1345,7 @@ function render() {
   const minPrice = minRaw === "" ? 0 : Number(minRaw);
   const maxPrice = maxRaw === "" ? Infinity : Number(maxRaw);
   const sortBy = String($("sortBy")?.value || "newest");
+  const conditionFilter = String($("conditionFilter")?.value || "").toLocaleLowerCase();
 
 if (
   !Number.isFinite(minPrice) ||
@@ -1341,6 +1366,7 @@ if (minPrice > maxPrice) {
     const c = String(value || "Other").trim().toLocaleLowerCase();
     if (c.includes("mobile") || c.includes("phone")) return "mobile";
     if (c.includes("car") || c.includes("vehicle")) return "car";
+    if (c.includes("bike") || c.includes("motorcycle") || c.includes("scooter")) return "bike";
     if (c === "all" || c === "all categories") return "all";
     return "other";
   };
@@ -1353,12 +1379,13 @@ if (minPrice > maxPrice) {
     const matchesCategory = normaliseCategory(category) === "all" || normaliseCategory(product.category) === normaliseCategory(category);
     const matchesPrice = amount >= minPrice && amount <= maxPrice;
     const matchesFavorite = !favoritesOnly || favorites.has(String(product.id));
+    const matchesCondition = !conditionFilter || String(product.condition || "").toLocaleLowerCase() === conditionFilter;
     const searchable = [
       product.brand, product.name, product.model, product.category, product.colour, product.color,
       product.condition, product.description, product.fuel, product.year, product.km,
-      product.ram, product.rom, product.battery, product.price, product.offer
+      product.ram, product.rom, product.battery, product.cc, product.price, product.offer
     ].filter(value => value !== null && value !== undefined).join(" ").toLocaleLowerCase();
-    return matchesCategory && matchesPrice && matchesFavorite && searchable.includes(query);
+    return matchesCategory && matchesPrice && matchesFavorite && matchesCondition && searchable.includes(query);
   });
   if (sortBy === "low") filtered.sort((a,b) => priceOf(a)-priceOf(b));
   else if (sortBy === "high") filtered.sort((a,b) => priceOf(b)-priceOf(a));
@@ -1370,6 +1397,7 @@ if (minPrice > maxPrice) {
     $("statCars").textContent = products.filter(p => p.category === "Car").length;
   }
   renderAdminInventory();
+  updateComparePanel();
 
   container.innerHTML = "";
 
@@ -1393,7 +1421,7 @@ if (minPrice > maxPrice) {
 
     const imageContent = firstPhoto
       ? `<img src="${escapeHTML(firstPhoto)}" alt="${escapeHTML(product.name)}">`
-      : `<span>${product.category === "Car" ? "🚗" : product.category === "Mobile" ? "📱" : "🛍️"}</span>`;
+      : `<span>${product.category === "Car" ? "🚗" : product.category === "Bike" ? "🏍️" : product.category === "Mobile" ? "📱" : "🛍️"}</span>`;
 
     let extraDetails = "";
 
@@ -1431,6 +1459,12 @@ if (minPrice > maxPrice) {
       }
     }
 
+    if (product.category === "Bike") {
+      if (product.year) extraDetails += "Year: " + escapeHTML(product.year) + " · ";
+      if (product.fuel) extraDetails += "Fuel: " + escapeHTML(product.fuel) + " · ";
+      if (product.km !== "" && product.km != null) extraDetails += "Driven: " + escapeHTML(Number(product.km).toLocaleString("en-IN")) + " km · ";
+      if (product.cc) extraDetails += "Engine: " + escapeHTML(product.cc) + " CC · ";
+    }
     if (product.colour) {
       extraDetails += "Colour: " + escapeHTML(product.colour) + " · ";
     }
@@ -1444,6 +1478,7 @@ if (minPrice > maxPrice) {
       <div class="content">
         <div class="label">${escapeHTML(product.category || "Other")}</div>
         ${product.sold_out ? '<div class="soldout-badge">✓ SOLD OUT</div>' : ''}
+        ${Number(product.price)>Number(product.offer) && Number(product.price)>0 ? `<div class="discount-badge">SAVE ${formatPrice(Number(product.price)-Number(product.offer))} · ${Math.round((Number(product.price)-Number(product.offer))*100/Number(product.price))}% OFF</div>` : ''}
         <h3>${escapeHTML(product.brand || "")} ${escapeHTML(product.name || "")}</h3>
         <div>
           <span class="price">${formatPrice(product.offer)}</span>
@@ -1456,14 +1491,53 @@ if (minPrice > maxPrice) {
         </div>
         <div class="details">${photos.length} photo(s)</div>
         <div class="actions">
-          <button type="button" class="view-btn">View Photos</button>
+          <button type="button" class="detail-btn details-btn">Product Details</button><button type="button" class="view-btn">View Photos</button>
+          <button type="button" class="review-btn secondary">☆ Write Review</button><button type="button" class="read-reviews-btn secondary">Read Reviews</button>
           <button type="button" class="secondary whatsapp-btn" ${product.sold_out ? "disabled" : ""}>${product.sold_out ? "Sold Out" : "WhatsApp"}</button>
           ${isAdmin ? `<button type="button" class="soldout-btn">${product.sold_out ? "Mark Available" : "Mark Sold Out"}</button>` : ''}
           <button type="button" class="favorite-btn ${favorites.has(String(product.id)) ? "saved" : ""}" aria-label="Save to wishlist">${favorites.has(String(product.id)) ? "♥ Saved" : "♡ Save"}</button>
+          <button type="button" class="compare-btn">${compareProducts.has(String(product.id)) ? "✓ Selected" : "⚖️ Compare"}</button>
           ${isAdmin ? '<button type="button" class="delete-btn" style="background:#dc2626">Delete</button>' : ''}
         </div>
       </div>
     `;
+
+    card.querySelector(".details-btn").addEventListener("click", () => {
+      const details = [
+        "Category: " + (product.category || "Other"),
+        "Brand: " + (product.brand || "Not specified"),
+        "Model/Product: " + (product.name || "Not specified"),
+        "Condition: " + (product.condition || "Not specified"),
+        "Offer price: " + formatPrice(product.offer),
+        Number(product.price)>0 ? "Original price: " + formatPrice(product.price) : "",
+        product.ram ? "RAM: " + product.ram : "",
+        product.rom ? "Storage: " + product.rom : "",
+        product.brand === "Apple" && product.battery ? "iPhone Battery Health: " + product.battery + "%" : "",
+        product.year ? "Year: " + product.year : "",
+        product.fuel ? "Fuel: " + product.fuel : "",
+        product.km !== "" && product.km != null ? "Driven: " + Number(product.km).toLocaleString("en-IN") + " km" : "",
+        product.cc ? "Engine: " + product.cc + " CC" : "",
+        product.colour ? "Colour: " + product.colour : "",
+        "Availability: " + (product.sold_out ? "Sold Out" : "Available"),
+        "",
+        "Description:",
+        product.description || "No description provided.",
+        "",
+        "Product ID: " + product.id
+      ].filter((line, index, arr) => line !== "" || (index > 0 && arr[index-1] !== ""));
+      showPolicy((product.brand || "") + " " + (product.name || "Product Details"), details.join("\\n"));
+    });
+
+    card.querySelector(".compare-btn").addEventListener("click", () => {
+      const id = String(product.id);
+      if (compareProducts.has(id)) compareProducts.delete(id);
+      else {
+        if (compareProducts.size >= 3) return alert("You can compare up to 3 products at a time. Remove one first.");
+        compareProducts.add(id);
+      }
+      updateComparePanel();
+      render();
+    });
 
     const image = card.querySelector(".art img");
 
@@ -1512,14 +1586,39 @@ if (minPrice > maxPrice) {
       }
 
       const message =
-        "Hello, I am interested in " +
-        (product.brand || "") + " " +
-        (product.name || "") +
-        ". Price: " + formatPrice(product.offer);
+        "Hello Unique Online Service, I am interested in this product: " +
+        (product.brand || "") + " " + (product.name || "") +
+        " (Category: " + (product.category || "Product") + "). Offer price: " + formatPrice(product.offer) +
+        ". Is it available? Please share more details. Product ID: " + product.id;
 
       const waUrl = "https://api.whatsapp.com/send?phone=" +
         WHATSAPP_NUMBER.replace(/\D/g, "") + "&text=" + encodeURIComponent(message);
       window.location.href = waUrl;
+    });
+
+    card.querySelector(".read-reviews-btn").addEventListener("click", async () => {
+      try {
+        const { data, error } = await supabaseClient.from("product_reviews").select("reviewer_name,rating,review_text,created_at").eq("product_id", String(product.id)).eq("approved", true).order("created_at", {ascending:false}).limit(10);
+        if (error) throw error;
+        if (!data || !data.length) return alert("No approved reviews yet. Be the first to write one!");
+        alert(data.map(r => "★".repeat(Number(r.rating)||0) + "☆".repeat(5-(Number(r.rating)||0)) + " — " + r.reviewer_name + "\n" + r.review_text).join("\n\n────────\n\n"));
+      } catch (error) { alert("Reviews are not set up yet. Run the SQL setup file first. " + (error.message || "")); }
+    });
+    card.querySelector(".review-btn").addEventListener("click", async () => {
+      const reviewer = prompt("Your name (or nickname):");
+      if (!reviewer || !reviewer.trim()) return;
+      const ratingText = prompt("Rating from 1 to 5 stars:", "5");
+      const rating = Number(ratingText);
+      if (!Number.isInteger(rating) || rating < 1 || rating > 5) return alert("Please enter a rating from 1 to 5.");
+      const reviewText = prompt("Write a short review:");
+      if (!reviewText || !reviewText.trim()) return;
+      try {
+        const { error } = await supabaseClient.from("product_reviews").insert({ product_id: String(product.id), reviewer_name: reviewer.trim().slice(0,80), rating, review_text: reviewText.trim().slice(0,1000) });
+        if (error) throw error;
+        alert("Thank you! Your review was submitted and will appear after admin approval.");
+      } catch (error) {
+        alert("Review could not be submitted. Please run the review SQL setup first. " + (error.message || ""));
+      }
     });
 
     const deleteButton = card.querySelector(".delete-btn");
@@ -1642,9 +1741,10 @@ $("adForm").addEventListener("submit", async function(event) {
       rom: category === "Mobile" ? $("adRom").value : "",
       battery: category === "Mobile" && brand === "Apple" ? battery : "",
       colour: $("adColour").value.trim(),
-      year: category === "Car" ? $("adYear").value : "",
-      fuel: category === "Car" ? $("adFuel").value : "",
-      km: category === "Car" ? $("adKm").value : "",
+      year: (category === "Car" || category === "Bike") ? $("adYear").value : "",
+      fuel: (category === "Car" || category === "Bike") ? $("adFuel").value : "",
+      km: (category === "Car" || category === "Bike") ? $("adKm").value : "",
+      cc: category === "Bike" ? $("adCc").value : "",
       condition: $("adCondition").value,
       price: price ? Number(price) : null,
       offer,
@@ -1729,20 +1829,58 @@ async function customerLogout(){try{if(supabaseClient&&currentUser)await supabas
 $("customerAuthForm").addEventListener("submit",async function(e){e.preventDefault();const email=$("customerAuthEmail").value.trim(),password=$("customerAuthPassword").value;const msg=$("customerAuthMessage"),btn=$("customerAuthSubmit");msg.textContent="";if(!supabaseClient){msg.textContent="Customer account needs Supabase setup. You can still browse and save wishlist items on this device.";return;}btn.disabled=true;btn.textContent=customerSignupMode?"Creating account…":"Signing in…";try{let result;if(customerSignupMode)result=await supabaseClient.auth.signUp({email,password});else result=await supabaseClient.auth.signInWithPassword({email,password});if(result.error)throw result.error;if(result.data.user){currentUser=result.data.user;localStorage.setItem("uos_customer_email",email);await checkAdmin();await loadProducts();updateCustomerProfile();closeCustomerLogin();openCustomerProfile();if(customerSignupMode&&!result.data.session)profileNotice("Account created. Check your email to confirm it, then log in.");}}catch(err){msg.textContent=err.message||"Could not complete sign in.";}finally{btn.disabled=false;btn.textContent=customerSignupMode?"Sign Up":"Login";}});
 // Fix selected category binding and keep profile status in sync.
 
-
-// ================= PREMIUM OFFER SLIDER =================
+// ================= START WEBSITE =================
 let offerSlideIndex = 0;
 function showOfferSlide(index) {
-  const slides = Array.from(document.querySelectorAll(".offer-slide"));
-  const dots = Array.from(document.querySelectorAll(".offer-dot"));
+  const slides = [...document.querySelectorAll("#offerSlider .offer-slide")];
+  const dots = [...document.querySelectorAll("#offerSlider .offer-dot")];
   if (!slides.length) return;
-  offerSlideIndex = (index + slides.length) % slides.length;
+  offerSlideIndex = ((index % slides.length) + slides.length) % slides.length;
   slides.forEach((slide, i) => slide.classList.toggle("active", i === offerSlideIndex));
   dots.forEach((dot, i) => dot.classList.toggle("active", i === offerSlideIndex));
 }
 setInterval(() => showOfferSlide(offerSlideIndex + 1), 4500);
 
-// ================= START WEBSITE =================
+async function loadAdminOffers() {
+  if (!supabaseClient) return;
+  try {
+    const { data, error } = await supabaseClient.from("site_offers").select("*").eq("active", true).order("sort_order", {ascending:true}).limit(8);
+    if (error) throw error;
+    if (!data || !data.length) return;
+    const slider = $("offerSlider");
+    const slides = data.map((o, i) => `<div class="offer-slide ${i===0?'active':''} ${o.image_url?'has-photo':''}" ${o.image_url ? `style="background-image:url('${escapeHTML(o.image_url)}')"` : ''}><div class="offer-copy"><span class="offer-kicker">🔥 SPECIAL OFFER</span><h2>${escapeHTML(o.title || 'Special Offer')}</h2><p>${escapeHTML(o.description || '')}</p><div class="offer-price">${escapeHTML(o.price_text || '')}</div><div class="offer-note">Contact us on WhatsApp for details.</div></div>${o.image_url ? `<div class="offer-visual"><img src="${escapeHTML(o.image_url)}" alt="${escapeHTML(o.title || 'Offer photo')}"></div>` : '<div class="offer-visual">🏷️</div>'}</div>`).join("");
+    const dots = data.map((_,i) => `<button class="offer-dot ${i===0?'active':''}" type="button" aria-label="Offer ${i+1}" onclick="showOfferSlide(${i})"></button>`).join("");
+    slider.innerHTML = slides + `<div class="offer-dots">${dots}</div>`;
+    offerSlideIndex = 0;
+    const offerList = $("adminOfferList");
+    if (offerList && isAdmin) {
+      offerList.innerHTML = "<h4>Manage published offers</h4>" + data.map(o => `<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid #e2e8f0"><span>${escapeHTML(o.title || "Offer")}</span><button type="button" data-offer-id="${escapeHTML(o.id)}" class="secondary">Remove from slider</button></div>`).join("");
+      offerList.querySelectorAll("[data-offer-id]").forEach(button => button.addEventListener("click", async () => {
+        if (!isAdmin || !confirm("Remove this offer from the homepage slider?")) return;
+        try { const { error } = await supabaseClient.from("site_offers").update({active:false}).eq("id", button.dataset.offerId); if (error) throw error; await loadAdminOffers(); }
+        catch (error) { alert("Could not update offer: " + (error.message || "")); }
+      }));
+    }
+  } catch (error) { console.info("Custom offers unavailable; default offers remain visible.", error.message || error); }
+}
+
+$("offerForm")?.addEventListener("submit", async function(event) {
+  event.preventDefault();
+  if (!isAdmin || !supabaseClient) return alert("Please log in as an authorised admin.");
+  const file = $("offerPhoto").files[0];
+  if (!file || !file.type.startsWith("image/")) return alert("Please select an image file.");
+  if (file.size > 10 * 1024 * 1024) return alert("Offer image must be 10 MB or smaller.");
+  const button = $("offerSubmit"); button.disabled = true; button.textContent = "Publishing...";
+  try {
+    const urls = await uploadPhotos([file]);
+    const { error } = await supabaseClient.from("site_offers").insert({title:$ ("offerTitle").value.trim(), price_text:$ ("offerPrice").value.trim(), description:$ ("offerText").value.trim(), image_url:urls[0], active:true, sort_order:Date.now()});
+    if (error) throw error;
+    $("offerMessage").textContent = "Offer published and visible to visitors.";
+    $("offerForm").reset(); await loadAdminOffers();
+  } catch (error) { $("offerMessage").textContent = "Could not publish offer: " + (error.message || "Run the SQL setup and check image upload permissions."); }
+  finally { button.disabled = false; button.textContent = "Publish Offer"; }
+});
+
 async function startWebsite() {
   ["q", "minPrice", "maxPrice"].forEach(id => {
     const field = $(id);
