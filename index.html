@@ -117,6 +117,57 @@ footer{margin-top:30px;background:#1d1238;color:white;padding:24px 6%;text-align
 #admin-login{margin-top:24px}
 #loginMessage{font-weight:bold}
 .admin-status{background:#ecfdf5;color:#065f46;padding:10px 12px;border-radius:8px;margin:12px 0}
+
+/* ===== Premium navy + yellow homepage update ===== */
+:root{--uos-navy:#07172f;--uos-navy2:#102b50;--uos-yellow:#ffd43b;--uos-yellow2:#ffb800}
+body{background:#f4f7fb;color:#10213a}
+header,footer{background:var(--uos-navy);color:#fff}
+.logo{letter-spacing:.2px}
+header nav a{font-weight:700}
+header nav a:hover{color:var(--uos-yellow)}
+button{background:var(--uos-yellow);color:#091a31}
+button:hover{filter:brightness(.96)}
+.hero{background:linear-gradient(120deg,#061329,#0d2b52 58%,#174a77);padding:28px 5% 32px}
+.hero:after{content:"";display:none}
+.hero h1{color:#fff;max-width:650px}
+.hero p{color:#dbeafe;max-width:650px}
+.search{max-width:760px}
+.search button{background:var(--uos-yellow);color:#07172f}
+.filter-row input,.filter-row select{border-color:#d6e0ed}
+.cat{border-radius:16px;box-shadow:0 8px 22px #0b25400c;transition:transform .2s,border-color .2s}
+.cat:hover{transform:translateY(-3px);border-color:var(--uos-yellow)}
+.cat span{display:inline-grid;place-items:center;width:58px;height:58px;border-radius:16px;background:#fff6cf}
+.cat h3{color:#10213a}
+.filters button.active{background:var(--uos-navy);color:#fff;border-color:var(--uos-navy)}
+.card{border-radius:16px;box-shadow:0 8px 24px #0b254012}
+.label{color:#0d5a94}
+.price{color:#07172f}
+.info{border-color:#e2e8f0}
+.stat strong{color:#0d5a94}
+.profile-trigger{background:#fff;color:#10213a}
+.profile-menu .menu-admin{background:var(--uos-navy);color:#fff}
+.profile-menu .menu-customer{background:var(--uos-yellow);color:#07172f}
+.gallery-thumbs img.active{border-color:var(--uos-yellow)}
+/* Offer slider */
+.offer-slider{position:relative;max-width:1150px;margin:0 auto 22px;border-radius:22px;overflow:hidden;box-shadow:0 18px 38px #0003}
+.offer-slide{display:none;min-height:230px;padding:28px 6%;align-items:center;justify-content:space-between;gap:18px;color:#fff;background:linear-gradient(115deg,#08172e,#123c67 70%,#17618a)}
+.offer-slide.active{display:flex;animation:uosFade .35s ease}
+.offer-copy{max-width:620px;position:relative;z-index:1}
+.offer-kicker{display:inline-block;background:var(--uos-yellow);color:#07172f;font-weight:900;font-size:11px;letter-spacing:1px;padding:7px 11px;border-radius:999px;margin-bottom:10px}
+.offer-slide h2{font-size:clamp(25px,4vw,40px);line-height:1.08;margin:0 0 10px;color:#fff}
+.offer-slide p{color:#dbeafe;line-height:1.5;margin:0 0 14px}
+.offer-price{font-size:clamp(20px,3vw,28px);font-weight:900;color:var(--uos-yellow)}
+.offer-price del{font-size:15px;color:#cbd5e1;margin-left:8px;font-weight:600}
+.offer-visual{flex:0 0 190px;width:190px;height:160px;border-radius:20px;background:linear-gradient(145deg,#fff4b5,#ffc928);display:grid;place-items:center;font-size:88px;box-shadow:0 14px 30px #0002}
+.offer-slide:nth-child(2){background:linear-gradient(115deg,#07172f,#173e5c 70%,#176b70)}
+.offer-slide:nth-child(3){background:linear-gradient(115deg,#101a32,#27385d 70%,#6048a4)}
+.offer-dots{position:absolute;left:6%;bottom:12px;display:flex;gap:7px;z-index:2}
+.offer-dot{width:9px;height:9px;padding:0;border-radius:50%;background:#ffffff80;min-width:9px}
+.offer-dot.active{background:var(--uos-yellow);transform:scale(1.2)}
+.offer-note{font-size:12px;color:#cbd5e1;margin-top:8px}
+@keyframes uosFade{from{opacity:.5;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:600px){.offer-slide{min-height:220px;padding:23px 18px 42px}.offer-visual{flex-basis:100px;width:100px;height:105px;font-size:55px;border-radius:16px}.offer-slide h2{font-size:25px}.offer-slide p{font-size:13px}.offer-price{font-size:21px}.offer-dots{left:18px}.hero{padding:24px 16px}}
+
 </style>
 </head>
 
@@ -167,6 +218,45 @@ footer{margin-top:30px;background:#1d1238;color:white;padding:24px 6%;text-align
   <select id="sortBy" onchange="render()" aria-label="Sort products">
    <option value="newest">Newest first</option><option value="low">Price: low to high</option><option value="high">Price: high to low</option><option value="name">Name A–Z</option>
   </select>
+ </div>
+</section>
+
+
+<section class="offer-slider" id="offerSlider" aria-label="Featured offers">
+ <div class="offer-slide active">
+  <div class="offer-copy">
+   <span class="offer-kicker">🔥 SPECIAL DEALS</span>
+   <h2>Big Offers. Smart Shopping.</h2>
+   <p>Discover mobiles, cars and great finds at prices you’ll love.</p>
+   <div class="offer-price">Best Offer Prices <del>Shop & Save</del></div>
+   <div class="offer-note">Browse latest listings and contact sellers directly.</div>
+  </div>
+  <div class="offer-visual" aria-hidden="true">📱</div>
+ </div>
+ <div class="offer-slide">
+  <div class="offer-copy">
+   <span class="offer-kicker">🚗 DRIVE YOUR DEAL</span>
+   <h2>Find Your Next Ride</h2>
+   <p>Explore cars and compare selling prices before you decide.</p>
+   <div class="offer-price">Cars • Great Deals</div>
+   <div class="offer-note">Check vehicle details and contact the seller.</div>
+  </div>
+  <div class="offer-visual" aria-hidden="true">🚘</div>
+ </div>
+ <div class="offer-slide">
+  <div class="offer-copy">
+   <span class="offer-kicker">✨ FRESH FINDS</span>
+   <h2>Mint. Super Mint. Open Box.</h2>
+   <p>Find products with clear condition details and multiple photos.</p>
+   <div class="offer-price">Shop With Confidence</div>
+   <div class="offer-note">Always confirm condition and price with the seller.</div>
+  </div>
+  <div class="offer-visual" aria-hidden="true">🏷️</div>
+ </div>
+ <div class="offer-dots" aria-label="Choose offer slide">
+  <button class="offer-dot active" type="button" aria-label="Offer 1" onclick="showOfferSlide(0)"></button>
+  <button class="offer-dot" type="button" aria-label="Offer 2" onclick="showOfferSlide(1)"></button>
+  <button class="offer-dot" type="button" aria-label="Offer 3" onclick="showOfferSlide(2)"></button>
  </div>
 </section>
 
@@ -1638,6 +1728,19 @@ function trackOrder(){const order=prompt("Enter your order ID to track:");if(ord
 async function customerLogout(){try{if(supabaseClient&&currentUser)await supabaseClient.auth.signOut();}catch(e){console.warn(e)}currentUser=null;isAdmin=false;localStorage.removeItem("uos_customer_email");await checkAdmin();await loadProducts();updateCustomerProfile();closeProfileMenu();profileNotice("You have logged out.");}
 $("customerAuthForm").addEventListener("submit",async function(e){e.preventDefault();const email=$("customerAuthEmail").value.trim(),password=$("customerAuthPassword").value;const msg=$("customerAuthMessage"),btn=$("customerAuthSubmit");msg.textContent="";if(!supabaseClient){msg.textContent="Customer account needs Supabase setup. You can still browse and save wishlist items on this device.";return;}btn.disabled=true;btn.textContent=customerSignupMode?"Creating account…":"Signing in…";try{let result;if(customerSignupMode)result=await supabaseClient.auth.signUp({email,password});else result=await supabaseClient.auth.signInWithPassword({email,password});if(result.error)throw result.error;if(result.data.user){currentUser=result.data.user;localStorage.setItem("uos_customer_email",email);await checkAdmin();await loadProducts();updateCustomerProfile();closeCustomerLogin();openCustomerProfile();if(customerSignupMode&&!result.data.session)profileNotice("Account created. Check your email to confirm it, then log in.");}}catch(err){msg.textContent=err.message||"Could not complete sign in.";}finally{btn.disabled=false;btn.textContent=customerSignupMode?"Sign Up":"Login";}});
 // Fix selected category binding and keep profile status in sync.
+
+
+// ================= PREMIUM OFFER SLIDER =================
+let offerSlideIndex = 0;
+function showOfferSlide(index) {
+  const slides = Array.from(document.querySelectorAll(".offer-slide"));
+  const dots = Array.from(document.querySelectorAll(".offer-dot"));
+  if (!slides.length) return;
+  offerSlideIndex = (index + slides.length) % slides.length;
+  slides.forEach((slide, i) => slide.classList.toggle("active", i === offerSlideIndex));
+  dots.forEach((dot, i) => dot.classList.toggle("active", i === offerSlideIndex));
+}
+setInterval(() => showOfferSlide(offerSlideIndex + 1), 4500);
 
 // ================= START WEBSITE =================
 async function startWebsite() {
