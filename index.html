@@ -3,13 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Unique Online Service Buy & Sell</title>
-<meta name="theme-color" content="#08172f">
-
+<meta name="description" content="Buy and sell mobiles, cars, bikes and electronics at Unique Online Service. Explore offers, compare products and contact sellers directly.">
+<meta name="robots" content="index,follow,max-image-preview:large">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="Unique Online Service Buy & Sell">
 <meta property="og:title" content="Unique Online Service Buy & Sell">
-<meta property="og:description" content="মোবাইল, গাড়ি, বাইক ও অন্যান্য পণ্যের Buy & Sell Marketplace।">
+<meta property="og:description" content="Explore mobile phones, cars, bikes and great offers.">
+<meta name="theme-color" content="#6d28d9">
+<title>Unique Online Service Buy & Sell</title>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"OnlineStore","name":"Unique Online Service Buy & Sell","description":"Buy and sell mobiles, cars, bikes and electronics."}</script>
 
 <style>
 *{box-sizing:border-box}
@@ -375,6 +376,8 @@ body.dark-mode #customer-profile .profile-heading {
    <div class="profile-menu-head"><strong id="menuUserName">Welcome!</strong><small id="menuUserEmail">Choose how to continue</small></div>
    <a href="#customer-profile" onclick="openCustomerProfile();return false">👤 My Profile</a>
    <a href="#listings" onclick="closeProfileMenu();openAppPage('wishlist');return false">♡ Wishlist / Products</a>
+   <a href="#seller-dashboard" onclick="closeProfileMenu();openAppPage('seller-dashboard');return false">📦 My Listings</a>
+   <a href="#seller-dashboard" onclick="closeProfileMenu();openAppPage('seller-dashboard');return false">🧾 My Orders</a>
    <button type="button" class="menu-admin" onclick="openAdminLogin()">🔐 Admin Login</button>
    <button type="button" class="menu-customer" onclick="openCustomerLogin()">🛍️ Customer Login</button>
    <button type="button" class="menu-logout" id="customerLogoutBtn" onclick="customerLogout()" hidden>↪ Logout</button>
@@ -496,6 +499,12 @@ body.dark-mode #customer-profile .profile-heading {
    </div>
  </div>
  <div class="admin-inventory" style="margin-top:24px">
+  <h3>🧾 Customer Orders</h3><p style="color:#64748b;font-size:13px">Update order statuses. Requires the orders SQL migration below.</p><div id="adminOrdersMessage" role="status"></div><div id="adminOrdersList"></div>
+ </div>
+ <div class="admin-inventory" style="margin-top:24px">
+  <h3>⭐ Review Moderation</h3><p style="color:#64748b;font-size:13px">Approve customer reviews before they appear publicly.</p><div id="adminReviewsMessage" role="status"></div><div id="adminReviewsList"></div>
+ </div>
+ <div class="admin-inventory" style="margin-top:24px">
   <h3>🎯 Homepage Offer Slider</h3>
   <p style="color:#64748b;font-size:13px">Add your own offer photo, title and price. Offer records are shared through Supabase.</p>
   <form id="offerForm" class="admin-offer-form">
@@ -507,6 +516,15 @@ body.dark-mode #customer-profile .profile-heading {
   </form>
   <p id="offerMessage" role="status"></p><div id="adminOfferList"></div>
  </div>
+</section>
+
+<section id="seller-dashboard" class="info" hidden>
+ <div class="page-heading"><h2>📦 My Seller Dashboard</h2><button class="back-home" type="button" onclick="openAppPage('home')">← Home</button></div>
+ <p id="sellerDashboardMessage" style="color:#64748b">Sign in to see your listings and orders.</p>
+ <div class="stats"><div class="stat">My Listings<strong id="sellerListingCount">0</strong></div><div class="stat">Published<strong id="sellerPublishedCount">0</strong></div><div class="stat">Pending approval<strong id="sellerPendingCount">0</strong></div></div>
+ <h3>My Product Listings</h3><div id="sellerListings" class="grid"></div>
+ <h3 style="margin-top:26px">My Orders</h3><div id="customerOrdersList"></div>
+ <button type="button" onclick="openSellPage()">＋ Post Another Product</button>
 </section>
 
 <section id="post-ad" class="info" hidden>
@@ -1344,6 +1362,14 @@ async function setProductSoldOut(id, soldOut) {
   const { error } = await supabaseClient.from("products").update({ sold_out: soldOut }).eq("id", id);
   if (error) throw error;
 }
+async function setProductPublished(id, published) {
+  if (!isAdmin || !supabaseClient) throw new Error("Admin access required.");
+  const { error } = await supabaseClient
+    .from("products")
+    .update({ published: Boolean(published) })
+    .eq("id", id);
+  if (error) throw error;
+}
 async function updateProductDetails(product) {
   if (!isAdmin || !supabaseClient) throw new Error("Admin access required.");
   const ask = (label, key, fallback = "") => prompt(label, product[key] == null ? fallback : String(product[key]));
@@ -1538,7 +1564,7 @@ function openSellPage() {
 }
 function openAppPage(page) {
  if (page === "post-ad" && !currentUser) { openSellPage(); return; }
- const sections = ['listings','post-ad','admin-login','admin-dashboard','customer-profile','contact'];
+ const sections = ['listings','post-ad','admin-login','admin-dashboard','customer-profile','contact','seller-dashboard'];
  document.body.classList.toggle('home-mode', page === 'home');
  document.body.classList.toggle('page-mode', page !== 'home');
  document.getElementById('appHome').hidden = page !== 'home';
@@ -1552,6 +1578,10 @@ function openAppPage(page) {
    if(favBtn) favBtn.classList.toggle('active', favoritesOnly);
    render();
    if(page === 'compare') { const panel=document.getElementById('comparePanel'); if(panel) { panel.hidden=false; panel.scrollIntoView({behavior:'smooth',block:'center'}); } }
+ } else if(page === 'seller-dashboard') {
+   if (!currentUser) { openCustomerLogin(); return; }
+   document.getElementById('seller-dashboard').hidden=false;
+   loadSellerDashboard();
  } else if(page === 'post-ad') {
    document.getElementById('post-ad').hidden=false;
  } else if(page === 'profile') {
@@ -1773,7 +1803,31 @@ function renderAdminInventory() {
       catch (err) { alert("Could not delete product: " + (err.message || "Unknown error")); }
       finally { deleteBtn.disabled = false; }
     });
-    actions.append(editBtn, linkBtn, statusBtn, deleteBtn);
+    const publishBtn = document.createElement("button");
+    publishBtn.type = "button";
+    publishBtn.className = "admin-action admin-status";
+    publishBtn.textContent = product.published === false ? "Approve / Publish" : "Unpublish";
+    publishBtn.addEventListener("click", async () => {
+      if (!isAdmin) {
+        alert("Admin access required.");
+        return;
+      }
+      const nextPublished = product.published === false;
+      const action = nextPublished ? "publish" : "unpublish";
+      if (!confirm("Are you sure you want to " + action + " this product?")) return;
+      publishBtn.disabled = true;
+      try {
+        await setProductPublished(product.id, nextPublished);
+        await loadProducts();
+      } catch (err) {
+        alert("Could not change publish status: " + (err.message || "Unknown error") +
+          "\n\nPlease check the Supabase products UPDATE policy.");
+      } finally {
+        publishBtn.disabled = false;
+      }
+    });
+
+    actions.append(editBtn, linkBtn, statusBtn, publishBtn, deleteBtn);
     tr.append(name, category, price, seller, status, actions);
     tbody.appendChild(tr);
   });
@@ -2029,6 +2083,7 @@ if (minPrice > maxPrice) {
           <button type="button" class="detail-btn details-btn">Product Details</button><button type="button" class="view-btn">View Photos</button>
           <button type="button" class="review-btn secondary">☆ Write Review</button><button type="button" class="read-reviews-btn secondary">Read Reviews</button>
           <button type="button" class="secondary whatsapp-btn" ${product.sold_out ? "disabled" : ""}>${product.sold_out ? "Sold Out" : "WhatsApp"}</button>
+          <button type="button" class="order-product-btn" ${product.sold_out ? "disabled" : ""}>${product.sold_out ? "Unavailable" : "🛒 Place Order"}</button>
           ${isAdmin ? `<button type="button" class="soldout-btn">${product.sold_out ? "Mark Available" : "Mark Sold Out"}</button><button type="button" class="secondary edit-product-btn">Edit Product</button><button type="button" class="secondary copy-product-link-btn">Copy Product Link</button>` : ''}
           <button type="button" class="favorite-btn ${favorites.has(String(product.id)) ? "saved" : ""}" aria-label="Save to wishlist">${favorites.has(String(product.id)) ? "♥ Saved" : "♡ Save"}</button>
           <button type="button" class="compare-btn">${compareProducts.has(String(product.id)) ? "✓ Selected" : "⚖️ Compare"}</button>
@@ -2148,6 +2203,30 @@ if (minPrice > maxPrice) {
         alert(data.map(r => "★".repeat(Number(r.rating)||0) + "☆".repeat(5-(Number(r.rating)||0)) + " — " + r.reviewer_name + "\n" + r.review_text).join("\n\n────────\n\n"));
       } catch (error) { alert("Reviews are not set up yet. Run the SQL setup file first. " + (error.message || "")); }
     });
+    card.querySelector(".order-product-btn").addEventListener("click", async () => {
+      if (product.sold_out) return alert("This product is marked sold out.");
+      if (!currentUser) { pendingSellAfterLogin = false; openCustomerLogin(); return; }
+      const customerName = prompt("Your name:", currentUser.user_metadata?.full_name || "");
+      if (!customerName || !customerName.trim()) return;
+      const customerPhone = prompt("Your 10-digit phone number:", "");
+      if (!customerPhone || !/^[6-9][0-9]{9}$/.test(customerPhone.trim())) return alert("Please enter a valid 10-digit Indian mobile number.");
+      const customerAddress = prompt("Delivery / contact address (or enter 'Pickup'):", "Pickup");
+      if (!customerAddress || !customerAddress.trim()) return;
+      if (!supabaseClient) return alert("Order system requires Supabase connection.");
+      try {
+        const { data, error } = await supabaseClient.from("orders").insert({
+          customer_id: currentUser.id, product_id: String(product.id),
+          product_name: [product.brand, product.name].filter(Boolean).join(" "),
+          seller_id: product.submitted_by || null, customer_name: customerName.trim().slice(0,100),
+          customer_phone: customerPhone.trim(), customer_address: customerAddress.trim().slice(0,500),
+          amount: Number(product.offer || product.price || 0), status: "pending"
+        }).select("id").single();
+        if (error) throw error;
+        alert("Order request submitted! Order ID: " + data.id + "\nThe seller/admin will contact you to confirm. No payment was taken.");
+        await loadCustomerOrders();
+      } catch (error) { alert("Could not place order. Run the provided orders SQL migration and check Supabase permissions.\n" + (error.message || "Unknown error")); }
+    });
+
     card.querySelector(".review-btn").addEventListener("click", async () => {
       const reviewer = prompt("Your name (or nickname):");
       if (!reviewer || !reviewer.trim()) return;
@@ -2282,7 +2361,7 @@ $("adForm").addEventListener("submit", async function(event) {
   }
   const submitButton = $("submitBtn");
   submitButton.disabled = true;
-  submitButton.textContent = "Uploading photos and publishing...";
+  submitButton.textContent = "Uploading photos and submitting for approval...";
   $("adMessage").textContent = "";
   try {
     const photoUrls = await uploadPhotos(selectedPhotos);
@@ -2301,13 +2380,13 @@ $("adForm").addEventListener("submit", async function(event) {
       offer,
       description: $("adDetails").value.trim(),
       photos: photoUrls,
-      published: true,
+      published: false,
       submitted_by: currentUser.id,
       seller_email: currentUser.email || "",
       seller_phone: sellerPhone
     };
     await saveProduct(product);
-    $("adMessage").textContent = "Product submitted successfully! The admin can see your account email and phone number in Product Inventory.";
+    $("adMessage").textContent = "Product submitted for admin approval. It will appear publicly after the admin publishes it.";
     clearForm();
     await loadProducts();
     $("listings").scrollIntoView({ behavior: "smooth" });
@@ -2348,6 +2427,8 @@ $("loginForm").addEventListener("submit", async function(event) {
     }
     $("loginPassword").value = "";
     await loadProducts();
+    await loadAdminOrders();
+    await loadAdminReviews();
   } catch (error) {
     $("loginMessage").textContent = error.message || "Login failed.";
   } finally {
@@ -2419,10 +2500,69 @@ function editCustomerProfile() {
     profileNotice("Display name saved on this device.");
   }
 }function editAddress(){const address=prompt("Enter your delivery/contact address",localStorage.getItem("uos_customer_address")||"");if(address!==null){localStorage.setItem("uos_customer_address",address);profileNotice(address?"Address saved on this device.":"Saved address cleared.");}}
-function trackOrder(){const order=prompt("Enter your order ID to track:");if(order)profileNotice("Order "+order+": live tracking is not connected yet. Please contact the seller for an update.");}
+async function trackOrder(){
+ if(!currentUser){openCustomerLogin();return;}
+ const order=prompt("Enter your order ID to track (leave blank to open My Listings & Orders):");
+ if(!order){openAppPage("seller-dashboard");return;}
+ if(!supabaseClient)return profileNotice("Order tracking needs Supabase setup.");
+ try{const {data,error}=await supabaseClient.from("orders").select("id,product_name,status,created_at").eq("id",order.trim()).eq("customer_id",currentUser.id).maybeSingle();if(error)throw error;if(!data)return profileNotice("No order found for that ID on your account.");profileNotice("Order "+data.id+" — "+(data.product_name||"Product")+" — Status: "+data.status);}catch(e){profileNotice("Order tracking unavailable. Run the orders SQL migration and check permissions.");}
+}
 async function customerLogout(){try{if(supabaseClient&&currentUser)await supabaseClient.auth.signOut();}catch(e){console.warn(e)}currentUser=null;isAdmin=false;localStorage.removeItem("uos_customer_email");await checkAdmin();await loadProducts();updateCustomerProfile();closeProfileMenu();profileNotice("You have logged out.");}
-$("customerAuthForm").addEventListener("submit",async function(e){e.preventDefault();const email=$("customerAuthEmail").value.trim(),password=$("customerAuthPassword").value;const msg=$("customerAuthMessage"),btn=$("customerAuthSubmit");msg.textContent="";if(!supabaseClient){msg.textContent="Customer account needs Supabase setup. You can still browse and save wishlist items on this device.";return;}btn.disabled=true;btn.textContent=customerSignupMode?"Creating account…":"Signing in…";try{let result;if(customerSignupMode)result=await supabaseClient.auth.signUp({email,password});else result=await supabaseClient.auth.signInWithPassword({email,password});if(result.error)throw result.error;if(result.data.user){currentUser=result.data.user;localStorage.setItem("uos_customer_email",email);await checkAdmin();await loadProducts();updateCustomerProfile();closeCustomerLogin();if(pendingSellAfterLogin){pendingSellAfterLogin=false;openAppPage("post-ad");}else{openCustomerProfile();}if(customerSignupMode&&!result.data.session)profileNotice("Account created. Check your email to confirm it, then log in.");}}catch(err){msg.textContent=err.message||"Could not complete sign in.";}finally{btn.disabled=false;btn.textContent=customerSignupMode?"Sign Up":"Login";}});
+$("customerAuthForm").addEventListener("submit",async function(e){e.preventDefault();const email=$("customerAuthEmail").value.trim(),password=$("customerAuthPassword").value;const msg=$("customerAuthMessage"),btn=$("customerAuthSubmit");msg.textContent="";if(!supabaseClient){msg.textContent="Customer account needs Supabase setup. You can still browse and save wishlist items on this device.";return;}btn.disabled=true;btn.textContent=customerSignupMode?"Creating account…":"Signing in…";try{let result;if(customerSignupMode)result=await supabaseClient.auth.signUp({email,password});else result=await supabaseClient.auth.signInWithPassword({email,password});if(result.error)throw result.error;if(result.data.user){currentUser=result.data.user;localStorage.setItem("uos_customer_email",email);await checkAdmin();await loadProducts();updateCustomerProfile();await loadCustomerOrders();closeCustomerLogin();if(pendingSellAfterLogin){pendingSellAfterLogin=false;openAppPage("post-ad");}else{openCustomerProfile();}if(customerSignupMode&&!result.data.session)profileNotice("Account created. Check your email to confirm it, then log in.");}}catch(err){msg.textContent=err.message||"Could not complete sign in.";}finally{btn.disabled=false;btn.textContent=customerSignupMode?"Sign Up":"Login";}});
 // Fix selected category binding and keep profile status in sync.
+
+// ================= SELLER DASHBOARD, ORDERS & REVIEW MODERATION =================
+async function loadSellerDashboard() {
+  const message = $("sellerDashboardMessage");
+  const list = $("sellerListings");
+  if (!currentUser || !supabaseClient) { if(message) message.textContent = "Please log in and connect Supabase to view your seller dashboard."; return; }
+  if(message) message.textContent = "Loading your listings and orders…";
+  try {
+    const { data, error } = await supabaseClient.from("products").select("*").eq("submitted_by", currentUser.id).order("created_at", {ascending:false});
+    if (error) throw error;
+    const mine = data || [];
+    $("sellerListingCount").textContent = mine.length;
+    $("sellerPublishedCount").textContent = mine.filter(p => p.published !== false).length;
+    $("sellerPendingCount").textContent = mine.filter(p => p.published === false).length;
+    if(message) message.textContent = "Your listings are shown below. Pending products become public after admin approval.";
+    if(list) {
+      list.innerHTML = mine.length ? mine.map(p => `<article class="card"><div class="content"><span class="label">${p.published === false ? "⏳ PENDING APPROVAL" : "✓ PUBLISHED"}</span><h3>${escapeHTML([p.brand,p.name].filter(Boolean).join(" "))}</h3><div class="price">${formatPrice(p.offer)}</div><p class="details">${escapeHTML(p.category || "Other")} · ${p.sold_out ? "Sold Out" : "Available"}</p><p class="details">${escapeHTML(p.description || "")}</p></div></article>`).join("") : '<p>No listings yet. Use “Post Another Product” to add one.</p>';
+    }
+    await loadCustomerOrders();
+  } catch(error) { if(message) message.textContent = "Could not load seller listings. Check products SELECT policies: " + (error.message || "Unknown error"); }
+}
+
+async function loadCustomerOrders() {
+  const target = $("customerOrdersList");
+  if (!target || !currentUser || !supabaseClient) return;
+  try {
+    const {data,error} = await supabaseClient.from("orders").select("id,product_name,amount,status,created_at").eq("customer_id", currentUser.id).order("created_at", {ascending:false}).limit(50);
+    if(error) throw error;
+    target.innerHTML = data && data.length ? data.map(o => `<div class="info" style="margin:10px 0;padding:14px"><strong>${escapeHTML(o.product_name || "Order")}</strong><p>Order ID: <code>${escapeHTML(o.id)}</code></p><p>Amount: ${formatPrice(o.amount)} · Status: <strong>${escapeHTML(o.status || "pending")}</strong></p><small>${o.created_at ? new Date(o.created_at).toLocaleString() : ""}</small></div>`).join("") : "<p>No orders yet.</p>";
+  } catch(error) { target.innerHTML = '<p>Order history is unavailable. Run the orders SQL migration and check Supabase permissions.</p>'; }
+}
+
+async function loadAdminOrders() {
+ const target=$("adminOrdersList"), message=$("adminOrdersMessage");
+ if(!target || !isAdmin || !supabaseClient) return;
+ try {
+  const {data,error}=await supabaseClient.from("orders").select("*").order("created_at",{ascending:false}).limit(100); if(error) throw error;
+  if(message) message.textContent=(data||[]).length+" order(s)";
+  target.innerHTML=(data||[]).length ? (data||[]).map(o=>`<div class="info" style="margin:10px 0;padding:14px"><strong>${escapeHTML(o.product_name||"Order")}</strong><p>ID: <code>${escapeHTML(o.id)}</code> · ${formatPrice(o.amount)}</p><p>Customer: ${escapeHTML(o.customer_name||"—")} · ${escapeHTML(o.customer_phone||"—")}</p><p>Address: ${escapeHTML(o.customer_address||"—")}</p><label>Order status <select data-order-status="${escapeHTML(o.id)}"><option value="pending" ${o.status==="pending"?"selected":""}>Pending</option><option value="confirmed" ${o.status==="confirmed"?"selected":""}>Confirmed</option><option value="processing" ${o.status==="processing"?"selected":""}>Processing</option><option value="completed" ${o.status==="completed"?"selected":""}>Completed</option><option value="cancelled" ${o.status==="cancelled"?"selected":""}>Cancelled</option></select></label><button type="button" data-save-order="${escapeHTML(o.id)}" style="margin-top:8px">Save Status</button></div>`).join("") : "<p>No customer orders yet.</p>";
+  target.querySelectorAll("[data-save-order]").forEach(btn=>btn.addEventListener("click",async()=>{const id=btn.dataset.saveOrder;const status=target.querySelector(`[data-order-status="${CSS.escape(id)}"]`)?.value;if(!status)return;btn.disabled=true;try{const {error}=await supabaseClient.from("orders").update({status}).eq("id",id);if(error)throw error;await loadAdminOrders();}catch(e){alert("Could not update order status: "+(e.message||"Unknown error"));}finally{btn.disabled=false;}}));
+ } catch(error) { if(message) message.textContent="Orders unavailable. Run the supplied SQL migration. "+(error.message||""); target.innerHTML=""; }
+}
+
+async function loadAdminReviews() {
+ const target=$("adminReviewsList"), message=$("adminReviewsMessage"); if(!target || !isAdmin || !supabaseClient) return;
+ try { const {data,error}=await supabaseClient.from("product_reviews").select("id,product_id,reviewer_name,rating,review_text,approved,created_at").order("created_at",{ascending:false}).limit(100); if(error) throw error;
+  const pending=(data||[]).filter(r=>r.approved!==true); if(message) message.textContent=pending.length+" review(s) waiting for approval";
+  target.innerHTML=pending.length?pending.map(r=>`<div class="info" style="margin:10px 0;padding:14px"><strong>${escapeHTML(r.reviewer_name)} · ${"★".repeat(Number(r.rating)||0)}</strong><p>${escapeHTML(r.review_text)}</p><small>Product ID: ${escapeHTML(r.product_id)}</small><div class="actions" style="margin-top:8px"><button type="button" data-review-approve="${r.id}">Approve</button><button type="button" class="admin-delete" data-review-reject="${r.id}">Reject</button></div></div>`).join(""):"<p>No reviews waiting for approval.</p>";
+  target.querySelectorAll("[data-review-approve]").forEach(btn=>btn.addEventListener("click",()=>moderateReview(btn.dataset.reviewApprove,true)));
+  target.querySelectorAll("[data-review-reject]").forEach(btn=>btn.addEventListener("click",()=>moderateReview(btn.dataset.reviewReject,false)));
+ } catch(error) { if(message) message.textContent="Review moderation unavailable: "+(error.message||"Run the review SQL setup first."); target.innerHTML=""; }
+}
+async function moderateReview(id,approved) { if(!isAdmin||!supabaseClient)return; try { const {error}=await supabaseClient.from("product_reviews").update({approved}).eq("id",id); if(error)throw error; await loadAdminReviews(); } catch(error) { alert("Could not moderate review: "+(error.message||"Unknown error")); } }
 
 // ================= START WEBSITE =================
 document.body.classList.add("home-mode");
@@ -2521,6 +2661,7 @@ async function startWebsite() {
   const ready = await initSupabase();
   if (ready) {
     await loadProducts();
+    if (isAdmin) { await loadAdminOrders(); await loadAdminReviews(); }
     openSharedProductIfRequested();
   }
 }
