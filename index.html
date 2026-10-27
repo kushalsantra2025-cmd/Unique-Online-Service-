@@ -425,7 +425,13 @@ body.dark-mode .admin-quick-card small{color:#a5b4cc}
 .admin-notice-box h3{margin:0 0 8px}.admin-notice-box p{margin:5px 0;color:#475569}
 .admin-error-box{display:none;border:1px solid #fed7aa;background:#fff7ed;color:#9a3412;padding:12px;border-radius:12px;white-space:pre-wrap;overflow-wrap:anywhere;margin:10px 0}
 @media(max-width:700px){.admin-live-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.admin-live-card{padding:12px}.admin-live-card strong{font-size:23px}}
-</style>
+
+/* Premium marketplace additions */
+.uos-featured-badge{display:inline-block;background:linear-gradient(90deg,#fef3c7,#fde68a);color:#92400e;border:1px solid #f59e0b;border-radius:999px;padding:5px 9px;font-size:11px;font-weight:800;margin:4px 0}
+.uos-chat-box{border:1px solid #dbeafe;background:#f8fbff;padding:14px;border-radius:14px;margin:12px 0}
+.uos-photo-tools{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}.uos-photo-tools button{font-size:11px;padding:5px 7px;border-radius:7px}
+.uos-chat-message{padding:10px;border-radius:10px;background:#f1f5f9;margin:8px 0;overflow-wrap:anywhere}.uos-chat-message small{display:block;color:#64748b;margin-top:4px}
+
 </head>
 
 <body>
@@ -594,6 +600,7 @@ body.dark-mode .admin-quick-card small{color:#a5b4cc}
   <p style="color:#64748b;font-size:13px">Review reports submitted by visitors. Resolve reports after checking the listing, or dismiss reports that do not need action.</p>
   <div id="adminReportsMessage" role="status" aria-live="polite"></div><div id="adminReportsList">Reports will appear here after loading.</div>
  </div>
+ <div class="admin-inventory" id="adminFeaturedPanel" style="margin-top:24px"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h3>⭐ Featured Ad Requests</h3><button type="button" class="secondary" onclick="uosLoadFeaturedRequests()">Refresh</button></div><p class="photo-hint">Approve a request to feature a listing for seven days. Payment processing is not connected.</p><div id="featuredRequestsList">Load requests after admin login.</div></div>
  <div class="admin-inventory" id="adminOffersPanel" style="margin-top:24px">
   <h3>🎯 Homepage Offer Slider</h3>
   <p style="color:#64748b;font-size:13px">Add your own offer photo, title and price. Offer records are shared through Supabase.</p>
@@ -614,6 +621,8 @@ body.dark-mode .admin-quick-card small{color:#a5b4cc}
  <div class="stats"><div class="stat">My Listings<strong id="sellerListingCount">0</strong></div><div class="stat">Published<strong id="sellerPublishedCount">0</strong></div><div class="stat">Pending approval<strong id="sellerPendingCount">0</strong></div></div>
  <h3>My Product Listings</h3><div id="sellerListings" class="grid"></div>
  <h3 style="margin-top:26px">My Orders</h3><div id="customerOrdersList"></div>
+ <h3 style="margin-top:26px">💬 Buyer Messages</h3><p class="photo-hint">Read buyer enquiries and reply. Messages require the premium SQL migration.</p><div id="sellerMessagesList"></div>
+ <h3 style="margin-top:26px">🔔 New Product Alerts</h3><p class="photo-hint">Alerts saved on this device appear when matching new listings are found on a future visit.</p><div id="sellerAlertSettings"></div>
  <button type="button" onclick="openSellPage()">＋ Post Another Product</button>
 </section>
 
@@ -721,7 +730,7 @@ body.dark-mode .admin-quick-card small{color:#a5b4cc}
     <label for="adPhoto">Product Photos * (Maximum 10 photos)</label>
     <input id="adPhoto" type="file" accept="image/*" multiple required>
     <div class="photo-hint">
-     You can add up to 10 original photos. For a 360° rotate view, upload several photos of the product from left to right around the product. Images will not be resized or compressed.
+     You can add up to 10 original photos. For a 360° rotate view, upload several photos of the product from left to right around the product. Use the photo tools below to rotate, reorder and choose the cover photo before upload.
     </div>
     <div id="photoCount" class="photo-hint">No photos selected</div>
     <div id="photoPreview"></div>
@@ -748,7 +757,7 @@ body.dark-mode .admin-quick-card small{color:#a5b4cc}
 <section id="listings" hidden>
  <div class="page-heading"><h2>Latest Listings</h2><button class="back-home" type="button" onclick="openAppPage('home')">← Home</button></div>
  <p style="color:#64748b;font-size:14px">Browse products, compare prices, and save favourites on this device.</p>
- <div class="filters"><button type="button" id="showAllBtn" class="active" onclick="showFavoritesOnly(false)">🛍️ All Products</button><button type="button" id="showFavBtn" class="fav-only" onclick="showFavoritesOnly(true)">❤️ My Wishlist</button></div>
+ <div class="filters"><button type="button" class="secondary" onclick="uosCreateNewAlert()">🔔 Alert me about new listings</button><button type="button" id="showAllBtn" class="active" onclick="showFavoritesOnly(false)">🛍️ All Products</button><button type="button" id="showFavBtn" class="fav-only" onclick="showFavoritesOnly(true)">❤️ My Wishlist</button></div>
 
  <div class="filters">
   <button class="active" onclick="pick('All')">All</button>
@@ -1388,9 +1397,29 @@ function showPhotoPreview(files) {
 
     wrap.appendChild(img);
     wrap.appendChild(remove);
+    const tools=document.createElement("div"); tools.className="uos-photo-tools";
+    const makeTool=(label,title,fn)=>{const b=document.createElement("button");b.type="button";b.className="secondary";b.textContent=label;b.title=title;b.addEventListener("click",fn);tools.appendChild(b);};
+    makeTool("↶ Rotate","Rotate this photo left",()=>uosRotateSelectedPhoto(index,-90));
+    makeTool("↷ Rotate","Rotate this photo right",()=>uosRotateSelectedPhoto(index,90));
+    if(index>0) makeTool("↑","Move photo earlier / set cover",()=>uosMoveSelectedPhoto(index,-1));
+    if(index<files.length-1) makeTool("↓","Move photo later",()=>uosMoveSelectedPhoto(index,1));
+    if(index===0){const cover=document.createElement("small");cover.textContent="★ Cover photo";cover.style.color="#6d28d9";tools.appendChild(cover);}
+    wrap.appendChild(tools);
     container.appendChild(wrap);
   });
 }
+
+// Smart photo tools: rotate via canvas, reorder images, and use first image as cover.
+async function uosRotateSelectedPhoto(index,degrees){
+ const file=selectedPhotos[index]; if(!file)return;
+ try{const bitmap=await createImageBitmap(file);const canvas=document.createElement("canvas");const swap=Math.abs(degrees)%180===90;canvas.width=swap?bitmap.height:bitmap.width;canvas.height=swap?bitmap.width:bitmap.height;const ctx=canvas.getContext("2d");ctx.translate(canvas.width/2,canvas.height/2);ctx.rotate(degrees*Math.PI/180);ctx.drawImage(bitmap,-bitmap.width/2,-bitmap.height/2);bitmap.close?.();const blob=await new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(new Error("Could not rotate image")),file.type||"image/jpeg",0.92));const rotated=new File([blob],file.name.replace(/(\.[^.]+)?$/, "-rotated$1"),{type:file.type||"image/jpeg",lastModified:Date.now()});selectedPhotos[index]=rotated;const transfer=new DataTransfer();selectedPhotos.forEach(f=>transfer.items.add(f));$("adPhoto").files=transfer.files;showPhotoPreview(selectedPhotos);}catch(e){alert("Could not rotate this image in your browser. Try another photo.");}}
+function uosMoveSelectedPhoto(index,delta){const next=index+delta;if(next<0||next>=selectedPhotos.length)return;[selectedPhotos[index],selectedPhotos[next]]=[selectedPhotos[next],selectedPhotos[index]];const transfer=new DataTransfer();selectedPhotos.forEach(f=>transfer.items.add(f));$("adPhoto").files=transfer.files;showPhotoPreview(selectedPhotos);}
+function uosCreateNewAlert(){const term=prompt("Alert keyword (brand or product, e.g. iPhone or Honda):");if(!term||!term.trim())return;const alerts=uosReadLocal("uos_new_listing_alerts",[]);alerts.push({term:term.trim().toLowerCase(),created_at:new Date().toISOString(),seen_ids:[]});localStorage.setItem("uos_new_listing_alerts",JSON.stringify(alerts));alert("New listing alert saved on this device for: "+term.trim()+". Matching listings will be checked when you visit again.");}
+function uosCheckNewListingAlerts(items){const alerts=uosReadLocal("uos_new_listing_alerts",[]);if(!Array.isArray(alerts)||!alerts.length)return;let changed=false;const notices=[];for(const a of alerts){const seen=new Set(a.seen_ids||[]);const matches=(items||[]).filter(p=>{const id=String(p.id);const text=[p.brand,p.name,p.category,p.description].join(" ").toLowerCase();const created=p.created_at?new Date(p.created_at).getTime():0;return !seen.has(id)&&text.includes(a.term)&&created>new Date(a.created_at).getTime();});if(matches.length){notices.push(a.term+": "+matches.slice(0,3).map(p=>[p.brand,p.name].filter(Boolean).join(" ")).join(", "));matches.forEach(p=>seen.add(String(p.id)));a.seen_ids=[...seen];changed=true;}}if(changed)localStorage.setItem("uos_new_listing_alerts",JSON.stringify(alerts));if(notices.length)setTimeout(()=>alert("New listings matching your alerts:\n\n"+notices.join("\n")),500);}
+async function uosMessageSeller(product){if(!currentUser){openCustomerLogin();return;}if(!supabaseClient)return alert("Messaging requires Supabase and the premium SQL migration.");const sellerId=product.submitted_by;if(!sellerId||sellerId===currentUser.id)return alert("Seller contact is unavailable for this listing.");const message=prompt("Message the seller about "+[product.brand,product.name].filter(Boolean).join(" ")+":");if(!message||!message.trim())return;try{const {error}=await supabaseClient.from("marketplace_messages").insert({product_id:String(product.id),sender_id:currentUser.id,recipient_id:sellerId,message:message.trim().slice(0,2000)});if(error)throw error;alert("Message sent. You can view replies in My Seller Dashboard / Buyer Messages.");}catch(e){alert("Message was not sent. Apply the premium SQL migration and check messaging RLS. "+(e.message||""));}}
+async function uosLoadSellerMessages(){const target=$("sellerMessagesList");if(!target||!currentUser||!supabaseClient)return;if(!target.dataset.loaded)target.innerHTML="<p>Loading messages…</p>";try{const {data,error}=await supabaseClient.from("marketplace_messages").select("id,product_id,sender_id,recipient_id,message,created_at").or(`sender_id.eq.${currentUser.id},recipient_id.eq.${currentUser.id}`).order("created_at",{ascending:false}).limit(100);if(error)throw error;const rows=data||[];target.dataset.loaded="1";target.innerHTML=rows.length?rows.map(m=>`<article class="uos-chat-message"><strong>${m.sender_id===currentUser.id?"You sent":"Buyer/Seller message"} · Product ${escapeHTML(String(m.product_id))}</strong><p>${escapeHTML(m.message)}</p><small>${escapeHTML(m.created_at?new Date(m.created_at).toLocaleString():"")}</small>${m.recipient_id===currentUser.id?`<button type="button" data-reply-message="${escapeHTML(String(m.product_id))}" data-reply-to="${escapeHTML(String(m.sender_id))}">Reply</button>`:""}</article>`).join(""):"<p>No messages yet.</p>";target.querySelectorAll("[data-reply-message]").forEach(b=>b.addEventListener("click",async()=>{const reply=prompt("Write your reply:");if(!reply||!reply.trim())return;try{const {error}=await supabaseClient.from("marketplace_messages").insert({product_id:b.dataset.replyMessage,sender_id:currentUser.id,recipient_id:b.dataset.replyTo,message:reply.trim().slice(0,2000)});if(error)throw error;await uosLoadSellerMessages();}catch(e){alert("Reply failed: "+(e.message||"Check SQL/RLS"));}}));}catch(e){target.innerHTML="<p>Messages unavailable. Apply the premium SQL migration and check RLS: "+escapeHTML(e.message||"")+"</p>";}}
+async function uosRequestFeatured(productId){if(!currentUser||!supabaseClient)return alert("Please sign in first.");try{const {error}=await supabaseClient.from("featured_ad_requests").insert({product_id:String(productId),seller_id:currentUser.id,status:"pending"});if(error)throw error;alert("Featured Ad request sent to admin. This does not charge or publish a paid promotion; pricing/payment must be agreed separately.");}catch(e){alert("Could not request Featured Ad. Apply premium SQL and check permissions. "+(e.message||""));}}
+async function uosLoadFeaturedRequests(){const target=$("featuredRequestsList");if(!target||!isAdmin||!supabaseClient)return;try{const {data,error}=await supabaseClient.from("featured_ad_requests").select("id,product_id,seller_id,status,created_at").order("created_at",{ascending:false}).limit(100);if(error)throw error;target.innerHTML=(data||[]).length?(data||[]).map(r=>`<article class="uos-chat-box"><strong>Product ID ${escapeHTML(r.product_id)}</strong><p>Status: ${escapeHTML(r.status)}</p><small>Seller ${escapeHTML(r.seller_id)} · ${escapeHTML(r.created_at?new Date(r.created_at).toLocaleString():"")}</small>${r.status==="pending"?`<div class="actions"><button type="button" data-feature-action="approve" data-feature-id="${r.id}" data-product-id="${escapeHTML(r.product_id)}">Approve 7 days</button><button type="button" class="secondary" data-feature-action="reject" data-feature-id="${r.id}">Reject</button></div>`:""}</article>`).join(""):"<p>No Featured Ad requests.</p>";target.querySelectorAll("[data-feature-action]").forEach(b=>b.addEventListener("click",async()=>{if(!isAdmin)return;try{if(b.dataset.featureAction==="approve"){const until=new Date(Date.now()+7*86400000).toISOString();const {error}=await supabaseClient.from("products").update({featured_until:until,featured_requested:false}).eq("id",b.dataset.productId);if(error)throw error;}const {error}=await supabaseClient.from("featured_ad_requests").update({status:b.dataset.featureAction==="approve"?"approved":"rejected",reviewed_at:new Date().toISOString()}).eq("id",b.dataset.featureId);if(error)throw error;await uosLoadFeaturedRequests();await loadProducts();}catch(e){alert("Could not update Featured Ad. Check products/admin update policies and SQL. "+(e.message||""));}}));}catch(e){target.innerHTML="<p>Featured Ad requests unavailable: "+escapeHTML(e.message||"")+"</p>";}}
 
 // Final premium features: local price watch/view count, listing reports, seller verification.
 function uosReadLocal(key,fallback={}){try{return JSON.parse(localStorage.getItem(key)||JSON.stringify(fallback))||fallback;}catch(_){return fallback;}}
@@ -1447,7 +1476,7 @@ async function refreshAdminDashboard() {
   const {data,error}=await supabaseClient.auth.getSession(); if(error) throw error;
   currentUser=data?.session?.user||null; await checkAdmin();
   if(!isAdmin) { const msg=$("loginMessage"); if(msg)msg.textContent="Admin session is not active. Please use Reload / Check Login or sign in again."; return; }
-  await loadProducts(); await loadAdminOrders(); await loadAdminReviews(); await loadAdminReports(); await loadAdminOffers(); await loadAdminOverview();
+  await loadProducts(); await loadAdminOrders(); await loadAdminReviews(); await loadAdminReports(); await uosLoadFeaturedRequests(); await loadAdminOffers(); await loadAdminOverview();
   const msg=$("adminInventoryMessage"); if(msg)msg.textContent="Dashboard refreshed at "+new Date().toLocaleTimeString()+".";
  } catch(e) { console.error("Admin refresh failed",e); alert("Dashboard refresh failed: "+(e.message||"Check internet and Supabase permissions.")); }
 }
@@ -1736,6 +1765,7 @@ function openBrandProducts(brand){
 async function loadProducts() {
   try {
     products = await getAllProducts();
+    uosCheckNewListingAlerts(products);
     renderHomeBrands();
   } catch (error) {
     console.error("Supabase product query error:", error);
@@ -2293,6 +2323,7 @@ if (minPrice > maxPrice) {
         <div class="label">${escapeHTML(product.category || "Other")}</div>
         ${product.sold_out ? '<div class="soldout-badge">✓ SOLD OUT</div>' : ''}
         ${product.verified_seller ? '<div class="uos-trust-badge">✓ Verified Seller</div>' : ''}
+        ${product.featured_until && new Date(product.featured_until).getTime()>Date.now() ? '<div class="uos-featured-badge">⭐ FEATURED AD</div>' : ''}
         <div class="uos-view-pill">👁️ <span class="product-view-count">${Number(uosReadLocal("uos_product_views",{})[String(product.id)])||0}</span> views on this device</div>
         ${Number(product.price)>Number(product.offer) && Number(product.price)>0 ? `<div class="discount-badge">SAVE ${formatPrice(Number(product.price)-Number(product.offer))} · ${Math.round((Number(product.price)-Number(product.offer))*100/Number(product.price))}% OFF</div>` : ''}
         <h3>${escapeHTML(product.brand || "")} ${escapeHTML(product.name || "")}</h3>
@@ -2308,10 +2339,11 @@ if (minPrice > maxPrice) {
         <div class="details">${photos.length} photo(s)</div>
         <div class="actions">
           <button type="button" class="detail-btn details-btn">Product Details</button><button type="button" class="view-btn">View Photos</button>
-          <button type="button" class="review-btn secondary">☆ Write Review</button><button type="button" class="read-reviews-btn secondary">Read Reviews</button>
+          <button type="button" class="review-btn secondary">☆ Write Review</button><button type="button" class="read-reviews-btn secondary">Read Reviews</button><button type="button" class="message-seller-btn secondary">💬 Message Seller</button>
           <button type="button" class="secondary whatsapp-btn" ${product.sold_out ? "disabled" : ""}>${product.sold_out ? "Sold Out" : "WhatsApp"}</button>
           <button type="button" class="order-product-btn" ${product.sold_out ? "disabled" : ""}>${product.sold_out ? "Unavailable" : "🛒 Place Order"}</button>
           ${isAdmin ? `<button type="button" class="soldout-btn">${product.sold_out ? "Mark Available" : "Mark Sold Out"}</button><button type="button" class="secondary edit-product-btn">Edit Product</button><button type="button" class="secondary copy-product-link-btn">Copy Product Link</button>` : ''}
+          ${currentUser && String(product.submitted_by||"")===String(currentUser.id) ? `<button type="button" class="secondary featured-request-btn">⭐ Request Featured Ad</button>` : ''}
           <button type="button" class="favorite-btn ${favorites.has(String(product.id)) ? "saved" : ""}" aria-label="Save to wishlist">${favorites.has(String(product.id)) ? "♥ Saved" : "♡ Save"}</button>
           <button type="button" class="compare-btn">${compareProducts.has(String(product.id)) ? "✓ Selected" : "⚖️ Compare"}</button>
           <div class="uos-extra-actions"><button type="button" class="price-watch-btn secondary">🔔 Watch Price</button><button type="button" class="report-listing-btn secondary">🚩 Report Listing</button>${isAdmin ? `<button type="button" class="verify-seller-btn secondary">${product.verified_seller ? "✓ Verified Seller" : "🛡️ Verify Seller"}</button>` : ''}</div>
@@ -2320,6 +2352,8 @@ if (minPrice > maxPrice) {
       </div>
     `;
 
+    const messageSellerBtn=card.querySelector(".message-seller-btn"); if(messageSellerBtn)messageSellerBtn.addEventListener("click",()=>uosMessageSeller(product));
+    const featureRequestBtn=card.querySelector(".featured-request-btn"); if(featureRequestBtn)featureRequestBtn.addEventListener("click",()=>uosRequestFeatured(product.id));
     const editCardBtn = card.querySelector(".edit-product-btn");
     if (editCardBtn) editCardBtn.addEventListener("click", async () => {
       try { editCardBtn.disabled = true; const changed = await updateProductDetails(product); if (changed) await loadProducts(); }
@@ -2833,9 +2867,11 @@ async function loadSellerDashboard() {
     $("sellerPendingCount").textContent = mine.filter(p => p.published === false).length;
     if(message) message.textContent = "Your listings are shown below. Pending products become public after admin approval.";
     if(list) {
-      list.innerHTML = mine.length ? mine.map(p => `<article class="card"><div class="content"><span class="label">${p.published === false ? "⏳ PENDING APPROVAL" : "✓ PUBLISHED"}</span><h3>${escapeHTML([p.brand,p.name].filter(Boolean).join(" "))}</h3><div class="price">${formatPrice(p.offer)}</div><p class="details">${escapeHTML(p.category || "Other")} · ${p.sold_out ? "Sold Out" : "Available"}</p><p class="details">${escapeHTML(p.description || "")}</p></div></article>`).join("") : '<p>No listings yet. Use “Post Another Product” to add one.</p>';
+      list.innerHTML = mine.length ? mine.map(p => `<article class="card"><div class="content"><span class="label">${p.published === false ? "⏳ PENDING APPROVAL" : "✓ PUBLISHED"}</span><h3>${escapeHTML([p.brand,p.name].filter(Boolean).join(" "))}</h3><div class="price">${formatPrice(p.offer)}</div><p class="details">${escapeHTML(p.category || "Other")} · ${p.sold_out ? "Sold Out" : "Available"}</p><p class="details">${escapeHTML(p.description || "")}</p><button type="button" class="secondary" onclick="uosRequestFeatured('${escapeHTML(String(p.id))}')">⭐ Request Featured Ad</button></div></article>`).join("") : '<p>No listings yet. Use “Post Another Product” to add one.</p>';
     }
     await loadCustomerOrders();
+    await uosLoadSellerMessages();
+    const alertsTarget=$("sellerAlertSettings");if(alertsTarget){const alerts=uosReadLocal("uos_new_listing_alerts",[]);alertsTarget.innerHTML=alerts.length?alerts.map((a,i)=>`<p class="uos-chat-box"><strong>${escapeHTML(a.term)}</strong><button type="button" class="secondary" data-remove-alert="${i}">Remove alert</button></p>`).join(""):"<p>No alerts saved on this device.</p>";alertsTarget.querySelectorAll("[data-remove-alert]").forEach(b=>b.addEventListener("click",()=>{const arr=uosReadLocal("uos_new_listing_alerts",[]);arr.splice(Number(b.dataset.removeAlert),1);localStorage.setItem("uos_new_listing_alerts",JSON.stringify(arr));loadSellerDashboard();}));}
   } catch(error) { if(message) message.textContent = "Could not load seller listings. Check products SELECT policies: " + (error.message || "Unknown error"); }
 }
 
