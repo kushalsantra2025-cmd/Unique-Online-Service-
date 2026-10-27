@@ -210,6 +210,153 @@ body.dark-mode textarea {
   color: var(--text-main);
   border-color: var(--border-color);
 }
+ /* PREMIUM CUSTOMER DASHBOARD */
+#customer-profile {
+  background: var(--card-bg, #fff);
+  color: var(--text-main, #172033);
+  border: 1px solid var(--border-color, #dbe3ef);
+  border-radius: 20px;
+  padding: 22px;
+  margin: 18px auto;
+  box-shadow: 0 10px 30px rgba(20, 35, 70, 0.08);
+}
+
+#customer-profile .dashboard-welcome {
+  padding: 20px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #5b4bdb, #8b5cf6);
+  color: white;
+  margin-bottom: 18px;
+}
+
+#customer-profile .dashboard-welcome h2,
+#customer-profile .dashboard-welcome p {
+  color: white;
+}
+
+#customer-profile button {
+  border-radius: 12px;
+  padding: 11px 15px;
+  cursor: pointer;
+  transition: transform .2s ease;
+}
+
+#customer-profile button:hover {
+  transform: translateY(-2px);
+}
+
+body.dark-mode #customer-profile {
+  background: var(--card-bg);
+  color: var(--text-main);
+  border-color: var(--border-color);
+}
+ /* PREMIUM PROFILE SHORTCUTS */
+.profile-shortcuts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.profile-shortcuts button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 72px;
+  padding: 16px;
+  background: var(--card-bg, #ffffff);
+  color: var(--text-main, #172033);
+  border: 1px solid var(--border-color, #dbe3ef);
+  border-radius: 16px;
+  box-shadow: 0 4px 14px rgba(20, 35, 70, 0.06);
+  text-align: left;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.profile-shortcuts button:hover {
+  border-color: #8b5cf6;
+  transform: translateY(-2px);
+}
+
+.profile-shortcuts button span {
+  overflow-wrap: anywhere;
+}
+
+body.dark-mode .profile-shortcuts button {
+  background: var(--card-bg);
+  color: var(--text-main);
+  border-color: var(--border-color);
+}
+
+@media (max-width: 380px) {
+  .profile-shortcuts {
+    grid-template-columns: 1fr;
+  }
+}
+ /* PREMIUM ACCOUNT SETTINGS */
+#customer-profile h3 {
+  margin: 24px 0 14px;
+  font-size: 19px;
+  font-weight: 750;
+}
+
+#customer-profile .profile-list {
+  display: grid;
+  gap: 10px;
+}
+
+#customer-profile .profile-list > * {
+  border-radius: 14px;
+}
+
+#customer-profile .profile-heading {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  margin: 16px 0;
+  background: var(--card-bg, #ffffff);
+  border: 1px solid var(--border-color, #dbe3ef);
+  border-radius: 16px;
+}
+
+#customer-profile .avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: #ede9fe;
+  font-size: 27px;
+}
+
+#customer-profile .profile-heading h2 {
+  margin: 0 0 5px;
+  overflow-wrap: anywhere;
+}
+
+#customer-profile .profile-heading p {
+  margin: 0;
+  overflow-wrap: anywhere;
+  opacity: .8;
+}
+
+body.dark-mode #customer-profile .profile-heading {
+  background: var(--card-bg);
+  border-color: var(--border-color);
+}
+
+@media (max-width: 380px) {
+  #customer-profile {
+    padding: 14px;
+  }
+
+  #customer-profile .profile-heading {
+    padding: 12px;
+  }
+}
 </style>
 </head>
 
@@ -521,7 +668,10 @@ body.dark-mode textarea {
 
 <section class="info customer-profile" id="customer-profile" hidden>
  <div class="page-heading"><h2>My Profile</h2><button class="back-home" type="button" onclick="openAppPage('home')">← Home</button></div>
- <div class="profile-heading"><div><span class="avatar">👤</span></div><div><h2 id="customerGreeting">Hello, Customer</h2><p id="customerEmailLabel">Sign in to manage your account</p></div></div>
+ <div class="dashboard-welcome">
+  <h2>👋 Welcome to Your Dashboard!</h2>
+  <p>Manage your profile, explore products and check your wishlist.</p>
+</div><div class="profile-heading"><div><span class="avatar">👤</span></div><div><h2 id="customerGreeting">Hello, Customer</h2><p id="customerEmailLabel">Sign in to manage your account</p></div></div>
  <div class="profile-shortcuts">
   <button type="button" onclick="profileNotice('Your orders will appear here after order tracking is connected.')">🛍️ <span>Your orders</span></button>
   <button type="button" onclick="showFavoritesOnly(true);location.hash='listings'">♡ <span>Wishlist</span></button>
@@ -2216,12 +2366,53 @@ function openCustomerLogin(){closeProfileMenu();customerSignupMode=false;$ ("cus
 function closeCustomerLogin(){$("customerAuthOverlay").hidden=true;}
 function toggleCustomerSignup(){customerSignupMode=!customerSignupMode;$ ("customerAuthTitle").textContent=customerSignupMode?"Create Customer Account":"Customer Login";$ ("customerAuthSubmit").textContent=customerSignupMode?"Sign Up":"Login";$ ("customerSignupToggle").textContent=customerSignupMode?"Back to login":"Create account";$ ("customerAuthMessage").textContent="";}
 function openCustomerProfile(){closeProfileMenu();openAppPage("profile");updateCustomerProfile();}
-function updateCustomerProfile(){const email=currentUser?.email||localStorage.getItem("uos_customer_email")||"Guest account";$("customerGreeting").textContent=currentUser?"Hello, "+(email.split("@")[0]||"Customer"):"Hello, Customer";$("customerEmailLabel").textContent=email;$("menuUserName").textContent=currentUser?(email.split("@")[0]||"Welcome!"):"Welcome!";$("menuUserEmail").textContent=email==="Guest account"?"Choose how to continue":email;$("profileTriggerLabel").textContent=currentUser?(email.split("@")[0]||"My Account"):"Profile / Login";$("customerLogoutBtn").hidden=!currentUser;}
-function profileNotice(message){$("profileNotice").textContent=message;}
+function updateCustomerProfile() {
+  const email = currentUser?.email ||
+    localStorage.getItem("uos_customer_email") ||
+    "Guest account";
+
+  const savedName = localStorage.getItem("uos_customer_name");
+  const defaultName = currentUser?.email?.split("@")[0] || "Customer";
+  const displayName = savedName || defaultName;
+
+  $("customerGreeting").textContent = "Hello, " + displayName;
+  $("customerEmailLabel").textContent = email;
+
+  $("menuUserName").textContent = currentUser
+    ? displayName
+    : "Welcome!";
+
+  $("menuUserEmail").textContent =
+    email === "Guest account" ? "Choose how to continue" : email;
+
+  $("profileTriggerLabel").textContent =
+    currentUser ? displayName : "Profile / Login";
+
+  $("customerLogoutBtn").hidden = !currentUser;
+}function profileNotice(message){$("profileNotice").textContent=message;}
 function closeSimpleModal(){$("simpleModal").hidden=true;}
 function showPolicy(title,body){$("simpleModalTitle").textContent=title;$("simpleModalBody").textContent=body;$("simpleModal").hidden=false;}
-function editCustomerProfile(){const name=prompt("Enter your display name",currentUser?.email?.split("@")[0]||"");if(name!==null){localStorage.setItem("uos_customer_name",name);$("customerGreeting").textContent="Hello, "+(name||"Customer");profileNotice("Display name saved on this device.");}}
-function editAddress(){const address=prompt("Enter your delivery/contact address",localStorage.getItem("uos_customer_address")||"");if(address!==null){localStorage.setItem("uos_customer_address",address);profileNotice(address?"Address saved on this device.":"Saved address cleared.");}}
+function editCustomerProfile() {
+  const currentName =
+    localStorage.getItem("uos_customer_name") ||
+    currentUser?.email?.split("@")[0] ||
+    "";
+
+  const name = prompt("Enter your display name", currentName);
+
+  if (name !== null) {
+    const cleanName = name.trim();
+
+    if (!cleanName) {
+      alert("Name cannot be empty.");
+      return;
+    }
+
+    localStorage.setItem("uos_customer_name", cleanName);
+    updateCustomerProfile();
+    profileNotice("Display name saved on this device.");
+  }
+}function editAddress(){const address=prompt("Enter your delivery/contact address",localStorage.getItem("uos_customer_address")||"");if(address!==null){localStorage.setItem("uos_customer_address",address);profileNotice(address?"Address saved on this device.":"Saved address cleared.");}}
 function trackOrder(){const order=prompt("Enter your order ID to track:");if(order)profileNotice("Order "+order+": live tracking is not connected yet. Please contact the seller for an update.");}
 async function customerLogout(){try{if(supabaseClient&&currentUser)await supabaseClient.auth.signOut();}catch(e){console.warn(e)}currentUser=null;isAdmin=false;localStorage.removeItem("uos_customer_email");await checkAdmin();await loadProducts();updateCustomerProfile();closeProfileMenu();profileNotice("You have logged out.");}
 $("customerAuthForm").addEventListener("submit",async function(e){e.preventDefault();const email=$("customerAuthEmail").value.trim(),password=$("customerAuthPassword").value;const msg=$("customerAuthMessage"),btn=$("customerAuthSubmit");msg.textContent="";if(!supabaseClient){msg.textContent="Customer account needs Supabase setup. You can still browse and save wishlist items on this device.";return;}btn.disabled=true;btn.textContent=customerSignupMode?"Creating account…":"Signing in…";try{let result;if(customerSignupMode)result=await supabaseClient.auth.signUp({email,password});else result=await supabaseClient.auth.signInWithPassword({email,password});if(result.error)throw result.error;if(result.data.user){currentUser=result.data.user;localStorage.setItem("uos_customer_email",email);await checkAdmin();await loadProducts();updateCustomerProfile();closeCustomerLogin();if(pendingSellAfterLogin){pendingSellAfterLogin=false;openAppPage("post-ad");}else{openCustomerProfile();}if(customerSignupMode&&!result.data.session)profileNotice("Account created. Check your email to confirm it, then log in.");}}catch(err){msg.textContent=err.message||"Could not complete sign in.";}finally{btn.disabled=false;btn.textContent=customerSignupMode?"Sign Up":"Login";}});
