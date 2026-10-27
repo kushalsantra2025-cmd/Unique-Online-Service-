@@ -519,8 +519,11 @@ body.dark-mode .admin-quick-card small{color:#a5b4cc}
       <div class="field"><label for="loginPassword">Password</label><input id="loginPassword" type="password" autocomplete="current-password" required placeholder="Your password"></div>
     </div>
     <button type="submit" id="loginBtn">Admin Login</button>
-    <button type="button" class="secondary" id="logoutBtn" hidden>Logout</button>
-    <p id="loginMessage" role="status"></p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
+      <button type="button" class="secondary" id="reloadAdminBtn" onclick="reloadAdminSession()">🔄 Reload / Check Login</button>
+      <button type="button" class="secondary" id="logoutBtn" hidden>Logout</button>
+    </div>
+    <p id="loginMessage" role="status" aria-live="polite"></p>
   </form>
   <p style="font-size:12px;color:#64748b">Admin accounts are created securely in the Supabase Dashboard. Public visitors do not get a sign-up button.</p>
 </section>
@@ -1370,7 +1373,32 @@ async function initSupabase() {
     $("loginMessage").textContent = "Add Supabase URL and publishable key before logging in.";
     return false;
   }
-  supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+  supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+      storageKey: "uos-supabase-auth"
+    }
+  });
+  // Keep the UI in sync when Supabase refreshes or restores a saved login session.
+  supabaseClient.auth.onAuthStateChange((event, session) => {
+    setTimeout(async () => {
+      currentUser = session?.user || null;
+      try {
+        await checkAdmin();
+        await loadProducts();
+        if (isAdmin) {
+          await loadAdminOrders();
+          await loadAdminReviews();
+          await loadAdminOffers();
+        }
+        updateCustomerProfile();
+      } catch (authSyncError) {
+        console.warn("Auth state refresh issue:", authSyncError);
+      }
+    }, 0);
+  });
   const { data, error } = await supabaseClient.auth.getSession();
   if (error) console.warn(error);
   currentUser = data?.session?.user || null;
@@ -2458,6 +2486,42 @@ $("adForm").addEventListener("submit", async function(event) {
     submitButton.textContent = translations[$("languageSelect").value].submit;
   }
 });
+
+// Restore/check the saved Supabase session without forcing a full page reload.
+async function reloadAdminSession() {
+  const btn = $("reloadAdminBtn");
+  const message = $("loginMessage");
+  if (!supabaseClient) {
+    message.textContent = "Supabase is not connected. Check the Project URL and publishable key.";
+    return;
+  }
+  const oldText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "Checking session…";
+  message.textContent = "Checking your saved login…";
+  try {
+    const { data, error } = await supabaseClient.auth.getSession();
+    if (error) throw error;
+    currentUser = data?.session?.user || null;
+    await checkAdmin();
+    await loadProducts();
+    if (isAdmin) {
+      await loadAdminOrders();
+      await loadAdminReviews();
+      await loadAdminOffers();
+      message.textContent = "Admin session restored: " + (currentUser?.email || "") + ". Dashboard refreshed.";
+    } else if (currentUser) {
+      message.textContent = "You are logged in, but this account is not authorised as an admin.";
+    } else {
+      message.textContent = "No saved login session found. Please log in again.";
+    }
+  } catch (error) {
+    message.textContent = "Could not refresh login: " + (error.message || "Connection issue");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = oldText;
+  }
+}
 
 // ================= ADMIN AUTH =================
 $("loginForm").addEventListener("submit", async function(event) {
